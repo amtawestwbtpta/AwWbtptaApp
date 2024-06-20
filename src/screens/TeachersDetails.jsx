@@ -1060,6 +1060,8 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                     hoi: 'no',
                     service: 'inservice',
                     id: '',
+                    rank: 3,
+                    dataYear: new Date().getFullYear(),
                   });
                   setSelectedText('Select School Name');
                 }}>
@@ -1191,6 +1193,7 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                         borderRadius: responsiveWidth(3),
                       }}>
                       <Text style={styles.text}>Name: {item.tname}</Text>
+                      <Text style={styles.text}>Designation: {item.desig}</Text>
                       <Text style={styles.text}>School: {item.school}</Text>
 
                       <TouchableOpacity
@@ -1358,11 +1361,15 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       onPress={() => {
                         setIsClicked(false);
                         setSelectedText(item.school);
+                        let teacherRank =
+                          teachersData.filter(el => el.udise === item.udise)
+                            .length + 1;
                         setInputField({
                           ...inputField,
                           udise: item.udise,
                           gp: item.gp,
                           school: item.school,
+                          rank: teacherRank,
                         });
                       }}>
                       <Text style={styles.dropDownText}>{item.school}</Text>
@@ -1380,7 +1387,7 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   if (foundTeacher.length) {
                     setInputField({
                       ...inputField,
-                      tsname: text + '-' + (teachersData.length + 1),
+                      tsname: text + '-' + (foundTeacher.length + 1),
                       tname: text,
                     });
                   } else {
