@@ -515,8 +515,8 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
             let x = teachersState;
             x = [...x, item];
             const newData = x.sort(function (a, b) {
-              let nameA = a.school.toLowerCase(),
-                nameB = b.school.toLowerCase();
+              let nameA = a.school,
+                nameB = b.school;
               if (nameA < nameB)
                 //sort string ascending
                 return -1;
@@ -549,9 +549,17 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
         let x = teachersState.filter(el => el.id === item.id)[0];
         x.circle = 'admin';
         let y = teachersState.filter(el => el.id !== item.id).concat(x);
-        const newData = y.sort(
-          (a, b) => a.school.localeCompare(b.school) && b.rank > a.rank,
-        );
+        const newData = y.sort((a, b) => {
+          // First, compare the "school" keys
+          if (a.school < b.school) {
+            return -1;
+          }
+          if (a.school > b.school) {
+            return 1;
+          }
+          // If "school" keys are equal, compare the "rank" keys
+          return a.rank - b.rank;
+        });
         setTeachersState(newData);
         setTeacherUpdateTime(Date.now());
         refreshData(newData);
@@ -645,9 +653,17 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
       .delete()
       .then(async () => {
         let x = teachersState.filter(el => el.id !== item.id);
-        const newData = x.sort(
-          (a, b) => a.school.localeCompare(b.school) && b.rank > a.rank,
-        );
+        const newData = x.sort((a, b) => {
+          // First, compare the "school" keys
+          if (a.school < b.school) {
+            return -1;
+          }
+          if (a.school > b.school) {
+            return 1;
+          }
+          // If "school" keys are equal, compare the "rank" keys
+          return a.rank - b.rank;
+        });
         setTeachersState(newData);
         setTeacherUpdateTime(Date.now());
         refreshData(newData);
@@ -677,9 +693,17 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
         let x = teachersState.filter(el => el.id === item.id)[0];
         x.circle = 'taw';
         let y = teachersState.filter(el => el.id !== item.id).concat(x);
-        const newData = y.sort(
-          (a, b) => a.school.localeCompare(b.school) && b.rank > a.rank,
-        );
+        const newData = y.sort((a, b) => {
+          // First, compare the "school" keys
+          if (a.school < b.school) {
+            return -1;
+          }
+          if (a.school > b.school) {
+            return 1;
+          }
+          // If "school" keys are equal, compare the "rank" keys
+          return a.rank - b.rank;
+        });
         setTeachersState(newData);
         setTeacherUpdateTime(Date.now());
         refreshData(newData);
@@ -846,9 +870,17 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
           ...doc.data(),
           id: doc.id,
         }));
-        const newData = data.sort(
-          (a, b) => a.school.localeCompare(b.school) && b.rank > a.rank,
-        );
+        const newData = data.sort((a, b) => {
+          // First, compare the "school" keys
+          if (a.school < b.school) {
+            return -1;
+          }
+          if (a.school > b.school) {
+            return 1;
+          }
+          // If "school" keys are equal, compare the "rank" keys
+          return a.rank - b.rank;
+        });
         setTeachersState(newData);
         setTeacherUpdateTime(Date.now());
         setData(newData);

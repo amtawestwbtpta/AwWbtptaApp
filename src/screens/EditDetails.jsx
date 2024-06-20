@@ -86,9 +86,17 @@ const EditDetails = () => {
           .then(async () => {
             let x = teachersState.filter(el => el.id !== editMember.id);
             x = [...x, editMember];
-            const newData = x.sort(
-              (a, b) => a.school.localeCompare(b.school) && b.rank > a.rank,
-            );
+            const newData = x.sort((a, b) => {
+              // First, compare the "school" keys
+              if (a.school < b.school) {
+                return -1;
+              }
+              if (a.school > b.school) {
+                return 1;
+              }
+              // If "school" keys are equal, compare the "rank" keys
+              return a.rank - b.rank;
+            });
             setTeachersState(newData);
             setShowLoader(false);
             showToast('success', 'Teacher Details Updated Successfully');

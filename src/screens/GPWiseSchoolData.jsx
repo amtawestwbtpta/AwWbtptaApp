@@ -122,9 +122,17 @@ const GPWiseSchoolData = ({refresh, navigation, selectActiveTab, tabValue}) => {
           ...doc.data(),
           id: doc.id,
         }));
-        const newData = data.sort(
-          (a, b) => a.school.localeCompare(b.school) && b.rank > a.rank,
-        );
+        const newData = data.sort((a, b) => {
+          // First, compare the "school" keys
+          if (a.school < b.school) {
+            return -1;
+          }
+          if (a.school > b.school) {
+            return 1;
+          }
+          // If "school" keys are equal, compare the "rank" keys
+          return a.rank - b.rank;
+        });
         setTeachersState(newData);
         setTeacherData(newData.sort((a, b) => b.desig.localeCompare(a.desig)));
         setShowLoader(false);
