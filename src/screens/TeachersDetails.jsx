@@ -923,9 +923,17 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
   };
 
   const getData = async () => {
-    const newData = teachersState.sort(
-      (a, b) => a.school.localeCompare(b.school) && b.rank > a.rank,
-    );
+    const newData = teachersState.sort((a, b) => {
+      // First, compare the "school" keys
+      if (a.school < b.school) {
+        return -1;
+      }
+      if (a.school > b.school) {
+        return 1;
+      }
+      // If "school" keys are equal, compare the "rank" keys
+      return a.rank - b.rank;
+    });
     setData(newData);
     setFilteredData(newData);
     setTeacherId(
@@ -939,9 +947,17 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
     setOurPercentage(parseInt((WBTPTATEACHERS / ALLTEACHER) * 100));
   };
   const refreshData = async pushedData => {
-    const newData = pushedData.sort(
-      (a, b) => a.school.localeCompare(b.school) && b.rank > a.rank,
-    );
+    const newData = pushedData.sort((a, b) => {
+      // First, compare the "school" keys
+      if (a.school < b.school) {
+        return -1;
+      }
+      if (a.school > b.school) {
+        return 1;
+      }
+      // If "school" keys are equal, compare the "rank" keys
+      return a.rank - b.rank;
+    });
     setData(newData);
     setFilteredData(newData);
     setTeacherId(
@@ -1193,7 +1209,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                         borderRadius: responsiveWidth(3),
                       }}>
                       <Text style={styles.text}>Name: {item.tname}</Text>
-                      <Text style={styles.text}>Designation: {item.desig}</Text>
+                      <Text style={[styles.text, {color: 'blueviolet'}]}>
+                        Designation: {item.desig}
+                      </Text>
                       <Text style={styles.text}>School: {item.school}</Text>
 
                       <TouchableOpacity
@@ -2067,6 +2085,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       }}>
                       <Text style={styles.text}>Name: {item.tname}</Text>
                       <Text style={styles.text}>School: {item.school}</Text>
+                      <Text style={[styles.text, {color: 'blueviolet'}]}>
+                        Designation: {item.desig}
+                      </Text>
                       {item.gender === 'male' ? (
                         <TouchableOpacity
                           onPress={() => makeCall(parseInt(item.phone))}>
