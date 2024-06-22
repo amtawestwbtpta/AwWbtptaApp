@@ -153,7 +153,7 @@ const AccountLedger = ({refresh}) => {
                   </Text>
                 </View>
                 <Text style={styles.label}>
-                  Purpose: {titleCase(el.purpose)}
+                  Purpose: {el.purpose ? titleCase(el.purpose) : 'Transfer'}
                 </Text>
                 <View style={{flexDirection: 'row', alignSelf: 'center'}}>
                   <Text style={styles.label}>Tansferer's Cash: </Text>

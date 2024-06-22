@@ -67,7 +67,7 @@ const EditDetails = () => {
   const [isGpClicked, setIsGpClicked] = useState(false);
   const [selectedGP, setSelectedGP] = useState('Select GP Name');
   const ifsc_ser = () => {
-    fetch(`https://ifsc.razorpay.com/${data.ifsc}`)
+    fetch(`https://ifsc.razorpay.com/${data?.ifsc}`)
       .then(res => res.json())
       .then(data => setBankData(data));
   };
@@ -81,10 +81,10 @@ const EditDetails = () => {
         setShowLoader(true);
         await firestore()
           .collection('teachers')
-          .doc(editMember.id)
+          .doc(editMember?.id)
           .update(editMember)
           .then(async () => {
-            let x = teachersState.filter(el => el.id !== editMember.id);
+            let x = teachersState.filter(el => el.id !== editMember?.id);
             x = [...x, editMember];
             const newData = x.sort((a, b) => {
               // First, compare the "school" keys
@@ -133,8 +133,8 @@ const EditDetails = () => {
       ? setIsInservice(true)
       : setIsInservice(false);
     setGp(gp.map(el => el.gp === data?.gp));
-    setSelectedGP(data.gp);
-  }, [isFocused]);
+    setSelectedGP(data?.gp);
+  }, [isFocused, data]);
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -147,9 +147,10 @@ const EditDetails = () => {
     );
     return () => backHandler.remove();
   }, [isFocused]);
+  useEffect(() => {}, [editMember, data]);
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>DETAILS OF {data.tname}</Text>
+      <Text style={styles.heading}>DETAILS OF {data?.tname}</Text>
       <ScrollView
         style={{
           marginTop: responsiveHeight(2),
@@ -157,7 +158,7 @@ const EditDetails = () => {
         <Text style={styles.dataText}>Name</Text>
         <CustomTextInput
           placeholder={'Enter Member Name'}
-          value={editMember.tname}
+          value={editMember?.tname}
           onChangeText={text => {
             setDisable(false);
             setEditMember({...editMember, tname: text});
@@ -166,7 +167,7 @@ const EditDetails = () => {
         <Text style={styles.dataText}>Father's Name</Text>
         <CustomTextInput
           placeholder={"Enter Father's Name"}
-          value={editMember.fname}
+          value={editMember?.fname}
           onChangeText={text => {
             setDisable(false);
             setEditMember({...editMember, fname: text});
@@ -208,7 +209,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>UDISE</Text>
             <CustomTextInput
               placeholder={'Enter UDISE'}
-              value={editMember.udise}
+              value={editMember?.udise}
               onChangeText={text => {
                 setDisable(false);
                 setEditMember({...editMember, udise: text});
@@ -250,7 +251,7 @@ const EditDetails = () => {
                 <Text style={styles.dataText}>Employee ID</Text>
                 <CustomTextInput
                   placeholder={'Enter Employee ID'}
-                  value={editMember.empid}
+                  value={editMember?.empid}
                   onChangeText={text => {
                     setDisable(false);
                     setEditMember({...editMember, empid: text});
@@ -324,7 +325,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>Training Status</Text>
             <CustomTextInput
               placeholder={'Enter Training Status'}
-              value={editMember.training}
+              value={editMember?.training}
               onChangeText={text => {
                 setDisable(false);
                 setEditMember({...editMember, training: text});
@@ -333,7 +334,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>Association</Text>
             <CustomTextInput
               placeholder={'Enter Association'}
-              value={editMember.association}
+              value={editMember?.association}
               onChangeText={text => {
                 setDisable(false);
                 setEditMember({...editMember, association: text});
@@ -342,7 +343,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>Teacher Search Name</Text>
             <CustomTextInput
               placeholder={'Enter Teacher Search Name'}
-              value={editMember.tsname}
+              value={editMember?.tsname}
               onChangeText={text => {
                 setDisable(false);
                 setEditMember({...editMember, tsname: text});
@@ -508,7 +509,7 @@ const EditDetails = () => {
         <Text style={styles.dataText}>Mobile</Text>
         <CustomTextInput
           placeholder={'Enter Mobile'}
-          value={editMember.phone}
+          value={editMember?.phone}
           type={'number-pad'}
           onChangeText={text => {
             setDisable(false);
@@ -518,7 +519,7 @@ const EditDetails = () => {
         <Text style={styles.dataText}>Email</Text>
         <CustomTextInput
           placeholder={'Enter Email'}
-          value={editMember.email}
+          value={editMember?.email}
           type={'email-address'}
           onChangeText={text => {
             setDisable(false);
@@ -528,7 +529,7 @@ const EditDetails = () => {
         <Text style={styles.dataText}>Date of Birth</Text>
         <CustomTextInput
           placeholder={'Enter Date of Birth'}
-          value={editMember.dob}
+          value={editMember?.dob}
           type={'number-pad'}
           onChangeText={text => {
             setDisable(false);
@@ -538,7 +539,7 @@ const EditDetails = () => {
         <Text style={styles.dataText}>Date of Joining</Text>
         <CustomTextInput
           placeholder={'Enter Date of Joining'}
-          value={editMember.doj}
+          value={editMember?.doj}
           type={'number-pad'}
           onChangeText={text => {
             setDisable(false);
@@ -548,7 +549,7 @@ const EditDetails = () => {
         <Text style={styles.dataText}>Date of Joining in Current School</Text>
         <CustomTextInput
           placeholder={'Enter Date of Joining in Current School'}
-          value={editMember.dojnow}
+          value={editMember?.dojnow}
           type={'number-pad'}
           onChangeText={text => {
             setDisable(false);
@@ -558,7 +559,7 @@ const EditDetails = () => {
         <Text style={styles.dataText}>Date of Retirement</Text>
         <CustomTextInput
           placeholder={'Enter Date of Retirement'}
-          value={editMember.dor}
+          value={editMember?.dor}
           type={'number-pad'}
           onChangeText={text => {
             setDisable(false);
@@ -569,7 +570,7 @@ const EditDetails = () => {
         <Text style={styles.dataText}>PAN</Text>
         <CustomTextInput
           placeholder={'Enter PAN'}
-          value={editMember.pan}
+          value={editMember?.pan}
           onChangeText={text => {
             setDisable(false);
             setEditMember({...editMember, pan: text});
@@ -578,7 +579,7 @@ const EditDetails = () => {
         <Text style={styles.dataText}>Address</Text>
         <CustomTextInput
           placeholder={'Enter Address'}
-          value={editMember.address}
+          value={editMember?.address}
           multiline={true}
           size={'medium'}
           onChangeText={text => {
@@ -592,7 +593,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>Bank</Text>
             <CustomTextInput
               placeholder={'Enter Bank'}
-              value={editMember.bank}
+              value={editMember?.bank}
               multiline={true}
               onChangeText={text => {
                 setDisable(false);
@@ -602,7 +603,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>Account No</Text>
             <CustomTextInput
               placeholder={'Enter Account No'}
-              value={editMember.account}
+              value={editMember?.account}
               multiline={true}
               onChangeText={text => {
                 setDisable(false);
@@ -612,7 +613,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>IFS Code</Text>
             <CustomTextInput
               placeholder={'Enter IFS Code'}
-              value={editMember.ifsc}
+              value={editMember?.ifsc}
               multiline={true}
               onChangeText={text => {
                 setDisable(false);
@@ -622,18 +623,20 @@ const EditDetails = () => {
             />
             <View style={styles.dataView}>
               <Text style={styles.bankDataText}>
-                Bank Name: {bankData.BANK}
+                Bank Name: {bankData?.BANK}
               </Text>
-              <Text style={styles.bankDataText}>Branch: {bankData.BRANCH}</Text>
               <Text style={styles.bankDataText}>
-                Address: {bankData.ADDRESS}
+                Branch: {bankData?.BRANCH}
               </Text>
-              <Text style={styles.bankDataText}>MICR: {bankData.MICR}</Text>
+              <Text style={styles.bankDataText}>
+                Address: {bankData?.ADDRESS}
+              </Text>
+              <Text style={styles.bankDataText}>MICR: {bankData?.MICR}</Text>
             </View>
             <Text style={styles.dataText}>July BASIC</Text>
             <CustomTextInput
               placeholder={'Enter July BASIC'}
-              value={editMember.basic.toString()}
+              value={editMember?.basic.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
@@ -643,7 +646,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>July DA</Text>
             <CustomTextInput
               placeholder={'Enter July DA'}
-              value={editMember.da.toString()}
+              value={editMember?.da.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
@@ -653,7 +656,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>July HRA</Text>
             <CustomTextInput
               placeholder={'Enter July HRA'}
-              value={editMember.hra.toString()}
+              value={editMember?.hra.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
@@ -663,7 +666,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>July Gross</Text>
             <CustomTextInput
               placeholder={'Enter July Gross'}
-              value={editMember.gross.toString()}
+              value={editMember?.gross.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
@@ -673,7 +676,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>July Net Pay</Text>
             <CustomTextInput
               placeholder={'Enter July Net Pay'}
-              value={editMember.netpay.toString()}
+              value={editMember?.netpay.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
@@ -683,7 +686,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>June BASIC</Text>
             <CustomTextInput
               placeholder={'Enter June BASIC'}
-              value={editMember.mbasic.toString()}
+              value={editMember?.mbasic.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
@@ -693,7 +696,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>June DA</Text>
             <CustomTextInput
               placeholder={'Enter June DA'}
-              value={editMember.mda.toString()}
+              value={editMember?.mda.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
@@ -703,7 +706,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>June HRA</Text>
             <CustomTextInput
               placeholder={'Enter June HRA'}
-              value={editMember.mhra.toString()}
+              value={editMember?.mhra.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
@@ -713,7 +716,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>June Gross</Text>
             <CustomTextInput
               placeholder={'Enter June Gross'}
-              value={editMember.mgross.toString()}
+              value={editMember?.mgross.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
@@ -723,7 +726,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>June Net Pay</Text>
             <CustomTextInput
               placeholder={'Enter June Net Pay'}
-              value={editMember.mnetpay.toString()}
+              value={editMember?.mnetpay.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
@@ -733,7 +736,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>GPF</Text>
             <CustomTextInput
               placeholder={'Enter GPF'}
-              value={editMember.gpf.toString()}
+              value={editMember?.gpf.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
@@ -743,7 +746,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>Previous GPF</Text>
             <CustomTextInput
               placeholder={'Enter Previous GPF'}
-              value={editMember.gpfprev.toString()}
+              value={editMember?.gpfprev.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
@@ -753,7 +756,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>Additional</Text>
             <CustomTextInput
               placeholder={'Enter Additional'}
-              value={editMember.addl.toString()}
+              value={editMember?.addl.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
@@ -763,7 +766,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>Medical Allowance</Text>
             <CustomTextInput
               placeholder={'Enter Medical Allowance'}
-              value={editMember.ma.toString()}
+              value={editMember?.ma.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
@@ -773,7 +776,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>GSLI</Text>
             <CustomTextInput
               placeholder={'Enter GSLI'}
-              value={editMember.gsli.toString()}
+              value={editMember?.gsli.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
@@ -783,7 +786,7 @@ const EditDetails = () => {
             <Text style={styles.dataText}>Bonus</Text>
             <CustomTextInput
               placeholder={'Enter Bonus'}
-              value={editMember.bonus.toString()}
+              value={editMember?.bonus.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);

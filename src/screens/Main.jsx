@@ -53,7 +53,6 @@ const Main = () => {
   const [textColor, setTextColor] = useState(THEME_COLOR);
   const selectActiveTab = tab => {
     setActiveTab(tab);
-    console.log(tab);
   };
   const AnimatedBtn = Animated.createAnimatedComponent(TouchableOpacity);
 

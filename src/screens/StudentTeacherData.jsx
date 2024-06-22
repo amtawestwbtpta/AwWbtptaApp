@@ -456,9 +456,7 @@ const StudentTeacherData = ({
                 onClick={() => {
                   navigation.navigate('AllTeachersSalary');
                   setStateObject({
-                    data: filteredData.sort((a, b) =>
-                      b.desig.localeCompare(a.desig),
-                    ),
+                    data: filteredData.sort((a, b) => a.rank - b.rank),
                     navigation: navigation,
                   });
                   DeviceEventEmitter.addListener('goBack', setActiveTab);
@@ -474,7 +472,8 @@ const StudentTeacherData = ({
                     onLongPress={() => {
                       if (user.circle === 'admin') {
                         {
-                          navigation.navigate('EditDetails', {
+                          navigation.navigate('EditDetails');
+                          setStateObject({
                             data: el,
                             navigation: navigation,
                           });

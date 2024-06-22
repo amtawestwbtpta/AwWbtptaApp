@@ -64,14 +64,6 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
   const setActiveTab = () => {
     selectActiveTab(tabValue);
   };
-  const scrollRef = useRef();
-
-  const onPressTouch = () => {
-    scrollRef.current?.scrollTo({
-      y: 0,
-      animated: true,
-    });
-  };
 
   const isFocused = useIsFocused();
   const [data, setData] = useState(teachersState);
@@ -155,7 +147,14 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
 
     return buf.map(() => Math.floor(isaac.random() * 256));
   });
+  const scrollRef = useRef();
 
+  const onPressTouch = () => {
+    scrollRef.current?.scrollTo({
+      y: 0,
+      animated: true,
+    });
+  };
   const loadPrev = () => {
     setVisibleItems(prevVisibleItems => prevVisibleItems - 10);
     setFirstData(firstData - 10);
@@ -1966,10 +1965,14 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
               fontSize={responsiveFontSize(1.8)}
               color={'blueviolet'}
               onClick={() => {
-                navigation.navigate('AllTeachersSalary', {
-                  data: data.filter(el => el.udise === user.udise),
+                navigation.navigate('AllTeachersSalary');
+                setStateObject({
+                  data: data
+                    .filter(el => el.udise === user.udise)
+                    .sort((a, b) => a.rank - b.rank),
                   navigation: navigation,
                 });
+
                 DeviceEventEmitter.addListener('goBack', setActiveTab);
               }}
             />

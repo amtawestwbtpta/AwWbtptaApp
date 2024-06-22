@@ -10,7 +10,7 @@ import {
   FlatList,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
-import {useIsFocused, useRoute} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {THEME_COLOR} from '../utils/Colors';
 import CustomButton from '../components/CustomButton';
 const {width, height} = Dimensions.get('window');
@@ -24,10 +24,10 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import {round2dec} from '../modules/calculatefunctions';
 import {useGlobalContext} from '../context/Store';
 const AllQuestionData = () => {
-  const {stateObject} = useGlobalContext();
+  const {questionState, questionRateState} = useGlobalContext();
   const isFocused = useIsFocused();
-  const route = useRoute();
-  const [questionData, setQuestionData] = useState([]);
+  const navigation = useNavigation();
+  const [questionData, setQuestionData] = useState(questionState);
   const [qRateData, setQRateData] = useState({
     id: '',
     question_pp_rate: '',
@@ -39,8 +39,7 @@ const AllQuestionData = () => {
     term: '1st',
     year: new Date().getFullYear(),
   });
-  const [filteredData, setFilteredData] = useState([]);
-  const navigation = stateObject.navigation;
+  const [filteredData, setFilteredData] = useState(questionState);
   const [firstData, setFirstData] = useState(0);
   const [visibleItems, setVisibleItems] = useState(10);
   const [isGpClicked, setIsGpClicked] = useState(false);
@@ -69,9 +68,9 @@ const AllQuestionData = () => {
   ];
 
   useEffect(() => {
-    setQuestionData(stateObject.data);
-    setQRateData(stateObject.rate);
-    setFilteredData(stateObject.data);
+    setQuestionData(questionState);
+    setQRateData(questionRateState);
+    setFilteredData(questionState);
   }, [isFocused]);
 
   useEffect(() => {}, [qRateData, questionData, filteredData]);

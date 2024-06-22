@@ -1,4 +1,3 @@
-import {Platform} from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
 import RNFS from 'react-native-fs';
 export const downloadFile = async (url, fileName) => {
@@ -20,5 +19,8 @@ export const downloadFile = async (url, fileName) => {
     .then(res => {
       // the temp file path
       console.log('The file saved to ', res.path());
+    })
+    .catch(err => {
+      console.log(err);
     });
 };

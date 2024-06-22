@@ -143,6 +143,7 @@ const Splash = () => {
                     const supported = await Linking.canOpenURL(AppURL); //To check if URL is supported or not.
                     if (supported) {
                       await Linking.openURL(AppURL); // It will open the URL on browser.
+                      await EncryptedStorage.clear();
                     } else {
                       Alert.alert(`Can't open this URL: ${AppURL}`);
                     }

@@ -25,6 +25,7 @@ import WbtptaChatRoom from '../screens/WbtptaChatRoom';
 import WbtptaWorkingChatRoom from '../screens/WbtptaWorkingChatRoom';
 import WeFourGroup from '../screens/WeFourGroup';
 import MemoDetails from '../screens/MemoDetails';
+import TokensView from '../screens/TokensView';
 
 const Stack = createNativeStackNavigator();
 const AppNavigator = () => {
@@ -115,6 +116,11 @@ const AppNavigator = () => {
         <Stack.Screen
           name="QuestionSection"
           component={QuestionSection}
+          options={{headerShown: false, drawerItemStyle: {height: 0}}}
+        />
+        <Stack.Screen
+          name="TokensView"
+          component={TokensView}
           options={{headerShown: false, drawerItemStyle: {height: 0}}}
         />
         <Stack.Screen

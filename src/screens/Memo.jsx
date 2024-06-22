@@ -143,8 +143,9 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
             type: type,
           })
           .then(async () => {
-            setMemoState([
-              ...memoState,
+            let x = memoState;
+            x = [
+              ...x,
               {
                 id: docId,
                 date: Date.now(),
@@ -157,22 +158,15 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
                 photoName: docId + '-' + photoName,
                 type: type,
               },
-            ]);
-            setAllmemos([
-              ...memoState,
-              {
-                id: docId,
-                date: Date.now(),
-                addedBy: user.tname,
-                title: title,
-                memoNumber: memoNumber,
-                memoDate: dateObjToDateFormat(date),
-                memoText: memoText,
-                url: url,
-                photoName: docId + '-' + photoName,
-                type: type,
-              },
-            ]);
+            ];
+            x = x.sort(
+              (a, b) =>
+                Date.parse(getCurrentDateInput(b.memoDate)) -
+                Date.parse(getCurrentDateInput(a.memoDate)),
+            );
+
+            setMemoState(x);
+            setAllmemos(x);
             setMemoUpdateTime(Date.now());
             let memoTitle = `New memo added By ${user.tname}`;
             let body = memoText;
@@ -214,8 +208,9 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
           })
 
           .then(async () => {
-            setMemoState([
-              ...memoState,
+            let x = memoState;
+            x = [
+              ...x,
               {
                 id: docId,
                 date: Date.now(),
@@ -228,22 +223,14 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
                 photoName: '',
                 type: '',
               },
-            ]);
-            setAllmemos([
-              ...memoState,
-              {
-                id: docId,
-                date: Date.now(),
-                addedBy: user.tname,
-                title: title,
-                memoNumber: memoNumber,
-                memoDate: dateObjToDateFormat(date),
-                memoText: memoText,
-                url: '',
-                photoName: '',
-                type: '',
-              },
-            ]);
+            ];
+            x = x.sort(
+              (a, b) =>
+                Date.parse(getCurrentDateInput(b.memoDate)) -
+                Date.parse(getCurrentDateInput(a.memoDate)),
+            );
+            setMemoState(x);
+            setAllmemos(x);
             setMemoUpdateTime(Date.now());
             let memoTitle = `New memo added By ${user.tname}`;
             let body = `Title: ${title}, memo: ${memoText}`;

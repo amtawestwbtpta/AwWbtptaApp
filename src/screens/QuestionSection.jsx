@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {useIsFocused, useRoute} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import {THEME_COLOR} from '../utils/Colors';
 import CustomTextInput from '../components/CustomTextInput';
@@ -43,11 +43,9 @@ const QuestionSection = () => {
     setQuestionUpdateTime,
     questionRateState,
     setQuestionRateState,
-    setStateObject,
   } = useGlobalContext();
   const user = state.USER;
-  const route = useRoute();
-  let navigation = route.params.navigation;
+  const navigation = useNavigation();
   const [docId, setDocId] = useState(uuid.v4().split('-')[0]);
   const [showLoader, setShowLoader] = useState(false);
   const [search, setSearch] = useState('');
@@ -246,7 +244,7 @@ const QuestionSection = () => {
         setFilteredData(data);
         setQuestionState(data);
         setQuestionUpdateTime(Date.now());
-        setDocId(`questions${data.length + 101}-${uuid().split('-')[0]}`);
+        setDocId(`questions${data.length + 101}-${uuid.v4().split('-')[0]}`);
       })
       .then(async () => {
         await firestore()
@@ -639,7 +637,7 @@ const QuestionSection = () => {
       setQData(questionState);
       setFilteredData(questionState);
       setDocId(
-        `questions${questionState.length + 101}-${uuid().split('-')[0]}`,
+        `questions${questionState.length + 101}-${uuid.v4().split('-')[0]}`,
       );
       setQRateData(questionRateState);
       let otherTerms = selectTerm.filter(
@@ -726,7 +724,6 @@ const QuestionSection = () => {
     }
   };
   useEffect(() => {
-    navigation = route.params.navigation;
     getQuestionData();
   }, [isFocused]);
   useEffect(() => {}, [
@@ -826,11 +823,6 @@ const QuestionSection = () => {
               color={'blueviolet'}
               onClick={() => {
                 navigation.navigate('AllQuestionData');
-                setStateObject({
-                  navigation: navigation,
-                  data: qData,
-                  rate: qRateData,
-                });
               }}
             />
           )}

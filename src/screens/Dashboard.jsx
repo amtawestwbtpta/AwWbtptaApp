@@ -233,8 +233,9 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
             images={images}
             imageIndex={currentIndex}
             visible={isVisible}
-            // presentationStyle={'overFullScreen'}
+            presentationStyle={'overFullScreen'}
             onRequestClose={() => setIsVisible(false)}
+            animationType="slide"
             onImageIndexChange={index => setCurrentIndex(index)}
             FooterComponent={() => {
               return (
@@ -292,6 +293,8 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
             imageIndex={0}
             visible={showProfilePhoto}
             doubleTapToZoomEnabled={true}
+            presentationStyle="overFullScreen"
+            animationType="slide"
             onRequestClose={() => setShowProfilePhoto(false)}
             FooterComponent={() => {
               return (
@@ -301,7 +304,7 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
                     alignItems: 'center',
                     alignSelf: 'center',
                     flexDirection: 'row',
-                    marginTop: -responsiveHeight(95.5),
+                    marginTop: -responsiveHeight(94),
                     marginLeft: responsiveWidth(60),
                   }}>
                   <TouchableOpacity
@@ -620,16 +623,26 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
                 </View>
               ) : null}
               {user.question === 'admin' && (
-                <CustomButton
-                  title={'Question Section'}
-                  color={'blueviolet'}
-                  onClick={() => {
-                    navigation.navigate('QuestionSection', {
-                      navigation: navigation,
-                    });
-                    DeviceEventEmitter.addListener('goBack', setActiveTab);
-                  }}
-                />
+                <View>
+                  <CustomButton
+                    title={'Question Section'}
+                    color={'blueviolet'}
+                    onClick={() => {
+                      navigation.navigate('QuestionSection', {
+                        navigation: navigation,
+                      });
+                      DeviceEventEmitter.addListener('goBack', setActiveTab);
+                    }}
+                  />
+                  <CustomButton
+                    title={'Tokens Section'}
+                    color={'purple'}
+                    onClick={() => {
+                      navigation.navigate('TokensView');
+                      DeviceEventEmitter.addListener('goBack', setActiveTab);
+                    }}
+                  />
+                </View>
               )}
 
               <View

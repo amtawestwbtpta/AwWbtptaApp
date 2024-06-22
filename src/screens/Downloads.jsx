@@ -8,6 +8,7 @@ import {
   BackHandler,
   Alert,
   Modal,
+  Linking,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import firestore from '@react-native-firebase/firestore';
@@ -31,6 +32,7 @@ import uuid from 'react-native-uuid';
 import CustomTextInput from '../components/CustomTextInput';
 import {notifyAll} from '../modules/notification';
 import {useGlobalContext} from '../context/Store';
+import {AppURL} from '../modules/constants';
 const Downloads = ({navigation, refresh}) => {
   const isFocused = useIsFocused();
   const docId = uuid.v4().split('-')[0];
@@ -296,6 +298,37 @@ const Downloads = ({navigation, refresh}) => {
                 </View>
               )}
             </View>
+            <View
+              style={[
+                styles.itemView,
+                {
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                },
+              ]}>
+              <Text style={styles.label}>1) Our Android App</Text>
+              <Text style={styles.label}>Format: APK</Text>
+
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                  flexDirection: 'row',
+                }}>
+                <TouchableOpacity
+                  onPress={async () => {
+                    const supported = await Linking.canOpenURL(AppURL); //To check if URL is supported or not.
+                    if (supported) {
+                      await Linking.openURL(AppURL); // It will open the URL on browser.
+                    }
+                  }}>
+                  <Text style={[styles.label, {color: 'purple'}]}>
+                    Download
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
             {filteredData.length > 0 ? (
               filteredData.slice(firstData, visibleItems).map((el, ind) => {
                 return (
@@ -309,7 +342,7 @@ const Downloads = ({navigation, refresh}) => {
                         },
                       ]}>
                       <Text style={styles.label}>
-                        {`${ind + 1}) ${el.fileName}`}
+                        {`${ind + 2}) ${el.fileName}`}
                       </Text>
                       <Text style={styles.label}>
                         Format:{' '}

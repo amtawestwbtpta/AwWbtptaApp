@@ -35,14 +35,11 @@ const MemoDetails = () => {
   const navigation = stateObject.navigation;
   const pdfRef = useRef();
   const [visible, setIsVisible] = useState(false);
-  const [width, setWidth] = useState(0);
-  const [height, setHeight] = useState(0);
   const [showLoader, setShowLoader] = useState(false);
   const [pageNo, setPageNo] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
 
   useEffect(() => {}, [isFocused, data]);
-  useEffect(() => {}, [width, height]);
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
