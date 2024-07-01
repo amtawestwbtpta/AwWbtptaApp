@@ -131,7 +131,9 @@ const PasswordForm = ({email}) => {
       />
 
       <View style={styles.card}>
-        <Text style={styles.title}>Login</Text>
+        <Text selectable style={styles.title}>
+          Login
+        </Text>
         <CustomTextInput
           value={inputField.otpCode}
           placeholder={'Enter OTP'}
@@ -141,7 +143,9 @@ const PasswordForm = ({email}) => {
           }
         />
         {errField.otpCodeErr.length > 0 && (
-          <Text style={styles.label}>{errField.otpErr}</Text>
+          <Text selectable style={styles.label}>
+            {errField.otpErr}
+          </Text>
         )}
         <CustomTextInput
           value={inputField.password}
@@ -150,7 +154,9 @@ const PasswordForm = ({email}) => {
           onChangeText={text => setInputField({...inputField, password: text})}
         />
         {errField.passwordErr.length > 0 && (
-          <Text style={styles.label}>{errField.passwordErr}</Text>
+          <Text selectable style={styles.label}>
+            {errField.passwordErr}
+          </Text>
         )}
         <CustomTextInput
           value={inputField.cpassword}
@@ -158,7 +164,9 @@ const PasswordForm = ({email}) => {
           onChangeText={text => setInputField({...inputField, cpassword: text})}
         />
         {errField.passwordErr.length > 0 && (
-          <Text style={styles.label}>{errField.cpasswordErr}</Text>
+          <Text selectable style={styles.label}>
+            {errField.cpasswordErr}
+          </Text>
         )}
         <CustomButton title="Submit" onClick={submitBtn} />
         <CustomButton

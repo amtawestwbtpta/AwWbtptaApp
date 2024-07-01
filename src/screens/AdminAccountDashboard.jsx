@@ -12,7 +12,7 @@ import React, {useState, useEffect} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {THEME_COLOR} from '../utils/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {useIsFocused, useRoute} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Loader from '../components/Loader';
 import {
   responsiveHeight,
@@ -23,8 +23,7 @@ import {INR, IndianFormat} from '../modules/calculatefunctions';
 import Toast from 'react-native-toast-message';
 
 const AdminAccountDashboard = ({exclueOther, total, getAccount}) => {
-  const route = useRoute();
-  const navigation = route.params.navigation;
+  const navigation = useNavigation();
   const isFocused = useIsFocused();
   const [showLoader, setShowLoader] = useState(false);
   const showConfirmDialog = el => {
@@ -90,13 +89,17 @@ const AdminAccountDashboard = ({exclueOther, total, getAccount}) => {
         let dateRecent = new Date(el.recentOn);
         return (
           <View style={styles.itemView} key={index}>
-            <Text style={styles.label}>Name: {el.name}</Text>
-            <Text style={styles.label}>Amount: ₹{el.cash}</Text>
-            <Text style={styles.label}>
+            <Text selectable style={styles.label}>
+              Name: {el.name}
+            </Text>
+            <Text selectable style={styles.label}>
+              Amount: ₹{el.cash}
+            </Text>
+            <Text selectable style={styles.label}>
               Recent Transaction Date:{' '}
               {`${dateRecent.getDate()}-${dateRecent.getMonth()}-${dateRecent.getFullYear()}`}
             </Text>
-            <Text style={styles.label}>
+            <Text selectable style={styles.label}>
               Recent Transaction Amount: ₹{el.recentTransactionAmount}
             </Text>
             <TouchableOpacity
@@ -104,7 +107,7 @@ const AdminAccountDashboard = ({exclueOther, total, getAccount}) => {
               onPress={() => {
                 showConfirmDialog(el);
               }}>
-              <Text>
+              <Text selectable>
                 <Ionicons name="trash-bin" size={25} color="red" />
               </Text>
             </TouchableOpacity>
@@ -113,8 +116,12 @@ const AdminAccountDashboard = ({exclueOther, total, getAccount}) => {
       })}
       <ScrollView style={{marginBottom: responsiveHeight(2)}}>
         <View style={styles.itemView}>
-          <Text style={styles.label}>Total: ₹{IndianFormat(total)}</Text>
-          <Text style={styles.label}>In Words: {INR(total)}</Text>
+          <Text selectable style={styles.label}>
+            Total: ₹{IndianFormat(total)}
+          </Text>
+          <Text selectable style={styles.label}>
+            In Words: {INR(total)}
+          </Text>
         </View>
       </ScrollView>
       <Loader visible={showLoader} />

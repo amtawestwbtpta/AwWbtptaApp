@@ -10,7 +10,6 @@ import {
   TouchableOpacity,
   Alert,
   Switch,
-  DeviceEventEmitter,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
@@ -27,13 +26,14 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import AnimatedSeacrch from '../components/AnimatedSeacrch';
 import CustomButton from '../components/CustomButton';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import CustomTextInput from '../components/CustomTextInput';
 import {BONUS, DA, HRA, INCREAMENT} from '../modules/constants';
 import {
   findEmptyValues,
   generateID,
+  getServiceLife,
   getSubmitDateInput,
 } from '../modules/calculatefunctions';
 import {notifyAll} from '../modules/notification';
@@ -45,7 +45,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import uuid from 'react-native-uuid';
 import {useGlobalContext} from '../context/Store';
 import {Image} from 'react-native-svg';
-const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
+const TeachersDetails = () => {
   const {
     state,
     teachersState,
@@ -59,16 +59,16 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
     schoolUpdateTime,
     setSchoolUpdateTime,
     setStateObject,
+    setStateArray,
+    setActiveTab,
   } = useGlobalContext();
   const user = state.USER;
-  const setActiveTab = () => {
-    selectActiveTab(tabValue);
-  };
-
+  const navigation = useNavigation();
   const isFocused = useIsFocused();
   const [data, setData] = useState(teachersState);
   const [ourPercentage, setOurPercentage] = useState(0);
   const [inputTname, setInputTname] = useState('');
+  const [inpSchool, setInpSchool] = useState('');
   const [filteredData, setFilteredData] = useState(teachersState);
   const [visible, setVisible] = useState(false);
   const [showOurTeachers, setShowOurTeachers] = useState(false);
@@ -87,12 +87,17 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
   const [visibleItems, setVisibleItems] = useState(10);
   const [deletedTeachers, setDeletedTeachers] = useState([]);
   const [showDeletedTeachers, setShowDeletedTeachers] = useState(false);
+  const [schSearchOption, setSchSearchOption] = useState(true);
+  const [teaSearchOption, setTeaSearchOption] = useState(true);
+  const [tenShowed, setTenShowed] = useState(true);
+  const [twentyShowed, setTwentyShowed] = useState(false);
+  const [thirtyShowed, setThirtyShowed] = useState(false);
+  const [pageData, setPageData] = useState(10);
   const [inputField, setInputField] = useState({
     school: '',
     udise: '',
     tname: '',
-    tsname: '',
-    gender: 'male',
+    gender: '',
     ph: 0,
     desig: 'AT',
     fname: '',
@@ -103,7 +108,7 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
     phone: '',
     email: '',
     dob: '01-01-1980',
-    doj: '01-01-2010',
+    doj: getSubmitDateInput(new Date().toLocaleDateString()),
     dojnow: getSubmitDateInput(new Date().toLocaleDateString()),
     dor: '01-01-2040',
     bank: '',
@@ -114,8 +119,8 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
     pan: '',
     address: '',
     basic: 0,
-    mbasic: '',
-    prevmbasic: '',
+    mbasic: 0,
+    prevmbasic: 0,
     addl: 0,
     da: 0,
     mda: 0,
@@ -126,14 +131,17 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
     mgross: 0,
     gpf: 0,
     gpfprev: 0,
-    ptax: 150,
+    mptax: 150,
+    jptax: 150,
     gsli: 0,
     netpay: 0,
     mnetpay: 0,
-    bonus: BONUS,
+    bonus: 0,
     arrear: 0,
     question: 'taw',
-    hoi: 'no',
+    hoi: 'NO',
+    newHt: false,
+    showAccount: false,
     service: 'inservice',
     id: '',
     rank: 3,
@@ -149,21 +157,21 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
   });
   const scrollRef = useRef();
 
-  const onPressTouch = () => {
+  const scrollToTop = () => {
     scrollRef.current?.scrollTo({
       y: 0,
       animated: true,
     });
   };
   const loadPrev = () => {
-    setVisibleItems(prevVisibleItems => prevVisibleItems - 10);
-    setFirstData(firstData - 10);
-    onPressTouch();
+    setVisibleItems(prevVisibleItems => prevVisibleItems - pageData);
+    setFirstData(firstData - pageData);
+    scrollToTop();
   };
   const loadMore = () => {
-    setVisibleItems(prevVisibleItems => prevVisibleItems + 10);
-    setFirstData(firstData + 10);
-    onPressTouch();
+    setVisibleItems(prevVisibleItems => prevVisibleItems + pageData);
+    setFirstData(firstData + pageData);
+    scrollToTop();
   };
 
   const getDeletedData = async () => {
@@ -360,9 +368,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   photoName: techerData.photoName,
                 });
               if (userState.length !== 0) {
-                let x = userState;
-                x = [
-                  ...x,
+                let user = userState;
+                user = [
+                  ...user,
                   {
                     teachersID: techerData.teachersID,
                     tname: techerData.tname,
@@ -393,7 +401,24 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                     photoName: techerData.photoName,
                   },
                 ];
-                setUserState(x);
+                setUserState(user);
+                let x = teachersState.filter(el => el.id === techerData.id)[0];
+                x.registered = true;
+                let y = teachersState.filter(el => el.id !== techerData.id);
+                y = [...y, x];
+                const newData = y.sort((a, b) => {
+                  // First, compare the "school" keys
+                  if (a.school < b.school) {
+                    return -1;
+                  }
+                  if (a.school > b.school) {
+                    return 1;
+                  }
+                  // If "school" keys are equal, compare the "rank" keys
+                  return a.rank - b.rank;
+                });
+                setTeachersState(newData);
+                setTeacherUpdateTime(Date.now());
               } else {
                 setVisible(true);
                 await firestore()
@@ -501,40 +526,50 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
 
   const restoreTeacher = async item => {
     setVisible(true);
-    await firestore()
-      .collection('deletedTeachers')
-      .doc(item.id)
-      .delete()
-      .then(async () => {
-        await firestore()
-          .collection('teachers')
-          .doc(item.id)
-          .set(item)
-          .then(async () => {
-            let x = teachersState;
-            x = [...x, item];
-            const newData = x.sort(function (a, b) {
-              let nameA = a.school,
-                nameB = b.school;
-              if (nameA < nameB)
-                //sort string ascending
-                return -1;
-              if (nameA > nameB) return 1;
-              return 0; //default return value (no sorting)
-            });
-            setTeachersState(newData);
-            setTeacherUpdateTime(Date.now());
-            refreshData(newData);
-            setVisible(false);
+    const url = `https://awwbtpta.vercel.app/api/addTeacher`;
+    let response = await axios.post(url, item);
+    let record = response.data;
+    if (record.success) {
+      await firestore()
+        .collection('deletedTeachers')
+        .doc(item.id)
+        .delete()
+        .then(async () => {
+          await firestore()
+            .collection('teachers')
+            .doc(item.id)
+            .set(item)
+            .then(async () => {
+              let x = teachersState;
+              x = [...x, item];
+              const newData = x.sort((a, b) => {
+                // First, compare the "school" keys
+                if (a.school < b.school) {
+                  return -1;
+                }
+                if (a.school > b.school) {
+                  return 1;
+                }
+                // If "school" keys are equal, compare the "rank" keys
+                return a.rank - b.rank;
+              });
+              setTeachersState(newData);
+              setTeacherUpdateTime(Date.now());
+              refreshData(newData);
+              setVisible(false);
 
-            getDeletedData();
-            setFilteredData(deletedTeachers);
-            setNoeditBtn(true);
-            showToast('success', 'Teacher Restored Successfully');
-          })
-          .catch(e => console.log(e));
-      })
-      .catch(e => console.log(e));
+              getDeletedData();
+              setFilteredData(deletedTeachers);
+              setNoeditBtn(true);
+              showToast('success', 'Teacher Restored Successfully');
+            })
+            .catch(e => console.log(e));
+        })
+        .catch(e => console.log(e));
+    } else {
+      setVisible(false);
+      showToast('error', 'Some Error Happened!');
+    }
   };
   const makeAdmin = async item => {
     setVisible(true);
@@ -646,38 +681,47 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
 
   const deleteTeacher = async item => {
     setVisible(true);
-    await firestore()
-      .collection('teachers')
-      .doc(item.id)
-      .delete()
-      .then(async () => {
-        let x = teachersState.filter(el => el.id !== item.id);
-        const newData = x.sort((a, b) => {
-          // First, compare the "school" keys
-          if (a.school < b.school) {
-            return -1;
-          }
-          if (a.school > b.school) {
-            return 1;
-          }
-          // If "school" keys are equal, compare the "rank" keys
-          return a.rank - b.rank;
-        });
-        setTeachersState(newData);
-        setTeacherUpdateTime(Date.now());
-        refreshData(newData);
+    const url = `https://awwbtpta.vercel.app/api/delteacher`;
+    let response = await axios.post(url, inputField);
+    let record = response.data;
+    if (record.success) {
+      await firestore()
+        .collection('teachers')
+        .doc(item.id)
+        .delete()
+        .then(async () => {
+          let x = teachersState.filter(el => el.id !== item.id);
+          const newData = x.sort((a, b) => {
+            // First, compare the "school" keys
+            if (a.school < b.school) {
+              return -1;
+            }
+            if (a.school > b.school) {
+              return 1;
+            }
+            // If "school" keys are equal, compare the "rank" keys
+            return a.rank - b.rank;
+          });
+          setTeachersState(newData);
+          setTeacherUpdateTime(Date.now());
+          refreshData(newData);
 
-        await firestore()
-          .collection('deletedTeachers')
-          .doc(item.id)
-          .set(item)
-          .then(async () => {
-            setVisible(false);
-            showToast('success', 'Teacher Deleted Successfully');
-          })
-          .catch(e => console.log(e));
-      })
-      .catch(e => console.log(e));
+          await firestore()
+            .collection('deletedTeachers')
+            .doc(item.id)
+            .set(item)
+            .then(async () => {
+              setVisible(false);
+              showToast('success', 'Teacher Deleted Successfully');
+            })
+            .catch(e => console.log(e));
+        })
+        .catch(e => console.log(e));
+    } else {
+      setVisible(false);
+      showToast('error', 'Some Error Happened!');
+      console.log(e);
+    }
   };
 
   const removeAdmin = async item => {
@@ -759,25 +803,33 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
   const addTeacher = async () => {
     if (!findEmptyValues(inputField)) {
       setVisible(true);
-      await firestore()
-        .collection('teachers')
-        .doc(teacherId)
-        .set(inputField)
-        .then(async () => {
-          let x = teachersState.filter(el => el.id !== teacherId);
-          x = [...x, inputField];
-          const newData = x.sort(
-            (a, b) => a.school.localeCompare(b.school) && b.rank > a.rank,
-          );
-          setTeachersState(newData);
-          setTeacherUpdateTime(Date.now());
-          let title = `New Teacher Added`;
-          let body = `Our Admin ${user.tname} Has Just Added A New Teacher ${inputField.tname}`;
-          await notifyAll(title, body).then(async () => {
-            setVisible(false);
-            showToast('success', 'New Teacher Added Successfully');
+      const url = `https://awwbtpta.vercel.app/api/addTeacher`;
+      let response = await axios.post(url, inputField);
+      let record = response.data;
+      if (record.success) {
+        await firestore()
+          .collection('teachers')
+          .doc(teacherId)
+          .set(inputField)
+          .then(async () => {
+            let x = teachersState.filter(el => el.id !== teacherId);
+            x = [...x, inputField];
+            const newData = x.sort(
+              (a, b) => a.school.localeCompare(b.school) && b.rank > a.rank,
+            );
+            setTeachersState(newData);
+            setTeacherUpdateTime(Date.now());
+            let title = `New Teacher Added`;
+            let body = `Our Admin ${user.tname} Has Just Added A New Teacher ${inputField.tname}`;
+            await notifyAll(title, body).then(async () => {
+              setVisible(false);
+              showToast('success', 'New Teacher Added Successfully');
+            });
           });
-        });
+      } else {
+        setVisible(false);
+        showToast('error', 'New Teacher Added Failed');
+      }
     } else {
       showToast('error', `Some Fields Has Empty Values!!!`);
     }
@@ -987,7 +1039,7 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
   };
   useEffect(() => {
     getMainData();
-    console.log(teacherUpdateTime / Date.now());
+    scrollToTop();
   }, [isFocused]);
 
   useEffect(() => {
@@ -996,12 +1048,28 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
     });
     setFilteredData(result);
   }, [inputTname]);
-  useEffect(() => {}, [inputField, bankData, teachersState]);
+
+  useEffect(() => {
+    const result = data.filter(el => {
+      return el.school.toLowerCase().match(inpSchool.toLowerCase());
+    });
+    setFilteredData(result);
+  }, [inpSchool]);
+  useEffect(() => {}, [
+    inputField,
+    bankData,
+    teachersState,
+    visibleItems,
+    tenShowed,
+    twentyShowed,
+    thirtyShowed,
+    pageData,
+  ]);
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
-        refresh();
+        setActiveTab(0);
         return true;
       },
     );
@@ -1030,8 +1098,7 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                     school: '',
                     udise: '',
                     tname: '',
-                    tsname: '',
-                    gender: 'male',
+                    gender: '',
                     ph: 0,
                     desig: 'AT',
                     fname: '',
@@ -1042,19 +1109,19 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                     phone: '',
                     email: '',
                     dob: '01-01-1980',
-                    doj: '01-01-2010',
+                    doj: getSubmitDateInput(new Date().toLocaleDateString()),
                     dojnow: getSubmitDateInput(new Date().toLocaleDateString()),
                     dor: '01-01-2040',
                     bank: '',
                     account: '',
                     ifsc: '',
-                    empid: generateID(),
+                    empid: '',
                     training: 'TRAINED',
                     pan: '',
                     address: '',
                     basic: 0,
-                    mbasic: '',
-                    prevmbasic: '',
+                    mbasic: 0,
+                    prevmbasic: 0,
                     addl: 0,
                     da: 0,
                     mda: 0,
@@ -1065,14 +1132,17 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                     mgross: 0,
                     gpf: 0,
                     gpfprev: 0,
-                    ptax: 150,
+                    mptax: 150,
+                    jptax: 150,
                     gsli: 0,
                     netpay: 0,
                     mnetpay: 0,
-                    bonus: BONUS,
+                    bonus: 0,
                     arrear: 0,
                     question: 'taw',
-                    hoi: 'no',
+                    hoi: 'NO',
+                    newHt: false,
+                    showAccount: false,
                     service: 'inservice',
                     id: '',
                     rank: 3,
@@ -1085,7 +1155,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   size={20}
                   color={THEME_COLOR}
                 />
-                <Text style={[styles.label, {paddingLeft: responsiveWidth(2)}]}>
+                <Text
+                  selectable
+                  style={[styles.text, {paddingLeft: responsiveWidth(2)}]}>
                   {showAddView ? 'Hide Add Teacher' : 'Add New Teacher'}
                 </Text>
               </TouchableOpacity>
@@ -1117,8 +1189,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   color={'green'}
                 />
                 <Text
+                  selectable
                   style={[
-                    styles.label,
+                    styles.text,
                     {
                       paddingLeft: responsiveWidth(2),
                       color: 'green',
@@ -1147,8 +1220,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                 }}>
                 <FontAwesome5 name={'trash'} size={20} color={'red'} />
                 <Text
+                  selectable
                   style={[
-                    styles.label,
+                    styles.text,
                     {
                       paddingLeft: responsiveWidth(2),
                       color: 'red',
@@ -1162,7 +1236,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
         )}
         {showDeletedTeachers ? (
           <View>
-            <Text style={styles.title}>Deleted Teachers Details</Text>
+            <Text selectable style={styles.title}>
+              Deleted Teachers Details
+            </Text>
             <View
               style={{
                 flexDirection: 'row',
@@ -1207,15 +1283,21 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                         backgroundColor: 'white',
                         borderRadius: responsiveWidth(3),
                       }}>
-                      <Text style={styles.text}>Name: {item.tname}</Text>
-                      <Text style={[styles.text, {color: 'blueviolet'}]}>
+                      <Text selectable style={styles.text}>
+                        Name: {item.tname}
+                      </Text>
+                      <Text
+                        selectable
+                        style={[styles.text, {color: 'blueviolet'}]}>
                         Designation: {item.desig}
                       </Text>
-                      <Text style={styles.text}>School: {item.school}</Text>
+                      <Text selectable style={styles.text}>
+                        School: {item.school}
+                      </Text>
 
                       <TouchableOpacity
                         onPress={() => makeCall(parseInt(item.phone))}>
-                        <Text style={styles.text}>
+                        <Text selectable style={styles.text}>
                           <Feather
                             name="phone-call"
                             size={18}
@@ -1225,7 +1307,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                         </Text>
                       </TouchableOpacity>
 
-                      <Text style={styles.text}>GP: {item.gp}</Text>
+                      <Text selectable style={styles.text}>
+                        GP: {item.gp}
+                      </Text>
                       <View
                         style={{
                           flexDirection: 'row',
@@ -1233,8 +1317,11 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                           alignItems: 'center',
                           alignSelf: 'center',
                         }}>
-                        <Text style={styles.text}>Association: </Text>
+                        <Text selectable style={styles.text}>
+                          Association:{' '}
+                        </Text>
                         <Text
+                          selectable
                           style={[
                             styles.text,
                             {
@@ -1247,7 +1334,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                           {item.association}
                         </Text>
                       </View>
-                      <Text style={styles.text}>Address: {item.address}</Text>
+                      <Text selectable style={styles.text}>
+                        Address: {item.address}
+                      </Text>
                       <TouchableOpacity
                         style={{
                           alignItems: 'center',
@@ -1266,8 +1355,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                           color={'green'}
                         />
                         <Text
+                          selectable
                           style={[
-                            styles.label,
+                            styles.text,
                             {
                               paddingLeft: responsiveWidth(2),
                               color: 'green',
@@ -1281,7 +1371,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   )}
                 />
               ) : (
-                <Text style={styles.text}>Teacher Not Found</Text>
+                <Text selectable style={styles.text}>
+                  Teacher Not Found
+                </Text>
               )}
             </ScrollView>
             <View
@@ -1316,12 +1408,16 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
           </View>
         ) : showAddView ? (
           <View>
-            <Text style={styles.title}>Add New Teacher</Text>
+            <Text selectable style={styles.title}>
+              Add New Teacher
+            </Text>
             <ScrollView
               style={{
                 marginTop: responsiveHeight(2),
               }}>
-              <Text style={styles.dataText}>Select School</Text>
+              <Text selectable style={styles.dataText}>
+                Select School
+              </Text>
               <View>
                 <TouchableOpacity
                   style={[styles.dropDownnSelector, {marginTop: 5}]}
@@ -1342,6 +1438,7 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                         justifyContent: 'space-between',
                       }}>
                       <Text
+                        selectable
                         style={[
                           styles.dropDownText,
                           {paddingRight: responsiveWidth(2)},
@@ -1358,6 +1455,7 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                         justifyContent: 'space-between',
                       }}>
                       <Text
+                        selectable
                         style={[
                           styles.dropDownText,
                           {paddingRight: responsiveWidth(2)},
@@ -1389,11 +1487,15 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                           rank: teacherRank,
                         });
                       }}>
-                      <Text style={styles.dropDownText}>{item.school}</Text>
+                      <Text selectable style={styles.dropDownText}>
+                        {item.school}
+                      </Text>
                     </TouchableOpacity>
                   ))}
               </View>
-              <Text style={styles.dataText}>Name</Text>
+              <Text selectable style={styles.dataText}>
+                Name
+              </Text>
               <CustomTextInput
                 placeholder={'Enter Member Name'}
                 value={inputField.tname}
@@ -1416,7 +1518,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   }
                 }}
               />
-              <Text style={styles.dataText}>Father's Name</Text>
+              <Text selectable style={styles.dataText}>
+                Father's Name
+              </Text>
               <CustomTextInput
                 placeholder={"Enter Father's Name"}
                 value={inputField.fname}
@@ -1424,7 +1528,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   setInputField({...inputField, fname: text});
                 }}
               />
-              <Text style={styles.dataText}>Gender</Text>
+              <Text selectable style={styles.dataText}>
+                Gender
+              </Text>
               <CustomTextInput
                 placeholder={'Enter Gender'}
                 value={inputField.gender}
@@ -1432,7 +1538,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   setInputField({...inputField, gender: text});
                 }}
               />
-              <Text style={styles.dataText}>UDISE</Text>
+              <Text selectable style={styles.dataText}>
+                UDISE
+              </Text>
               <CustomTextInput
                 placeholder={'Enter UDISE'}
                 value={inputField.udise}
@@ -1440,7 +1548,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   setInputField({...inputField, udise: text});
                 }}
               />
-              <Text style={styles.dataText}>Designation</Text>
+              <Text selectable style={styles.dataText}>
+                Designation
+              </Text>
 
               <View
                 style={{
@@ -1450,6 +1560,7 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   marginBottom: responsiveHeight(0.5),
                 }}>
                 <Text
+                  selectable
                   style={[styles.title, {paddingRight: responsiveWidth(1.5)}]}>
                   AT
                 </Text>
@@ -1469,11 +1580,14 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   value={isHT}
                 />
 
-                <Text style={[styles.title, {paddingRight: 5}]}>HT</Text>
+                <Text selectable style={[styles.title, {paddingRight: 5}]}>
+                  HT
+                </Text>
               </View>
               {user.circle === 'admin' ? (
                 <View>
                   <Text
+                    selectable
                     style={[
                       styles.dataText,
                       {paddingRight: responsiveWidth(5)},
@@ -1490,7 +1604,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   />
                 </View>
               ) : null}
-              <Text style={styles.dataText}>Gram Panchayet</Text>
+              <Text selectable style={styles.dataText}>
+                Gram Panchayet
+              </Text>
               <CustomTextInput
                 placeholder={'Enter Gram Panchayet'}
                 value={inputField.gp}
@@ -1500,7 +1616,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                 }}
               />
 
-              <Text style={styles.dataText}>Mobile</Text>
+              <Text selectable style={styles.dataText}>
+                Mobile
+              </Text>
               <CustomTextInput
                 placeholder={'Enter Mobile'}
                 value={inputField.phone}
@@ -1509,7 +1627,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   setInputField({...inputField, phone: text});
                 }}
               />
-              <Text style={styles.dataText}>Email</Text>
+              <Text selectable style={styles.dataText}>
+                Email
+              </Text>
               <CustomTextInput
                 placeholder={'Enter Email'}
                 value={inputField.email}
@@ -1518,7 +1638,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   setInputField({...inputField, email: text});
                 }}
               />
-              <Text style={styles.dataText}>Date of Birth</Text>
+              <Text selectable style={styles.dataText}>
+                Date of Birth
+              </Text>
               <CustomTextInput
                 placeholder={'Enter Date of Birth'}
                 value={inputField.dob}
@@ -1527,7 +1649,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   setInputField({...inputField, dob: text});
                 }}
               />
-              <Text style={styles.dataText}>Date of Joining</Text>
+              <Text selectable style={styles.dataText}>
+                Date of Joining
+              </Text>
               <CustomTextInput
                 placeholder={'Enter Date of Joining'}
                 value={inputField.doj}
@@ -1536,7 +1660,7 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   setInputField({...inputField, doj: text});
                 }}
               />
-              <Text style={styles.dataText}>
+              <Text selectable style={styles.dataText}>
                 Date of Joining in Current School
               </Text>
               <CustomTextInput
@@ -1547,7 +1671,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   setInputField({...inputField, dojnow: text});
                 }}
               />
-              <Text style={styles.dataText}>Date of Retirement</Text>
+              <Text selectable style={styles.dataText}>
+                Date of Retirement
+              </Text>
               <CustomTextInput
                 placeholder={'Enter Date of Retirement'}
                 value={inputField.dor}
@@ -1557,7 +1683,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                 }}
               />
 
-              <Text style={styles.dataText}>PAN</Text>
+              <Text selectable style={styles.dataText}>
+                PAN
+              </Text>
               <CustomTextInput
                 placeholder={'Enter PAN'}
                 value={inputField.pan}
@@ -1565,7 +1693,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   setInputField({...inputField, pan: text});
                 }}
               />
-              <Text style={styles.dataText}>Address</Text>
+              <Text selectable style={styles.dataText}>
+                Address
+              </Text>
               <CustomTextInput
                 placeholder={'Enter Address'}
                 value={inputField.address}
@@ -1578,7 +1708,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
 
               {user.circle === 'admin' ? (
                 <View>
-                  <Text style={styles.dataText}>Bank</Text>
+                  <Text selectable style={styles.dataText}>
+                    Bank
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter Bank'}
                     value={inputField.bank}
@@ -1587,7 +1719,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, bank: text});
                     }}
                   />
-                  <Text style={styles.dataText}>Account No</Text>
+                  <Text selectable style={styles.dataText}>
+                    Account No
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter Account No'}
                     value={inputField.account}
@@ -1596,7 +1730,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, account: text});
                     }}
                   />
-                  <Text style={styles.dataText}>IFS Code</Text>
+                  <Text selectable style={styles.dataText}>
+                    IFS Code
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter IFS Code'}
                     value={inputField.ifsc}
@@ -1613,21 +1749,23 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   />
                   {showBankData && (
                     <View style={styles.dataView}>
-                      <Text style={styles.bankDataText}>
+                      <Text selectable style={styles.bankDataText}>
                         Bank Name: {bankData.BANK}
                       </Text>
-                      <Text style={styles.bankDataText}>
+                      <Text selectable style={styles.bankDataText}>
                         Branch: {bankData.BRANCH}
                       </Text>
-                      <Text style={styles.bankDataText}>
+                      <Text selectable style={styles.bankDataText}>
                         Address: {bankData.ADDRESS}
                       </Text>
-                      <Text style={styles.bankDataText}>
+                      <Text selectable style={styles.bankDataText}>
                         MICR: {bankData.MICR}
                       </Text>
                     </View>
                   )}
-                  <Text style={styles.dataText}>GPF</Text>
+                  <Text selectable style={styles.dataText}>
+                    GPF
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter GPF'}
                     value={inputField.gpf.toString()}
@@ -1636,7 +1774,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, gpf: text});
                     }}
                   />
-                  <Text style={styles.dataText}>Previous GPF</Text>
+                  <Text selectable style={styles.dataText}>
+                    Previous GPF
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter Previous GPF'}
                     value={inputField.gpfprev.toString()}
@@ -1645,7 +1785,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, gpfprev: text});
                     }}
                   />
-                  <Text style={styles.dataText}>Additional</Text>
+                  <Text selectable style={styles.dataText}>
+                    Additional
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter Additional'}
                     value={inputField.addl.toString()}
@@ -1654,7 +1796,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, addl: text});
                     }}
                   />
-                  <Text style={styles.dataText}>Medical Allowance</Text>
+                  <Text selectable style={styles.dataText}>
+                    Medical Allowance
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter Medical Allowance'}
                     value={inputField.ma.toString()}
@@ -1663,7 +1807,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, ma: text});
                     }}
                   />
-                  <Text style={styles.dataText}>GSLI</Text>
+                  <Text selectable style={styles.dataText}>
+                    GSLI
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter GSLI'}
                     value={inputField.gsli.toString()}
@@ -1672,7 +1818,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, gsli: text});
                     }}
                   />
-                  <Text style={styles.dataText}>June BASIC</Text>
+                  <Text selectable style={styles.dataText}>
+                    June BASIC
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter June BASIC'}
                     value={inputField.mbasic.toString()}
@@ -1681,7 +1829,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       calculateSalary(parseInt(text));
                     }}
                   />
-                  <Text style={styles.dataText}>June DA</Text>
+                  <Text selectable style={styles.dataText}>
+                    June DA
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter June DA'}
                     value={inputField.mda.toString()}
@@ -1690,7 +1840,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, mda: text});
                     }}
                   />
-                  <Text style={styles.dataText}>June HRA</Text>
+                  <Text selectable style={styles.dataText}>
+                    June HRA
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter June HRA'}
                     value={inputField.mhra.toString()}
@@ -1699,7 +1851,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, mhra: text});
                     }}
                   />
-                  <Text style={styles.dataText}>June Gross</Text>
+                  <Text selectable style={styles.dataText}>
+                    June Gross
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter June Gross'}
                     value={inputField.mgross.toString()}
@@ -1708,7 +1862,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, mgross: text});
                     }}
                   />
-                  <Text style={styles.dataText}>June Net Pay</Text>
+                  <Text selectable style={styles.dataText}>
+                    June Net Pay
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter June Net Pay'}
                     value={inputField.mnetpay.toString()}
@@ -1717,7 +1873,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, mnetpay: text});
                     }}
                   />
-                  <Text style={styles.dataText}>July BASIC</Text>
+                  <Text selectable style={styles.dataText}>
+                    July BASIC
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter July BASIC'}
                     value={inputField.basic.toString()}
@@ -1726,7 +1884,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, basic: text});
                     }}
                   />
-                  <Text style={styles.dataText}>July DA</Text>
+                  <Text selectable style={styles.dataText}>
+                    July DA
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter July DA'}
                     value={inputField.da.toString()}
@@ -1735,7 +1895,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, da: text});
                     }}
                   />
-                  <Text style={styles.dataText}>July HRA</Text>
+                  <Text selectable style={styles.dataText}>
+                    July HRA
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter July HRA'}
                     value={inputField.hra.toString()}
@@ -1744,7 +1906,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, hra: text});
                     }}
                   />
-                  <Text style={styles.dataText}>July Gross</Text>
+                  <Text selectable style={styles.dataText}>
+                    July Gross
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter July Gross'}
                     value={inputField.gross.toString()}
@@ -1753,7 +1917,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, gross: text});
                     }}
                   />
-                  <Text style={styles.dataText}>July Net Pay</Text>
+                  <Text selectable style={styles.dataText}>
+                    July Net Pay
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter July Net Pay'}
                     value={inputField.netpay.toString()}
@@ -1763,7 +1929,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                     }}
                   />
 
-                  <Text style={styles.dataText}>Bonus</Text>
+                  <Text selectable style={styles.dataText}>
+                    Bonus
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter Bonus'}
                     value={inputField.bonus.toString()}
@@ -1772,7 +1940,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, bonus: text});
                     }}
                   />
-                  <Text style={styles.dataText}>Training Status</Text>
+                  <Text selectable style={styles.dataText}>
+                    Training Status
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter Training Status'}
                     value={inputField.training}
@@ -1780,7 +1950,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, training: text});
                     }}
                   />
-                  <Text style={styles.dataText}>Association</Text>
+                  <Text selectable style={styles.dataText}>
+                    Association
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter Association'}
                     value={inputField.association}
@@ -1788,7 +1960,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, association: text});
                     }}
                   />
-                  <Text style={styles.dataText}>Teacher Search Name</Text>
+                  <Text selectable style={styles.dataText}>
+                    Teacher Search Name
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter Teacher Search Name'}
                     value={inputField.tsname}
@@ -1796,7 +1970,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, tsname: text});
                     }}
                   />
-                  <Text style={styles.dataText}>Access</Text>
+                  <Text selectable style={styles.dataText}>
+                    Access
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter Access'}
                     value={inputField.circle}
@@ -1804,7 +1980,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, circle: text});
                     }}
                   />
-                  <Text style={styles.dataText}>Question Access</Text>
+                  <Text selectable style={styles.dataText}>
+                    Question Access
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter Question Access'}
                     value={inputField.question}
@@ -1812,7 +1990,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, question: text});
                     }}
                   />
-                  <Text style={styles.dataText}>Disability</Text>
+                  <Text selectable style={styles.dataText}>
+                    Disability
+                  </Text>
                   <CustomTextInput
                     placeholder={'Enter Disability Write 0 or 1'}
                     value={inputField.ph.toString()}
@@ -1821,7 +2001,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, ph: text});
                     }}
                   />
-                  <Text style={styles.dataText}>IS HOI?</Text>
+                  <Text selectable style={styles.dataText}>
+                    IS HOI?
+                  </Text>
                   <CustomTextInput
                     placeholder={'IS HOI?'}
                     value={inputField.hoi}
@@ -1829,7 +2011,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       setInputField({...inputField, hoi: text});
                     }}
                   />
-                  <Text style={styles.dataText}>Service Status</Text>
+                  <Text selectable style={styles.dataText}>
+                    Service Status
+                  </Text>
                   <CustomTextInput
                     placeholder={'Service Status?'}
                     value={inputField.service}
@@ -1840,21 +2024,31 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                 </View>
               ) : null}
               <View style={{marginBottom: responsiveHeight(2)}}>
-                <CustomButton title={'Add Teacher'} onClick={addTeacher} />
+                <CustomButton
+                  title={'Add Teacher'}
+                  onClick={() => {
+                    if (inputField.empid !== '') {
+                      addTeacher();
+                    } else {
+                      setInputField({...inputField, empid: generateID()});
+                      addTeacher();
+                    }
+                  }}
+                />
                 <CustomButton
                   title={'Cancel'}
                   color={'red'}
                   onClick={() => {
+                    scrollToTop();
                     setShowAddView(false);
                     setSelectedText('Select School Name');
                     setInputField({
                       school: '',
                       udise: '',
                       tname: '',
-                      tsname: '',
-                      gender: 'male',
+                      gender: '',
                       ph: 0,
-                      desig: 'AT',
+                      desig: '',
                       fname: '',
                       circle: 'taw',
                       sis: 'AMTA WEST CIRCLE',
@@ -1863,7 +2057,7 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       phone: '',
                       email: '',
                       dob: '01-01-1980',
-                      doj: '01-01-2010',
+                      doj: getSubmitDateInput(new Date().toLocaleDateString()),
                       dojnow: getSubmitDateInput(
                         new Date().toLocaleDateString(),
                       ),
@@ -1871,13 +2065,13 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       bank: '',
                       account: '',
                       ifsc: '',
-                      empid: generateID(),
+                      empid: '',
                       training: 'TRAINED',
                       pan: '',
                       address: '',
                       basic: 0,
-                      mbasic: '',
-                      prevmbasic: '',
+                      mbasic: 0,
+                      prevmbasic: 0,
                       addl: 0,
                       da: 0,
                       mda: 0,
@@ -1888,16 +2082,21 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       mgross: 0,
                       gpf: 0,
                       gpfprev: 0,
-                      ptax: 150,
+                      mptax: 150,
+                      jptax: 150,
                       gsli: 0,
                       netpay: 0,
                       mnetpay: 0,
-                      bonus: BONUS,
+                      bonus: 0,
                       arrear: 0,
                       question: 'taw',
-                      hoi: 'no',
+                      hoi: '',
+                      newHt: false,
+                      showAccount: false,
                       service: 'inservice',
                       id: '',
+                      rank: 3,
+                      dataYear: new Date().getFullYear(),
                     });
                   }}
                 />
@@ -1911,13 +2110,17 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
               alignItems: 'center',
               alignSelf: 'center',
             }}>
-            <Text style={styles.title}>Teachers Details</Text>
-            <Text style={styles.text}>Total Teachers: {data.length}</Text>
-            <Text style={styles.text}>
+            <Text selectable style={styles.title}>
+              Teachers Details
+            </Text>
+            <Text selectable style={styles.text}>
+              Total Teachers: {data.length}
+            </Text>
+            <Text selectable style={styles.text}>
               Total WBTPTA Teachers:{' '}
               {data.filter(el => el.association === 'WBTPTA').length}
             </Text>
-            <Text style={styles.text}>
+            <Text selectable style={styles.text}>
               Other Teachers:{' '}
               {data.filter(el => el.association !== 'WBTPTA').length}
             </Text>
@@ -1966,14 +2169,11 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
               color={'blueviolet'}
               onClick={() => {
                 navigation.navigate('AllTeachersSalary');
-                setStateObject({
-                  data: data
+                setStateArray(
+                  data
                     .filter(el => el.udise === user.udise)
                     .sort((a, b) => a.rank - b.rank),
-                  navigation: navigation,
-                });
-
-                DeviceEventEmitter.addListener('goBack', setActiveTab);
+                );
               }}
             />
             {showOurTeachers ? (
@@ -2032,16 +2232,147 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                 size={'medium'}
               />
             )}
-            <AnimatedSeacrch
-              value={inputTname}
-              placeholder={'Search Teacher Name'}
-              onChangeText={text => setInputTname(text)}
-              func={() => {
-                setInputTname('');
-                setFirstData(0);
-                setVisibleItems(10);
-              }}
-            />
+
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                alignSelf: 'center',
+                marginVertical: responsiveHeight(0.5),
+              }}>
+              {schSearchOption && (
+                <AnimatedSeacrch
+                  value={inpSchool}
+                  placeholder={'Search By School'}
+                  onChangeText={text => {
+                    setInpSchool(text);
+                    setInputTname('');
+                    setTeaSearchOption(false);
+                  }}
+                  func={() => {
+                    setInpSchool('');
+                    setFirstData(0);
+                    setVisibleItems(10);
+                    setTeaSearchOption(true);
+                  }}
+                  onClick={() => {
+                    setInputTname('');
+                    setFirstData(0);
+                    setVisibleItems(10);
+                    setTeaSearchOption(false);
+                  }}
+                />
+              )}
+
+              {teaSearchOption && (
+                <AnimatedSeacrch
+                  value={inputTname}
+                  placeholder={'Search By Teacher Name'}
+                  onChangeText={text => {
+                    setInputTname(text);
+                    setInpSchool('');
+                    setSchSearchOption(false);
+                  }}
+                  func={() => {
+                    setInputTname('');
+                    setFirstData(0);
+                    setVisibleItems(10);
+                    setSchSearchOption(true);
+                  }}
+                  onClick={() => {
+                    setInputTname('');
+                    setFirstData(0);
+                    setVisibleItems(10);
+                    setSchSearchOption(false);
+                  }}
+                />
+              )}
+            </View>
+            <View
+              style={{
+                alignSelf: 'flex-end',
+                justifyContent: 'space-between',
+                flexDirection: 'row',
+                marginVertical: responsiveHeight(0.5),
+              }}>
+              <Text
+                selectable
+                style={[
+                  styles.text,
+                  {
+                    fontSize: responsiveFontSize(1.5),
+                    color: 'darkgreen',
+                    fontStyle: 'italic',
+                    fontWeight: '500',
+                  },
+                ]}>
+                Showing Data Per Page:{' '}
+              </Text>
+              <TouchableOpacity
+                style={{marginLeft: responsiveWidth(2)}}
+                onPress={() => {
+                  setVisibleItems(10);
+                  setPageData(10);
+                  setFirstData(0);
+                  setTenShowed(true);
+                  setThirtyShowed(false);
+                  setTwentyShowed(false);
+                }}>
+                <Text
+                  selectable
+                  style={{
+                    fontSize: responsiveFontSize(1.5),
+                    color: tenShowed ? 'purple' : 'darkgreen',
+                    fontStyle: 'italic',
+                    fontWeight: '500',
+                  }}>
+                  10
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{marginLeft: responsiveWidth(2)}}
+                onPress={() => {
+                  setVisibleItems(20);
+                  setPageData(20);
+                  setFirstData(0);
+                  setTwentyShowed(true);
+                  setTenShowed(false);
+                  setThirtyShowed(false);
+                }}>
+                <Text
+                  selectable
+                  style={{
+                    fontSize: responsiveFontSize(1.5),
+                    color: twentyShowed ? 'purple' : 'darkgreen',
+                    fontStyle: 'italic',
+                    fontWeight: '500',
+                  }}>
+                  20
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{marginLeft: responsiveWidth(2)}}
+                onPress={() => {
+                  setVisibleItems(30);
+                  setPageData(30);
+                  setFirstData(0);
+                  setThirtyShowed(true);
+                  setTwentyShowed(false);
+                  setTenShowed(false);
+                }}>
+                <Text
+                  selectable
+                  style={{
+                    fontSize: responsiveFontSize(1.5),
+                    color: thirtyShowed ? 'purple' : 'darkgreen',
+                    fontStyle: 'italic',
+                    fontWeight: '500',
+                  }}>
+                  30
+                </Text>
+              </TouchableOpacity>
+            </View>
             <View
               style={{
                 flexDirection: 'row',
@@ -2049,7 +2380,7 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                 alignItems: 'center',
                 marginBottom: responsiveHeight(1),
               }}>
-              {firstData >= 10 && (
+              {firstData >= pageData && (
                 <View>
                   <CustomButton
                     color={'orange'}
@@ -2086,15 +2417,21 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                         backgroundColor: 'white',
                         borderRadius: responsiveWidth(3),
                       }}>
-                      <Text style={styles.text}>Name: {item.tname}</Text>
-                      <Text style={styles.text}>School: {item.school}</Text>
-                      <Text style={[styles.text, {color: 'blueviolet'}]}>
+                      <Text selectable style={styles.text}>
+                        Name: {item.tname}
+                      </Text>
+                      <Text selectable style={styles.text}>
+                        School: {item.school}
+                      </Text>
+                      <Text
+                        selectable
+                        style={[styles.text, {color: 'blueviolet'}]}>
                         Designation: {item.desig}
                       </Text>
                       {item.gender === 'male' ? (
                         <TouchableOpacity
                           onPress={() => makeCall(parseInt(item.phone))}>
-                          <Text style={styles.text}>
+                          <Text selectable style={styles.text}>
                             <Feather
                               name="phone-call"
                               size={18}
@@ -2107,7 +2444,7 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                         user.question == 'admin' ? (
                         <TouchableOpacity
                           onPress={() => makeCall(parseInt(item.phone))}>
-                          <Text style={styles.text}>
+                          <Text selectable style={styles.text}>
                             <Feather
                               name="phone-call"
                               size={18}
@@ -2118,7 +2455,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                         </TouchableOpacity>
                       ) : null}
 
-                      <Text style={styles.text}>GP: {item.gp}</Text>
+                      <Text selectable style={styles.text}>
+                        GP: {item.gp}
+                      </Text>
                       <View
                         style={{
                           flexDirection: 'row',
@@ -2126,8 +2465,11 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                           alignItems: 'center',
                           alignSelf: 'center',
                         }}>
-                        <Text style={styles.text}>Association: </Text>
+                        <Text selectable style={styles.text}>
+                          Association:{' '}
+                        </Text>
                         <Text
+                          selectable
                           style={[
                             styles.text,
                             {
@@ -2140,7 +2482,12 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                           {item.association}
                         </Text>
                       </View>
-                      <Text style={styles.text}>Address: {item.address}</Text>
+                      <Text selectable style={styles.text}>
+                        Service Life: {getServiceLife(item.doj)}
+                      </Text>
+                      <Text selectable style={styles.text}>
+                        Address: {item.address}
+                      </Text>
                       {noeditBtn
                         ? user.circle === 'admin' && (
                             <View
@@ -2158,14 +2505,7 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                                 color={'darkgreen'}
                                 onClick={() => {
                                   navigation.navigate('ViewDetails');
-                                  setStateObject({
-                                    data: item,
-                                    navigation: navigation,
-                                  });
-                                  DeviceEventEmitter.addListener(
-                                    'goBack',
-                                    setActiveTab,
-                                  );
+                                  setStateObject(item);
                                 }}
                               />
                               <CustomButton
@@ -2175,14 +2515,7 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                                 color={'chocolate'}
                                 onClick={() => {
                                   navigation.navigate('EditDetails');
-                                  setStateObject({
-                                    data: item,
-                                    navigation: navigation,
-                                  });
-                                  DeviceEventEmitter.addListener(
-                                    'goBack',
-                                    setActiveTab,
-                                  );
+                                  setStateObject(item);
                                 }}
                               />
                               {user.circle === 'admin' && (
@@ -2233,6 +2566,7 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                                     }}
                                   />
                                   <Text
+                                    selectable
                                     style={[
                                       styles.text,
                                       {
@@ -2269,6 +2603,7 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                                     }}
                                   />
                                   <Text
+                                    selectable
                                     style={[
                                       styles.text,
                                       {
@@ -2289,7 +2624,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   )}
                 />
               ) : (
-                <Text style={styles.text}>Teacher Not Found</Text>
+                <Text selectable style={styles.text}>
+                  Teacher Not Found
+                </Text>
               )}
             </ScrollView>
             <View
@@ -2297,9 +2634,9 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                 flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center',
-                marginBottom: responsiveHeight(8),
+                marginBottom: responsiveHeight(1),
               }}>
-              {firstData >= 10 && (
+              {firstData >= pageData && (
                 <View>
                   <CustomButton
                     color={'orange'}
@@ -2321,6 +2658,96 @@ const TeachersDetails = ({refresh, navigation, selectActiveTab, tabValue}) => {
                 </View>
               )}
             </View>
+            {visibleItems < filteredData.length && (
+              <View
+                style={{
+                  alignSelf: 'flex-end',
+                  justifyContent: 'space-between',
+                  flexDirection: 'row',
+                  marginTop: responsiveHeight(0.5),
+                  marginBottom: responsiveHeight(8),
+                }}>
+                <Text
+                  selectable
+                  style={[
+                    styles.text,
+                    {
+                      fontSize: responsiveFontSize(1.5),
+                      color: 'darkgreen',
+                      fontStyle: 'italic',
+                      fontWeight: '500',
+                    },
+                  ]}>
+                  Showing Data Per Page:{' '}
+                </Text>
+                <TouchableOpacity
+                  style={{marginLeft: responsiveWidth(2)}}
+                  onPress={() => {
+                    setVisibleItems(10);
+                    setPageData(10);
+                    setFirstData(0);
+                    setTenShowed(true);
+                    setThirtyShowed(false);
+                    setTwentyShowed(false);
+                    scrollToTop();
+                  }}>
+                  <Text
+                    selectable
+                    style={{
+                      fontSize: responsiveFontSize(1.5),
+                      color: tenShowed ? 'purple' : 'darkgreen',
+                      fontStyle: 'italic',
+                      fontWeight: '500',
+                    }}>
+                    10
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{marginLeft: responsiveWidth(2)}}
+                  onPress={() => {
+                    setVisibleItems(20);
+                    setPageData(20);
+                    setFirstData(0);
+                    setTwentyShowed(true);
+                    setTenShowed(false);
+                    setThirtyShowed(false);
+                    scrollToTop();
+                  }}>
+                  <Text
+                    selectable
+                    style={{
+                      fontSize: responsiveFontSize(1.5),
+                      color: twentyShowed ? 'purple' : 'darkgreen',
+                      fontStyle: 'italic',
+                      fontWeight: '500',
+                    }}>
+                    20
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{marginLeft: responsiveWidth(2)}}
+                  onPress={() => {
+                    setVisibleItems(30);
+                    setPageData(30);
+                    setFirstData(0);
+                    setThirtyShowed(true);
+                    setTwentyShowed(false);
+                    setTenShowed(false);
+                    scrollToTop();
+                  }}>
+                  <Text
+                    selectable
+                    style={{
+                      fontSize: responsiveFontSize(1.5),
+                      color: thirtyShowed ? 'purple' : 'darkgreen',
+                      fontStyle: 'italic',
+                      fontWeight: '500',
+                    }}>
+                    30
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         )}
       </ScrollView>

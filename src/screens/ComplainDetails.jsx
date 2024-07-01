@@ -10,7 +10,7 @@ import {
   FlatList,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {useIsFocused, useRoute} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import uuid from 'react-native-uuid';
 import {THEME_COLOR} from '../utils/Colors';
@@ -36,14 +36,13 @@ import AnimatedSeacrch from '../components/AnimatedSeacrch';
 import {useGlobalContext} from '../context/Store';
 
 const ComplainDetails = () => {
-  const route = useRoute();
   const isFocused = useIsFocused();
 
-  const {state} = useGlobalContext();
+  const {state, stateObject} = useGlobalContext();
   const user = state.USER;
   const teacher = state.TEACHER;
-  let data = route.params.data;
-  const navigation = route.params.navigation;
+  let data = stateObject;
+  const navigation = useNavigation();
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [editReply, setEditReply] = useState('');
   const [reply, setReply] = useState('');
@@ -237,11 +236,21 @@ const ComplainDetails = () => {
 
         <ScrollView>
           <View style={styles.itemView}>
-            <Text style={styles.dropDownText}>{`Name: ${data.tname},`}</Text>
-            <Text style={styles.dropDownText}>{`School: ${data.school},`}</Text>
-            <Text style={styles.dropDownText}>{`GP: ${data.gp},`}</Text>
-            <Text style={styles.dropDownText}>{`Mobile: ${data.phone},`}</Text>
-            <Text style={styles.dropDownText}>{`Email: ${data.email},`}</Text>
+            <Text
+              selectable
+              style={styles.dropDownText}>{`Name: ${data.tname},`}</Text>
+            <Text
+              selectable
+              style={styles.dropDownText}>{`School: ${data.school},`}</Text>
+            <Text
+              selectable
+              style={styles.dropDownText}>{`GP: ${data.gp},`}</Text>
+            <Text
+              selectable
+              style={styles.dropDownText}>{`Mobile: ${data.phone},`}</Text>
+            <Text
+              selectable
+              style={styles.dropDownText}>{`Email: ${data.email},`}</Text>
           </View>
           <View
             style={[
@@ -250,18 +259,28 @@ const ComplainDetails = () => {
                 flexDirection: 'row',
               },
             ]}>
-            <Text style={styles.dropDownText}>
+            <Text selectable style={styles.dropDownText}>
               Complain Date: {getDay(data.date)}
             </Text>
-            <Text style={styles.dropDownText}> {getMonthName(data.date)}</Text>
-            <Text style={styles.dropDownText}> {getFullYear(data.date)}</Text>
+            <Text selectable style={styles.dropDownText}>
+              {' '}
+              {getMonthName(data.date)}
+            </Text>
+            <Text selectable style={styles.dropDownText}>
+              {' '}
+              {getFullYear(data.date)}
+            </Text>
           </View>
           <View style={styles.itemView}>
-            <Text style={styles.label}>
+            <Text selectable style={styles.label}>
               Complain Title: {titleCase(data.title)}
             </Text>
-            <Text style={styles.label}>Complain Details:</Text>
-            <Text style={styles.label}>{titleCase(data.complain)}</Text>
+            <Text selectable style={styles.label}>
+              Complain Details:
+            </Text>
+            <Text selectable style={styles.label}>
+              {titleCase(data.complain)}
+            </Text>
           </View>
 
           {showReplyBox ? (
@@ -313,7 +332,7 @@ const ComplainDetails = () => {
                 setShowReplies(false);
               }}>
               <Feather name={'plus-circle'} size={20} color={'darkgreen'} />
-              <Text style={[styles.text, {color: 'darkgreen'}]}>
+              <Text selectable style={[styles.text, {color: 'darkgreen'}]}>
                 {'Add New Reply'}
               </Text>
             </TouchableOpacity>
@@ -355,7 +374,9 @@ const ComplainDetails = () => {
           <View>
             {showReplies ? (
               <View>
-                <Text style={styles.title}>Complain Replies</Text>
+                <Text selectable style={styles.title}>
+                  Complain Replies
+                </Text>
                 <AnimatedSeacrch
                   value={search}
                   onChangeText={text => setSearch(text)}
@@ -422,6 +443,7 @@ const ComplainDetails = () => {
                               alignItems: 'center',
                             }}>
                             <Text
+                              selectable
                               style={styles.text}
                               onPress={() => console.log(item)}>
                               Reply: {titleCase(item.reply)}
@@ -434,18 +456,18 @@ const ComplainDetails = () => {
                                 flexDirection: 'row',
                               },
                             ]}>
-                            <Text style={styles.dropDownText}>
+                            <Text selectable style={styles.dropDownText}>
                               Date: {getDay(item.date)}
                             </Text>
-                            <Text style={styles.dropDownText}>
+                            <Text selectable style={styles.dropDownText}>
                               {' '}
                               {getMonthName(item.date)}
                             </Text>
-                            <Text style={styles.dropDownText}>
+                            <Text selectable style={styles.dropDownText}>
                               {' '}
                               {getFullYear(item.date)}
                             </Text>
-                            <Text style={styles.dropDownText}>
+                            <Text selectable style={styles.dropDownText}>
                               {' , By: '}
                               {item.tname}
                             </Text>
@@ -458,14 +480,14 @@ const ComplainDetails = () => {
                                   flexDirection: 'row',
                                 },
                               ]}>
-                              <Text style={styles.dropDownText}>
+                              <Text selectable style={styles.dropDownText}>
                                 Updated At: {getDay(item.updatedAt)}
                               </Text>
-                              <Text style={styles.dropDownText}>
+                              <Text selectable style={styles.dropDownText}>
                                 {' '}
                                 {getMonthName(item.updatedAt)}
                               </Text>
-                              <Text style={styles.dropDownText}>
+                              <Text selectable style={styles.dropDownText}>
                                 {' '}
                                 {getFullYear(item.updatedAt)}
                               </Text>
@@ -511,7 +533,9 @@ const ComplainDetails = () => {
                       )}
                     />
                   ) : (
-                    <Text style={styles.text}>No Replies</Text>
+                    <Text selectable style={styles.text}>
+                      No Replies
+                    </Text>
                   )}
                 </ScrollView>
                 <View

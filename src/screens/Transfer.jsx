@@ -124,7 +124,9 @@ const Transfer = ({refresh, excludeMyData, myData, total}) => {
   useEffect(() => {}, [receivingAdmin]);
   return (
     <View style={{flex: 1}}>
-      <Text style={styles.title}>Transfer To Which Admin?</Text>
+      <Text selectable style={styles.title}>
+        Transfer To Which Admin?
+      </Text>
 
       <TouchableOpacity
         style={[styles.dropDownnSelector, {marginTop: 5}]}
@@ -138,6 +140,7 @@ const Transfer = ({refresh, excludeMyData, myData, total}) => {
         {isClicked ? (
           <View style={{flexDirection: 'row'}}>
             <Text
+              selectable
               style={[styles.dropDownText, {paddingRight: responsiveWidth(2)}]}>
               {selectedText}
             </Text>
@@ -147,6 +150,7 @@ const Transfer = ({refresh, excludeMyData, myData, total}) => {
         ) : (
           <View style={{flexDirection: 'row'}}>
             <Text
+              selectable
               style={[styles.dropDownText, {paddingRight: responsiveWidth(2)}]}>
               {selectedText}
             </Text>
@@ -171,7 +175,9 @@ const Transfer = ({refresh, excludeMyData, myData, total}) => {
                     excludeMyData.filter(el => el.name.match(item.name))[0],
                   );
                 }}>
-                <Text style={styles.dropDownText}>{item.name}</Text>
+                <Text selectable style={styles.dropDownText}>
+                  {item.name}
+                </Text>
               </TouchableOpacity>
             );
           })}
@@ -181,7 +187,7 @@ const Transfer = ({refresh, excludeMyData, myData, total}) => {
       <ScrollView>
         {showData && (
           <View style={{marginTop: responsiveHeight(1)}}>
-            <Text style={styles.title}>
+            <Text selectable style={styles.title}>
               {titleCase(
                 `${receivingAdmin.name}'s Total Amount: ₹${receivingAdmin.cash}`,
               )}
@@ -204,7 +210,7 @@ const Transfer = ({refresh, excludeMyData, myData, total}) => {
               myData.cash >= parseFloat(transferingAmount) &&
               purpose !== '' && (
                 <View style={styles.itemView}>
-                  <Text style={styles.title}>
+                  <Text selectable style={styles.title}>
                     {titleCase(
                       `${receivingAdmin.name}'s Total Amount After Transfer: ₹${
                         receivingAdmin.cash + parseFloat(transferingAmount)

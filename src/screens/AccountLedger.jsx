@@ -138,11 +138,18 @@ const AccountLedger = ({refresh}) => {
             let date = new Date(el.transactOn);
             return (
               <View style={styles.itemView} key={index}>
-                <Text style={styles.label}>From: {el.transferFrom}</Text>
-                <Text style={styles.label}>To: {el.receiveTo}</Text>
+                <Text selectable style={styles.label}>
+                  From: {el.transferFrom}
+                </Text>
+                <Text selectable style={styles.label}>
+                  To: {el.receiveTo}
+                </Text>
                 <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-                  <Text style={styles.label}>Amount: </Text>
+                  <Text selectable style={styles.label}>
+                    Amount:{' '}
+                  </Text>
                   <Text
+                    selectable
                     style={[
                       styles.label,
                       {
@@ -152,12 +159,15 @@ const AccountLedger = ({refresh}) => {
                     ₹{IndianFormat(el.cashTransfered)}
                   </Text>
                 </View>
-                <Text style={styles.label}>
+                <Text selectable style={styles.label}>
                   Purpose: {el.purpose ? titleCase(el.purpose) : 'Transfer'}
                 </Text>
                 <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-                  <Text style={styles.label}>Tansferer's Cash: </Text>
+                  <Text selectable style={styles.label}>
+                    Tansferer's Cash:{' '}
+                  </Text>
                   <Text
+                    selectable
                     style={[
                       styles.label,
                       {
@@ -170,8 +180,11 @@ const AccountLedger = ({refresh}) => {
                   </Text>
                 </View>
                 <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-                  <Text style={styles.label}>Receiver's Cash: </Text>
+                  <Text selectable style={styles.label}>
+                    Receiver's Cash:{' '}
+                  </Text>
                   <Text
+                    selectable
                     style={[
                       styles.label,
                       {
@@ -184,14 +197,19 @@ const AccountLedger = ({refresh}) => {
                   </Text>
                 </View>
 
-                <Text style={styles.label}>
+                <Text selectable style={styles.label}>
                   Date:-{' '}
                   {`${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`}
                 </Text>
-                <Text style={styles.label}>Done By:- {el.transactBy}</Text>
+                <Text selectable style={styles.label}>
+                  Done By:- {el.transactBy}
+                </Text>
                 <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-                  <Text style={styles.label}>Total Cash: </Text>
+                  <Text selectable style={styles.label}>
+                    Total Cash:{' '}
+                  </Text>
                   <Text
+                    selectable
                     style={[
                       styles.label,
                       {
@@ -205,7 +223,9 @@ const AccountLedger = ({refresh}) => {
             );
           })
         ) : (
-          <Text style={styles.label}>Data Not Found</Text>
+          <Text selectable style={styles.label}>
+            Data Not Found
+          </Text>
         )}
         <View
           style={{

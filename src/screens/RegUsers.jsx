@@ -19,7 +19,7 @@ import {THEME_COLOR} from '../utils/Colors';
 import CustomButton from '../components/CustomButton';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {useIsFocused, useRoute} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Loader from '../components/Loader';
 import {
   responsiveHeight,
@@ -37,14 +37,20 @@ import AnimatedSeacrch from '../components/AnimatedSeacrch';
 import {useGlobalContext} from '../context/Store';
 const RegUsers = () => {
   const isFocused = useIsFocused();
-  const route = useRoute();
-  const navigation = route.params.navigation;
+
+  const navigation = useNavigation();
   const [members, setMembers] = useState([]);
   const [name, setName] = useState('');
   const [filteredName, setFilteredName] = useState([]);
   const [showLoader, setShowLoader] = useState(false);
-  const {state, userState, setUserState, teachersState, setTeachersState} =
-    useGlobalContext();
+  const {
+    state,
+    userState,
+    setUserState,
+    teachersState,
+    setTeachersState,
+    setTeacherUpdateTime,
+  } = useGlobalContext();
   const user = state.USER;
   bcrypt.setRandomFallback(len => {
     const buf = new Uint8Array(len);
@@ -126,17 +132,14 @@ const RegUsers = () => {
           (a, b) => a.school.localeCompare(b.school) && b.rank > a.rank,
         );
         setTeachersState(c);
+        setTeacherUpdateTime(Date.now());
 
-        getUserData();
         await storage()
           .ref('/profileImage/' + user.photoName)
           .delete()
           .then(async () => {
             await delChats(user).then(() => {
               setShowLoader(false);
-              let x = userState.filter(el => el.id !== user.id);
-              setUserState(x);
-              getUserData();
               showToast('success', 'User Deleted Successfully!');
             });
           })
@@ -290,7 +293,6 @@ const RegUsers = () => {
         y = [...y, x];
         let newData = y.sort((a, b) => a.createdAt - b.createdAt);
         setUserState(newData);
-        getUserData();
         showToast('success', 'User Login is Disabled Successfully!');
       })
       .catch(e => {
@@ -317,7 +319,6 @@ const RegUsers = () => {
         y = [...y, x];
         let newData = y.sort((a, b) => a.createdAt - b.createdAt);
         setUserState(newData);
-        getUserData();
       })
       .catch(e => {
         setShowLoader(false);
@@ -460,17 +461,11 @@ const RegUsers = () => {
               let n = teachersState.filter(el => el.id !== item.id);
               m.circle = 'admin';
               n = [...n, m];
-              let c = n.sort(function (a, b) {
-                let nameA = a.school.toLowerCase(),
-                  nameB = b.school.toLowerCase();
-                if (nameA < nameB)
-                  //sort string ascending
-                  return -1;
-                if (nameA > nameB) return 1;
-                return 0; //default return value (no sorting)
-              });
+              let c = n.sort(
+                (a, b) => a.school.localeCompare(b.school) && b.rank > a.rank,
+              );
               setTeachersState(c);
-              getUserData();
+              setTeacherUpdateTime(Date.now());
             })
             .catch(e => {
               setShowLoader(false);
@@ -550,15 +545,9 @@ const RegUsers = () => {
               let n = teachersState.filter(el => el.id !== item.id);
               m.circle = 'taw';
               n = [...n, m];
-              let c = n.sort(function (a, b) {
-                let nameA = a.school.toLowerCase(),
-                  nameB = b.school.toLowerCase();
-                if (nameA < nameB)
-                  //sort string ascending
-                  return -1;
-                if (nameA > nameB) return 1;
-                return 0; //default return value (no sorting)
-              });
+              let c = n.sort(
+                (a, b) => a.school.localeCompare(b.school) && b.rank > a.rank,
+              );
               setTeachersState(c);
               getUserData();
             })
@@ -658,6 +647,7 @@ const RegUsers = () => {
             />
           </TouchableOpacity>
           <Text
+            selectable
             style={{
               fontSize: responsiveFontSize(3),
               fontFamily: 'kalpurush',
@@ -694,7 +684,9 @@ const RegUsers = () => {
         style={{
           marginTop: responsiveHeight(9),
         }}>
-        <Text style={[styles.title, {marginBottom: responsiveHeight(2)}]}>
+        <Text
+          selectable
+          style={[styles.title, {marginBottom: responsiveHeight(2)}]}>
           Our Registered Users
         </Text>
         <View style={{marginBottom: responsiveHeight(6)}}>
@@ -835,6 +827,7 @@ const RegUsers = () => {
                                     color="red"
                                   />
                                   <Text
+                                    selectable
                                     style={[
                                       styles.btnText,
                                       {color: 'red'},
@@ -879,6 +872,7 @@ const RegUsers = () => {
                                     color="green"
                                   />
                                   <Text
+                                    selectable
                                     style={[
                                       styles.btnText,
                                       {color: 'green'},
@@ -903,6 +897,7 @@ const RegUsers = () => {
                                   color="green"
                                 />
                                 <Text
+                                  selectable
                                   style={[
                                     styles.btnText,
                                     {color: 'green'},
@@ -925,6 +920,7 @@ const RegUsers = () => {
                                   color="red"
                                 />
                                 <Text
+                                  selectable
                                   style={[
                                     styles.btnText,
                                     {color: 'red'},
@@ -948,6 +944,7 @@ const RegUsers = () => {
                                 color="red"
                               />
                               <Text
+                                selectable
                                 style={[
                                   styles.btnText,
                                   {color: 'red'},
@@ -969,6 +966,7 @@ const RegUsers = () => {
                                 color="red"
                               />
                               <Text
+                                selectable
                                 style={[
                                   styles.btnText,
                                   {color: 'red'},
@@ -978,9 +976,15 @@ const RegUsers = () => {
                         ) : null}
                       </View>
                       <View>
-                        <Text style={styles.label}>Sl No.: {ind + 1}</Text>
-                        <Text style={styles.label}>Name: {el.tname}</Text>
-                        <Text style={styles.label}>Access: {el.circle}</Text>
+                        <Text selectable style={styles.label}>
+                          Sl No.: {ind + 1}
+                        </Text>
+                        <Text selectable style={styles.label}>
+                          Name: {el.tname}
+                        </Text>
+                        <Text selectable style={styles.label}>
+                          Access: {el.circle}
+                        </Text>
                         {el.circle === 'admin' ? (
                           <TouchableOpacity
                             style={{
@@ -1003,6 +1007,7 @@ const RegUsers = () => {
                               }}
                             />
                             <Text
+                              selectable
                               style={[
                                 styles.text,
                                 {
@@ -1037,6 +1042,7 @@ const RegUsers = () => {
                               }}
                             />
                             <Text
+                              selectable
                               style={[
                                 styles.text,
                                 {
@@ -1050,11 +1056,14 @@ const RegUsers = () => {
                             </Text>
                           </TouchableOpacity>
                         )}
-                        <Text style={styles.label}>
+                        <Text selectable style={styles.label}>
                           Username: {el.username}
                         </Text>
-                        <Text style={styles.label}>Email: {el.email}</Text>
+                        <Text selectable style={styles.label}>
+                          Email: {el.email}
+                        </Text>
                         <Text
+                          selectable
                           style={styles.label}
                           onPress={() => makeCall(parseInt(el.phone))}>
                           <Feather
@@ -1064,10 +1073,16 @@ const RegUsers = () => {
                           />{' '}
                           Mobile: {el.phone}
                         </Text>
-                        <Text style={styles.label}>
+                        <Text selectable style={styles.label}>
                           Teacher ID: {el.teachersID}
                         </Text>
-                        <Text style={styles.label}>
+                        <Text selectable style={styles.label}>
+                          EMPID: {el.empid}
+                        </Text>
+                        <Text selectable style={styles.label}>
+                          PAN: {el.pan}
+                        </Text>
+                        <Text selectable style={styles.label}>
                           Registered On:{' '}
                           {getSubmitDateInput(
                             new Date(el.createdAt).toLocaleDateString(),
@@ -1080,7 +1095,9 @@ const RegUsers = () => {
               );
             })
           ) : (
-            <Text style={styles.label}>Teacher Not Found</Text>
+            <Text selectable style={styles.label}>
+              Teacher Not Found
+            </Text>
           )}
           <View
             style={{

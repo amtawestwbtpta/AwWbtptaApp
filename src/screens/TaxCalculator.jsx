@@ -15,8 +15,10 @@ import {
 } from 'react-native-responsive-dimensions';
 import CustomTextInput from '../components/CustomTextInput';
 import {avoidNaN} from '../modules/calculatefunctions';
+import {useGlobalContext} from '../context/Store';
 
-const TaxCalculator = ({refresh}) => {
+const TaxCalculator = () => {
+  const {setActiveTab} = useGlobalContext();
   const [inputField, setInputField] = useState({
     junebasic: 0,
     julybasic: 0,
@@ -217,7 +219,7 @@ const TaxCalculator = ({refresh}) => {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
-        refresh();
+        setActiveTab(0);
         return true;
       },
     );
@@ -225,7 +227,9 @@ const TaxCalculator = ({refresh}) => {
   }, []);
   return (
     <View style={{flex: 1}}>
-      <Text style={styles.title}>Tax Calculator</Text>
+      <Text selectable style={styles.title}>
+        Tax Calculator
+      </Text>
       <ScrollView
         nestedScrollEnabled={true}
         contentContainerStyle={{
@@ -237,7 +241,9 @@ const TaxCalculator = ({refresh}) => {
           marginBottom: responsiveHeight(1),
         }}>
         <View>
-          <Text style={styles.label}>June Basic</Text>
+          <Text selectable style={styles.label}>
+            June Basic
+          </Text>
           <CustomTextInput
             placeholder={'JUNE BASIC'}
             // value={inputField.junebasic.toString()}
@@ -253,7 +259,9 @@ const TaxCalculator = ({refresh}) => {
               });
             }}
           />
-          <Text style={styles.label}>July Basic</Text>
+          <Text selectable style={styles.label}>
+            July Basic
+          </Text>
           <CustomTextInput
             placeholder={'July BASIC'}
             editable={false}
@@ -263,7 +271,9 @@ const TaxCalculator = ({refresh}) => {
               setInputField({...inputField, julybasic: parseInt(text)});
             }}
           />
-          <Text style={styles.label}>Additional Allowance</Text>
+          <Text selectable style={styles.label}>
+            Additional Allowance
+          </Text>
           <CustomTextInput
             placeholder={'Additional Allowance'}
             // value={inputField.addl.toString()}
@@ -272,7 +282,9 @@ const TaxCalculator = ({refresh}) => {
               setInputField({...inputField, addl: parseInt(text)});
             }}
           />
-          <Text style={styles.label}>Is Physically Chalanged ?</Text>
+          <Text selectable style={styles.label}>
+            Is Physically Chalanged ?
+          </Text>
 
           <View
             style={{
@@ -281,7 +293,9 @@ const TaxCalculator = ({refresh}) => {
               marginTop: responsiveHeight(1),
               marginBottom: responsiveHeight(1),
             }}>
-            <Text style={[styles.label, {paddingRight: responsiveWidth(1.5)}]}>
+            <Text
+              selectable
+              style={[styles.label, {paddingRight: responsiveWidth(1.5)}]}>
               No
             </Text>
             <Switch
@@ -292,11 +306,15 @@ const TaxCalculator = ({refresh}) => {
               // value={isEnabled}
               value={avoidNaN(inputField.julybasic).toString()}
             />
-            <Text style={[styles.label, {paddingLeft: responsiveWidth(1.5)}]}>
+            <Text
+              selectable
+              style={[styles.label, {paddingLeft: responsiveWidth(1.5)}]}>
               Yes
             </Text>
           </View>
-          <Text style={styles.label}>Medical Allowance</Text>
+          <Text selectable style={styles.label}>
+            Medical Allowance
+          </Text>
           <CustomTextInput
             placeholder={'Medical Allowance'}
             // value={inputField.ma.toString()}
@@ -305,7 +323,9 @@ const TaxCalculator = ({refresh}) => {
               setInputField({...inputField, ma: parseInt(text)});
             }}
           />
-          <Text style={styles.label}>Arrear</Text>
+          <Text selectable style={styles.label}>
+            Arrear
+          </Text>
           <CustomTextInput
             placeholder={'Arrear'}
             // value={inputField.arrear.toString()}
@@ -314,7 +334,9 @@ const TaxCalculator = ({refresh}) => {
               setInputField({...inputField, arrear: parseInt(text)});
             }}
           />
-          <Text style={styles.label}>Bonus</Text>
+          <Text selectable style={styles.label}>
+            Bonus
+          </Text>
           <CustomTextInput
             placeholder={'Bonus'}
             // value={inputField.bonus.toString()}
@@ -323,7 +345,9 @@ const TaxCalculator = ({refresh}) => {
               setInputField({...inputField, bonus: parseInt(text)});
             }}
           />
-          <Text style={styles.label}>GPF</Text>
+          <Text selectable style={styles.label}>
+            GPF
+          </Text>
           <CustomTextInput
             placeholder={'GPF'}
             // value={inputField.gpf.toString()}
@@ -332,7 +356,9 @@ const TaxCalculator = ({refresh}) => {
               setInputField({...inputField, gpf: parseInt(text)});
             }}
           />
-          <Text style={styles.label}>GSLI</Text>
+          <Text selectable style={styles.label}>
+            GSLI
+          </Text>
           <CustomTextInput
             placeholder={'GSLI'}
             // value={inputField.gsli.toString()}
@@ -341,7 +367,9 @@ const TaxCalculator = ({refresh}) => {
               setInputField({...inputField, gsli: parseInt(text)});
             }}
           />
-          <Text style={styles.label}>LIC</Text>
+          <Text selectable style={styles.label}>
+            LIC
+          </Text>
           <CustomTextInput
             placeholder={'LIC'}
             // value={inputField.lic.toString()}
@@ -350,7 +378,9 @@ const TaxCalculator = ({refresh}) => {
               setInputField({...inputField, lic: parseInt(text)});
             }}
           />
-          <Text style={styles.label}>NSC</Text>
+          <Text selectable style={styles.label}>
+            NSC
+          </Text>
           <CustomTextInput
             placeholder={'NSC'}
             // value={inputField.nsc.toString()}
@@ -359,7 +389,9 @@ const TaxCalculator = ({refresh}) => {
               setInputField({...inputField, nsc: parseInt(text)});
             }}
           />
-          <Text style={styles.label}>PPF</Text>
+          <Text selectable style={styles.label}>
+            PPF
+          </Text>
           <CustomTextInput
             placeholder={'PPF'}
             // value={inputField.ppf.toString()}
@@ -368,7 +400,9 @@ const TaxCalculator = ({refresh}) => {
               setInputField({...inputField, ppf: parseInt(text)});
             }}
           />
-          <Text style={styles.label}>Deposit in Sukanya Samriddhi Account</Text>
+          <Text selectable style={styles.label}>
+            Deposit in Sukanya Samriddhi Account
+          </Text>
           <CustomTextInput
             placeholder={'Deposit in Sukanya Samriddhi Account'}
             // value={inputField.sukanya.toString()}
@@ -377,7 +411,7 @@ const TaxCalculator = ({refresh}) => {
               setInputField({...inputField, sukanya: parseInt(text)});
             }}
           />
-          <Text style={styles.label}>
+          <Text selectable style={styles.label}>
             F.D.in Sch. Bank not less than 5 years
           </Text>
           <CustomTextInput
@@ -388,7 +422,7 @@ const TaxCalculator = ({refresh}) => {
               setInputField({...inputField, fd5y: parseInt(text)});
             }}
           />
-          <Text style={styles.label}>
+          <Text selectable style={styles.label}>
             Recovery of Principal Amount of House Building Loan
           </Text>
           <CustomTextInput
@@ -399,7 +433,9 @@ const TaxCalculator = ({refresh}) => {
               setInputField({...inputField, hbloan: parseInt(text)});
             }}
           />
-          <Text style={styles.label}>Interest On House Building Loan</Text>
+          <Text selectable style={styles.label}>
+            Interest On House Building Loan
+          </Text>
           <CustomTextInput
             placeholder={'Interest On House Building Loan'}
             // value={inputField.ihbloan.toString()}
@@ -408,7 +444,7 @@ const TaxCalculator = ({refresh}) => {
               setInputField({...inputField, ihbloan: parseInt(text)});
             }}
           />
-          <Text style={styles.label}>
+          <Text selectable style={styles.label}>
             Tution Fees Maximum Rs. 1,00,000/- ( for two childern )
           </Text>
           <CustomTextInput
@@ -421,7 +457,9 @@ const TaxCalculator = ({refresh}) => {
               setInputField({...inputField, tfee: parseInt(text)});
             }}
           />
-          <Text style={styles.label}>Medical Insurance Premium</Text>
+          <Text selectable style={styles.label}>
+            Medical Insurance Premium
+          </Text>
           <CustomTextInput
             placeholder={'Medical Insurance Premium'}
             // value={inputField.mediclaim.toString()}
@@ -430,7 +468,7 @@ const TaxCalculator = ({refresh}) => {
               setInputField({...inputField, mediclaim: parseInt(text)});
             }}
           />
-          <Text style={styles.label}>
+          <Text selectable style={styles.label}>
             Medical treatment of dependent person with terminal Disease
           </Text>
           <CustomTextInput
@@ -451,35 +489,47 @@ const TaxCalculator = ({refresh}) => {
                 marginTop: responsiveHeight(1),
                 marginBottom: responsiveHeight(1),
               }}>
-              <Text style={styles.label}>
+              <Text selectable style={styles.label}>
                 March to June Gross Salary: {mgross}
               </Text>
-              <Text style={styles.label}>June Net Salary: {mnetPay}</Text>
-              <Text style={styles.label}>
+              <Text selectable style={styles.label}>
+                June Net Salary: {mnetPay}
+              </Text>
+              <Text selectable style={styles.label}>
                 July to December Gross Salary: {jgross}
               </Text>
-              <Text style={styles.label}>
+              <Text selectable style={styles.label}>
                 January to February Gross Salary: {incGross}
               </Text>
-              <Text style={styles.label}>
+              <Text selectable style={styles.label}>
                 July to December Net Salary: {jnetPay}
               </Text>
-              <Text style={styles.label}>
+              <Text selectable style={styles.label}>
                 January to February Net Salary: {incNetPay}
               </Text>
             </View>
-            <Text style={styles.title}>Calculated Tax Section</Text>
+            <Text selectable style={styles.title}>
+              Calculated Tax Section
+            </Text>
             <View
               style={{
                 marginTop: responsiveHeight(1),
                 marginBottom: responsiveHeight(1),
               }}>
-              <Text style={styles.label}>Gross Income: {tgross}</Text>
-              <Text style={styles.label}>Standard Deduction: 50000</Text>
-              <Text style={styles.label}>80C Deduction: {eightyc}</Text>
-              <Text style={styles.label}>80D Deduction: {eightyd}</Text>
+              <Text selectable style={styles.label}>
+                Gross Income: {tgross}
+              </Text>
+              <Text selectable style={styles.label}>
+                Standard Deduction: 50000
+              </Text>
+              <Text selectable style={styles.label}>
+                80C Deduction: {eightyc}
+              </Text>
+              <Text selectable style={styles.label}>
+                80D Deduction: {eightyd}
+              </Text>
             </View>
-            <Text style={styles.title}>
+            <Text selectable style={styles.title}>
               Gross Income After Deduction: {totalTaxableIncome}
             </Text>
             {slabCalculation > 12500 ? (
@@ -488,16 +538,16 @@ const TaxCalculator = ({refresh}) => {
                   marginTop: responsiveHeight(1),
                   marginBottom: responsiveHeight(1),
                 }}>
-                <Text style={styles.label}>
+                <Text selectable style={styles.label}>
                   Total Tax Payable: {slabCalculation}
                 </Text>
-                <Text style={styles.label}>
+                <Text selectable style={styles.label}>
                   Health & Education Cess (4% of Total Tax):{' '}
                   {Math.round((slabCalculation * 4) / 100)}
                 </Text>
               </View>
             ) : null}
-            <Text style={styles.title}>
+            <Text selectable style={styles.title}>
               Net Tax Payable:{' '}
               {slabCalculation < 12500
                 ? 'NIL'

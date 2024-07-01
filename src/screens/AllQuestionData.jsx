@@ -132,7 +132,7 @@ const AllQuestionData = () => {
               marginLeft: responsiveWidth(10),
             }}
           />
-          <Text style={styles.title}>
+          <Text selectable style={styles.title}>
             {`Amta West Circle, ${qRateData.term} Summative Exam,  ${qRateData.year}`}
           </Text>
           <TouchableOpacity
@@ -145,7 +145,9 @@ const AllQuestionData = () => {
               navigation.navigate('QuestionSection', {navigation: navigation})
             }>
             <Entypo name="back" size={30} color={'red'} />
-            <Text style={{color: 'red'}}>Go Back</Text>
+            <Text selectable style={{color: 'red'}}>
+              Go Back
+            </Text>
           </TouchableOpacity>
         </TouchableOpacity>
         <TouchableOpacity
@@ -165,6 +167,7 @@ const AllQuestionData = () => {
                 justifyContent: 'space-between',
               }}>
               <Text
+                selectable
                 style={[
                   styles.dropDownText,
                   {paddingRight: responsiveWidth(2)},
@@ -181,6 +184,7 @@ const AllQuestionData = () => {
                 justifyContent: 'space-between',
               }}>
               <Text
+                selectable
                 style={[
                   styles.dropDownText,
                   {paddingRight: responsiveWidth(2)},
@@ -208,7 +212,9 @@ const AllQuestionData = () => {
                       filteredData.filter(el => item.gp.match(el.gp)),
                     );
                   }}>
-                  <Text style={styles.dropDownText}>{item.gp}</Text>
+                  <Text selectable style={styles.dropDownText}>
+                    {item.gp}
+                  </Text>
                 </TouchableOpacity>
               )}
             />
@@ -225,7 +231,7 @@ const AllQuestionData = () => {
                       filteredData.filter(el => item.gp.match(el.gp)),
                     );
                   }}>
-                  <Text style={styles.dropDownText}>{item.gp}</Text>
+                  <Text selectable style={styles.dropDownText}>{item.gp}</Text>
                 </TouchableOpacity>
               );
             })} */}
@@ -320,34 +326,42 @@ const AllQuestionData = () => {
                 }}
                 alt="QRCode"
               />
-              <Text style={styles.text}>Sl No.: {index + 1 + firstData}</Text>
-              <Text style={styles.text}>School Name:</Text>
-              <Text style={styles.text}>{item.school}</Text>
-              <Text style={styles.text}>GP: {item.gp}</Text>
-              <Text style={styles.text}>
+              <Text selectable style={styles.text}>
+                Sl No.: {index + 1 + firstData}
+              </Text>
+              <Text selectable style={styles.text}>
+                School Name:
+              </Text>
+              <Text selectable style={styles.text}>
+                {item.school}
+              </Text>
+              <Text selectable style={styles.text}>
+                GP: {item.gp}
+              </Text>
+              <Text selectable style={styles.text}>
                 Class PP Students: {item.cl_pp_student}
               </Text>
-              <Text style={styles.text}>
+              <Text selectable style={styles.text}>
                 Class I Students: {item.cl_1_student}
               </Text>
-              <Text style={styles.text}>
+              <Text selectable style={styles.text}>
                 Class II Students: {item.cl_2_student}
               </Text>
-              <Text style={styles.text}>
+              <Text selectable style={styles.text}>
                 Class III Students: {item.cl_3_student}
               </Text>
-              <Text style={styles.text}>
+              <Text selectable style={styles.text}>
                 Class IV Students: {item.cl_4_student}
               </Text>
               {item.cl_5_student > 0 && (
-                <Text style={styles.text}>
+                <Text selectable style={styles.text}>
                   Class V Students: {item.cl_5_student}
                 </Text>
               )}
-              <Text style={styles.text}>
+              <Text selectable style={styles.text}>
                 Total Students: {item.total_student}
               </Text>
-              <Text style={styles.text}>
+              <Text selectable style={styles.text}>
                 Total Cost: Rs. ₹
                 {Math.round(
                   item.cl_pp_student * qRateData.pp_rate +

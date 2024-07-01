@@ -142,8 +142,8 @@ const Splash = () => {
                   onPress: async () => {
                     const supported = await Linking.canOpenURL(AppURL); //To check if URL is supported or not.
                     if (supported) {
-                      await Linking.openURL(AppURL); // It will open the URL on browser.
                       await EncryptedStorage.clear();
+                      await Linking.openURL(AppURL); // It will open the URL on browser.
                     } else {
                       Alert.alert(`Can't open this URL: ${AppURL}`);
                     }
@@ -191,9 +191,15 @@ const Splash = () => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-        <Text style={styles.logoText}>Amta</Text>
-        <Text style={styles.logoText}>West</Text>
-        <Text style={styles.logoText}>WBTPTA</Text>
+        <Text selectable style={styles.logoText}>
+          Amta
+        </Text>
+        <Text selectable style={styles.logoText}>
+          West
+        </Text>
+        <Text selectable style={styles.logoText}>
+          WBTPTA
+        </Text>
       </View>
       <View style={{margin: responsiveHeight(2)}}>
         <ActivityIndicator size={50} color={'white'} />

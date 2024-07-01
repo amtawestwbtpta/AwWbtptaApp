@@ -15,10 +15,10 @@ import {
 } from 'react-native-responsive-dimensions';
 import bcrypt from 'react-native-bcrypt';
 import isaac from 'isaac';
-const ChangeUP = ({refresh}) => {
+const ChangeUP = () => {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  const {state} = useGlobalContext();
+  const {state, setActiveTab} = useGlobalContext();
   const user = state.USER;
   const [showLoder, setShowLoder] = useState(false);
   const [showUsername, setShowUsername] = useState(false);
@@ -117,7 +117,7 @@ const ChangeUP = ({refresh}) => {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
-        refresh();
+        setActiveTab(0);
         return true;
       },
     );
@@ -130,7 +130,9 @@ const ChangeUP = ({refresh}) => {
       style={{
         flex: 1,
       }}>
-      <Text style={styles.heading}>Change Username & Password</Text>
+      <Text selectable style={styles.heading}>
+        Change Username & Password
+      </Text>
       {showUPBtn ? (
         <View>
           <CustomButton
@@ -161,8 +163,10 @@ const ChangeUP = ({refresh}) => {
       ) : null}
       {showUsername ? (
         <View>
-          <Text style={styles.heading}>Change Username</Text>
-          <Text style={styles.dropDownText}>
+          <Text selectable style={styles.heading}>
+            Change Username
+          </Text>
+          <Text selectable style={styles.dropDownText}>
             Current Username: {user.username}
           </Text>
           <CustomTextInput
@@ -187,7 +191,9 @@ const ChangeUP = ({refresh}) => {
       ) : null}
       {showPassword ? (
         <View>
-          <Text style={styles.heading}>Change Password</Text>
+          <Text selectable style={styles.heading}>
+            Change Password
+          </Text>
           <CustomTextInput
             value={password}
             onChangeText={text => setPassword(text)}

@@ -1,5 +1,5 @@
-import {KeyboardAvoidingView, StyleSheet, View} from 'react-native';
-import React, {useEffect, useContext, useState} from 'react';
+import {StyleSheet, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import Main from './Main';
 import {useIsFocused} from '@react-navigation/native';

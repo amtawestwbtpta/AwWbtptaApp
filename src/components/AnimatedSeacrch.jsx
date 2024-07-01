@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
+  Text,
 } from 'react-native';
 import React, {useState} from 'react';
 import Animated, {
@@ -23,7 +24,7 @@ const AnimatedSeacrch = ({
   onChangeText,
   type,
   secure,
-  size,
+  onClick,
   multiline,
   bgcolor,
   editable,
@@ -40,17 +41,18 @@ const AnimatedSeacrch = ({
   });
   const [animationValue, setAnimationValue] = useState(0);
   return (
-    <View style={{flex: 1, marginTop: responsiveHeight(1)}}>
+    <View style={{flex: 1, marginTop: responsiveHeight(0.5)}}>
       <Animated.View
         style={[
           {
-            width: responsiveWidth(80),
+            width: responsiveWidth(85),
             height: responsiveHeight(5),
             backgroundColor: '#E7E7E7',
             borderRadius: responsiveWidth(2),
             flexDirection: 'row',
             alignItems: 'center',
             alignSelf: 'center',
+            justifyContent: 'center',
           },
           animatedStyle,
         ]}>
@@ -64,7 +66,7 @@ const AnimatedSeacrch = ({
           multiline={multiline ? true : false}
           numberOfLines={10}
           textAlignVertical={'top'}
-          placeholderTextColor={THEME_COLOR}
+          placeholderTextColor={'chocolate'}
           style={{
             color: 'black',
             backgroundColor: bgcolor ? bgcolor : 'transparent',
@@ -77,11 +79,16 @@ const AnimatedSeacrch = ({
             if (animation.value === 1) {
               animation.value = 0;
               setAnimationValue(0);
+              if (func) {
+                func();
+              }
             } else {
               animation.value = 1;
               setAnimationValue(1);
+              if (onClick) {
+                onClick();
+              }
             }
-            func();
           }}>
           <Image
             source={
@@ -97,6 +104,16 @@ const AnimatedSeacrch = ({
           />
         </TouchableOpacity>
       </Animated.View>
+      <Text
+        style={{
+          color: 'chocolate',
+          fontSize: responsiveFontSize(1.2),
+          alignSelf: 'center',
+          textAlign: 'center',
+          marginTop: responsiveHeight(0.2),
+        }}>
+        {placeholder}
+      </Text>
     </View>
   );
 };

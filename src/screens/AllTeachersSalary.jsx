@@ -1,13 +1,6 @@
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  BackHandler,
-  DeviceEventEmitter,
-} from 'react-native';
+import {ScrollView, StyleSheet, Text, View, BackHandler} from 'react-native';
 import React, {useEffect} from 'react';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {THEME_COLOR} from '../utils/Colors';
 import CustomButton from '../components/CustomButton';
 import {IndianFormat} from '../modules/calculatefunctions';
@@ -19,11 +12,11 @@ import {
 } from 'react-native-responsive-dimensions';
 import {useGlobalContext} from '../context/Store';
 const AllTeachersSalary = () => {
-  const {stateObject} = useGlobalContext();
+  const {stateArray} = useGlobalContext();
   const isFocused = useIsFocused();
 
-  const data = stateObject.data;
-  const navigation = stateObject.navigation;
+  const data = stateArray;
+  const navigation = useNavigation();
 
   useEffect(() => {}, [isFocused]);
   useEffect(() => {
@@ -31,7 +24,6 @@ const AllTeachersSalary = () => {
       'hardwareBackPress',
       () => {
         navigation.navigate('Home');
-        DeviceEventEmitter.emit('goBack');
         return true;
       },
     );
@@ -42,13 +34,13 @@ const AllTeachersSalary = () => {
       <ScrollView
         style={{
           marginTop: responsiveHeight(1),
-          marginBottom: responsiveHeight(1),
         }}
         contentContainerStyle={{
           justifyContent: 'center',
           alignItems: 'center',
         }}>
         <Text
+          selectable
           style={
             styles.title
           }>{`ALL TEACHERS SALARY DATA OF\n ${data[0].school}`}</Text>
@@ -99,7 +91,9 @@ const AllTeachersSalary = () => {
 
           return (
             <View style={styles.dataView} key={index}>
-              <Text style={styles.dataText}>({index + 1})</Text>
+              <Text selectable style={styles.dataText}>
+                ({index + 1})
+              </Text>
               <View
                 style={{
                   flexDirection: data.length > 3 ? 'row' : 'column',
@@ -108,31 +102,41 @@ const AllTeachersSalary = () => {
                   alignSelf: 'center',
                   flexWrap: 'wrap',
                 }}>
-                <Text style={styles.dataText}>Teacher Name: {el.tname},</Text>
-                <Text style={styles.dataText}>Designation: {el.desig},</Text>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
+                  Teacher Name: {el.tname},
+                </Text>
+                <Text selectable style={styles.dataText}>
+                  Designation: {el.desig},
+                </Text>
+                <Text selectable style={styles.dataText}>
                   Basicpay: ₹{IndianFormat(basicpay)},
                 </Text>
                 {addl > 0 ? (
-                  <Text style={styles.dataText}>
+                  <Text selectable style={styles.dataText}>
                     Additional Allowance: ₹{IndianFormat(addl)},
                   </Text>
                 ) : null}
-                <Text style={styles.dataText}>DA: ₹{IndianFormat(da)},</Text>
-                <Text style={styles.dataText}>HRA: ₹{IndianFormat(hra)},</Text>
+                <Text selectable style={styles.dataText}>
+                  DA: ₹{IndianFormat(da)},
+                </Text>
+                <Text selectable style={styles.dataText}>
+                  HRA: ₹{IndianFormat(hra)},
+                </Text>
                 {ma > 0 ? (
-                  <Text style={styles.dataText}>
+                  <Text selectable style={styles.dataText}>
                     Medical Allowance: ₹{IndianFormat(ma)},
                   </Text>
                 ) : null}
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
                   Gross: ₹{IndianFormat(gross)},
                 </Text>
-                <Text style={styles.dataText}>GPF: ₹{IndianFormat(gpf)},</Text>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
+                  GPF: ₹{IndianFormat(gpf)},
+                </Text>
+                <Text selectable style={styles.dataText}>
                   PTax: ₹{IndianFormat(ptax)},
                 </Text>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
                   Net Pay: ₹{IndianFormat(netpay)}
                 </Text>
               </View>

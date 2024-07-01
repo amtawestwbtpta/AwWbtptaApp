@@ -758,7 +758,7 @@ const QuestionSection = () => {
               marginLeft: responsiveWidth(10),
             }}
           />
-          <Text style={styles.title}>
+          <Text selectable style={styles.title}>
             {`Amta West Circle, ${qRateData.term} Summative Exam,  ${qRateData.year}`}
           </Text>
           <TouchableOpacity
@@ -767,11 +767,11 @@ const QuestionSection = () => {
               alignItems: 'center',
               marginRight: responsiveWidth(10),
             }}
-            onPress={() =>
-              navigation.navigate('Home', {navigation: navigation})
-            }>
+            onPress={() => navigation.navigate('Home')}>
             <Entypo name="back" size={30} color={'red'} />
-            <Text style={{color: 'red'}}>Go Back</Text>
+            <Text selectable style={{color: 'red'}}>
+              Go Back
+            </Text>
           </TouchableOpacity>
         </TouchableOpacity>
 
@@ -828,7 +828,9 @@ const QuestionSection = () => {
           )}
         </View>
         {!isClicked && !showData && (
-          <Text style={styles.desc}>Select School Name</Text>
+          <Text selectable style={styles.desc}>
+            Select School Name
+          </Text>
         )}
         {!visible && !addSchoolVisible && (
           <TouchableOpacity
@@ -843,6 +845,7 @@ const QuestionSection = () => {
             {isClicked ? (
               <View style={{flexDirection: 'row'}}>
                 <Text
+                  selectable
                   style={[
                     styles.dropDownText,
                     {paddingRight: responsiveWidth(2)},
@@ -855,6 +858,7 @@ const QuestionSection = () => {
             ) : (
               <View style={{flexDirection: 'row'}}>
                 <Text
+                  selectable
                   style={[
                     styles.dropDownText,
                     {paddingRight: responsiveWidth(2)},
@@ -906,7 +910,7 @@ const QuestionSection = () => {
                         setSearch('');
                         setIndexNumber(index + 1);
                       }}>
-                      <Text style={styles.dropDownText}>
+                      <Text selectable style={styles.dropDownText}>
                         {index + 1 + '. ' + item.school}
                       </Text>
                     </TouchableOpacity>
@@ -926,7 +930,9 @@ const QuestionSection = () => {
                     alignSelf: 'center',
                   }}>
                   <View style={styles.itemView}>
-                    <Text style={styles.text}>Scan Here</Text>
+                    <Text selectable style={styles.text}>
+                      Scan Here
+                    </Text>
                     <Image
                       source={{
                         uri: `https://api.qrserver.com/v1/create-qr-code/?data=Amta West Circle, ${
@@ -976,79 +982,87 @@ const QuestionSection = () => {
                     />
                   </View>
                   <View style={styles.itemView}>
-                    <Text style={styles.text}>Sl No.: {indexNumber}</Text>
-                    <Text style={styles.text}>School Name:</Text>
-                    <Text style={styles.text}>{filteredData[0].school}</Text>
-                    <Text style={styles.text}>GP: {filteredData[0].gp}</Text>
-                    <Text style={styles.text}>
+                    <Text selectable style={styles.text}>
+                      Sl No.: {indexNumber}
+                    </Text>
+                    <Text selectable style={styles.text}>
+                      School Name:
+                    </Text>
+                    <Text selectable style={styles.text}>
+                      {filteredData[0].school}
+                    </Text>
+                    <Text selectable style={styles.text}>
+                      GP: {filteredData[0].gp}
+                    </Text>
+                    <Text selectable style={styles.text}>
                       UDISE: {filteredData[0].udise}
                     </Text>
                   </View>
                   <View style={styles.itemView}>
-                    <Text style={styles.text}>
+                    <Text selectable style={styles.text}>
                       Class PP Students: {filteredData[0].cl_pp_student}
                     </Text>
-                    <Text style={styles.text}>
+                    <Text selectable style={styles.text}>
                       Class I Students: {filteredData[0].cl_1_student}
                     </Text>
-                    <Text style={styles.text}>
+                    <Text selectable style={styles.text}>
                       Class II Students: {filteredData[0].cl_2_student}
                     </Text>
-                    <Text style={styles.text}>
+                    <Text selectable style={styles.text}>
                       Class III Students: {filteredData[0].cl_3_student}
                     </Text>
-                    <Text style={styles.text}>
+                    <Text selectable style={styles.text}>
                       Class IV Students: {filteredData[0].cl_4_student}
                     </Text>
                     {filteredData[0].cl_5_student > 0 && (
-                      <Text style={styles.text}>
+                      <Text selectable style={styles.text}>
                         Class V Students: {filteredData[0].cl_5_student}
                       </Text>
                     )}
-                    <Text style={styles.text}>
+                    <Text selectable style={styles.text}>
                       Total Students: {filteredData[0].total_student}
                     </Text>
                   </View>
                   <View style={styles.itemView}>
-                    <Text style={styles.text}>
+                    <Text selectable style={styles.text}>
                       Class PP Cost:{' ₹ '}
                       {round2dec(
                         filteredData[0].cl_pp_student * qRateData.pp_rate,
                       )}
                     </Text>
-                    <Text style={styles.text}>
+                    <Text selectable style={styles.text}>
                       Class I Cost:{' ₹ '}
                       {round2dec(
                         filteredData[0].cl_1_student * qRateData.i_rate,
                       )}
                     </Text>
-                    <Text style={styles.text}>
+                    <Text selectable style={styles.text}>
                       Class II Cost:{' ₹ '}
                       {round2dec(
                         filteredData[0].cl_2_student * qRateData.ii_rate,
                       )}
                     </Text>
-                    <Text style={styles.text}>
+                    <Text selectable style={styles.text}>
                       Class III Cost:{' ₹ '}
                       {round2dec(
                         filteredData[0].cl_3_student * qRateData.iii_rate,
                       )}
                     </Text>
-                    <Text style={styles.text}>
+                    <Text selectable style={styles.text}>
                       Class IV Cost:{' ₹ '}
                       {round2dec(
                         filteredData[0].cl_4_student * qRateData.iv_rate,
                       )}
                     </Text>
                     {filteredData[0].cl_5_student > 0 && (
-                      <Text style={styles.text}>
+                      <Text selectable style={styles.text}>
                         Class V Cost:{' ₹ '}
                         {round2dec(
                           filteredData[0].cl_5_student * qRateData.v_rate,
                         )}
                       </Text>
                     )}
-                    <Text style={styles.text}>
+                    <Text selectable style={styles.text}>
                       Total Cost:{' ₹ '}
                       {Math.round(
                         filteredData[0].cl_pp_student * qRateData.pp_rate +
@@ -1115,7 +1129,7 @@ const QuestionSection = () => {
                           .catch(e => console.log(e));
                       });
                     }}>
-                    <Text style={{color: 'white', fontSize: 18}}>
+                    <Text selectable style={{color: 'white', fontSize: 18}}>
                       Share As Image
                     </Text>
                   </TouchableOpacity> */}
@@ -1136,6 +1150,7 @@ const QuestionSection = () => {
                       setShowData(false);
                     }}>
                     <Text
+                      selectable
                       style={{color: 'white', fontSize: responsiveFontSize(2)}}>
                       Close
                     </Text>
@@ -1158,6 +1173,7 @@ const QuestionSection = () => {
             }}>
             <View style={[styles.mainView, {padding: 10}]}>
               <Text
+                selectable
                 style={{
                   fontSize: responsiveFontSize(3),
                   fontWeight: '500',
@@ -1280,6 +1296,7 @@ const QuestionSection = () => {
           <View style={styles.modalView}>
             <View style={styles.mainView}>
               <Text
+                selectable
                 style={{
                   fontSize: responsiveFontSize(3),
                   fontWeight: '500',
@@ -1404,6 +1421,7 @@ const QuestionSection = () => {
                   margin: responsiveWidth(2),
                 }}>
                 <Text
+                  selectable
                   style={[
                     styles.label,
                     {
@@ -1449,6 +1467,7 @@ const QuestionSection = () => {
                         color={THEME_COLOR}
                       />
                       <Text
+                        selectable
                         style={[
                           styles.label,
                           {paddingLeft: responsiveWidth(2)},
@@ -1485,6 +1504,7 @@ const QuestionSection = () => {
           <View style={styles.modalView}>
             <View style={styles.mainView}>
               <Text
+                selectable
                 style={{
                   fontSize: responsiveFontSize(3),
                   fontWeight: '500',
@@ -1538,6 +1558,7 @@ const QuestionSection = () => {
                       justifyContent: 'space-between',
                     }}>
                     <Text
+                      selectable
                       style={[
                         styles.dropDownText,
                         {paddingRight: responsiveWidth(2)},
@@ -1571,7 +1592,9 @@ const QuestionSection = () => {
                           });
                           setGp(gp.filter(el => el.gp.match(item.gp)));
                         }}>
-                        <Text style={styles.dropDownText}>{item.gp}</Text>
+                        <Text selectable style={styles.dropDownText}>
+                          {item.gp}
+                        </Text>
                       </TouchableOpacity>
                     );
                   })}

@@ -437,6 +437,15 @@ export function getCurrentDateSlashInput(date) {
     return `${year}-${month}-${day}`;
   }
 }
+export function getCurrentDateReverseSlashInput(date) {
+  if (date) {
+    let data = date.split('-');
+    let day = data[0];
+    let month = data[1];
+    let year = data[2];
+    return `${year}/${month}/${day}`;
+  }
+}
 
 export const generateID = () => {
   const capitalAlphabets = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -463,3 +472,76 @@ export function avoidNaN(val) {
   }
   return parseInt(val);
 }
+
+export const getServiceAge = date => {
+  if (!date) return '';
+  let currentDate = Date.now();
+  let birthDate = Date.parse(getCurrentDateInput(date));
+  let yearInMillis = 31556926000;
+  let age = Math.floor((currentDate - birthDate) / yearInMillis);
+  return age;
+};
+export const getServiceLife = date => {
+  if (!date) return '';
+  let currentDate = Date.now();
+  let birthDate = Date.parse(getCurrentDateInput(date));
+  let yearInMillis = 31556926000;
+  let monthinMillis = 2629800000;
+  let age = Math.floor((currentDate - birthDate) / yearInMillis);
+  let months = Math.floor(
+    ((currentDate - birthDate) % yearInMillis) / monthinMillis,
+  );
+  if (age) {
+    return `${age} years ${months} months`;
+  } else {
+    return `${months} months`;
+  }
+};
+export function removeDuplicates(books) {
+  // Create an array of objects
+
+  // Declare a new array
+  let newArray = [];
+
+  // Declare an empty object
+  let uniqueObject = {};
+  let objTitle;
+  // Loop for the array elements
+  for (let i in books) {
+    // Extract the title
+    objTitle = books[i]['id'];
+
+    // Use the title as the index
+    uniqueObject[objTitle] = books[i];
+  }
+
+  // Loop to push unique object into array
+  for (let i in uniqueObject) {
+    newArray.push(uniqueObject[i]);
+  }
+
+  // Display the unique objects
+  return newArray;
+}
+
+export const filterArrayExtraItems = (x, y) => {
+  return x.filter(item => !y.includes(item));
+};
+export const filterArraySameItems = (x, y) => {
+  return x.filter(item => y.includes(item));
+};
+export const uniqArray = a => [...new Set(a)];
+export const monthNamesWithIndex = [
+  {monthName: 'January', index: '01', rank: 1},
+  {monthName: 'February', index: '02', rank: 2},
+  {monthName: 'March', index: '03', rank: 3},
+  {monthName: 'April', index: '04', rank: 4},
+  {monthName: 'May', index: '05', rank: 5},
+  {monthName: 'June', index: '06', rank: 6},
+  {monthName: 'July', index: '07', rank: 7},
+  {monthName: 'August', index: '08', rank: 8},
+  {monthName: 'September', index: '09', rank: 9},
+  {monthName: 'October', index: '10', rank: 10},
+  {monthName: 'November', index: '11', rank: 11},
+  {monthName: 'December', index: '12', rank: 12},
+];

@@ -8,6 +8,8 @@ const GlobalContext = createContext({
     LOGGEDAT: '',
   },
   setState: () => {},
+  activeTab: 0,
+  setActiveTab: () => '',
   stateArray: [],
   setStateArray: () => [],
   stateObject: {},
@@ -49,7 +51,7 @@ export const GlobalContextProvider = ({children}) => {
     TOKEN: '',
     LOGGEDAT: '',
   });
-
+  const [activeTab, setActiveTab] = useState(0);
   const [stateArray, setStateArray] = useState([]);
   const [stateObject, setStateObject] = useState({});
   const [teachersState, setTeachersState] = useState([]);
@@ -84,6 +86,8 @@ export const GlobalContextProvider = ({children}) => {
       value={{
         state,
         setState,
+        activeTab,
+        setActiveTab,
         stateArray,
         setStateArray,
         stateObject,

@@ -26,6 +26,8 @@ import WbtptaWorkingChatRoom from '../screens/WbtptaWorkingChatRoom';
 import WeFourGroup from '../screens/WeFourGroup';
 import MemoDetails from '../screens/MemoDetails';
 import TokensView from '../screens/TokensView';
+import TeacherServiceLife from '../screens/TeacherServiceLife';
+import YearwiseTeachers from '../screens/YearwiseTeachers';
 
 const Stack = createNativeStackNavigator();
 const AppNavigator = () => {
@@ -136,6 +138,16 @@ const AppNavigator = () => {
         <Stack.Screen
           name="Accounts"
           component={Accounts}
+          options={{headerShown: false, drawerItemStyle: {height: 0}}}
+        />
+        <Stack.Screen
+          name="TeacherServiceLife"
+          component={TeacherServiceLife}
+          options={{headerShown: false, drawerItemStyle: {height: 0}}}
+        />
+        <Stack.Screen
+          name="YearwiseTeachers"
+          component={YearwiseTeachers}
           options={{headerShown: false, drawerItemStyle: {height: 0}}}
         />
         <Stack.Screen

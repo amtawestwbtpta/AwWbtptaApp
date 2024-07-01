@@ -8,11 +8,11 @@ import {
   BackHandler,
   DeviceEventEmitter,
 } from 'react-native';
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {THEME_COLOR} from '../utils/Colors';
 import CustomButton from '../components/CustomButton';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Loader from '../components/Loader';
 import {
   responsiveHeight,
@@ -22,17 +22,16 @@ import {
 import {useGlobalContext} from '../context/Store';
 import Toast from 'react-native-toast-message';
 import AnimatedSeacrch from '../components/AnimatedSeacrch';
-const ChatList = ({refresh, navigation, selectActiveTab, tabValue}) => {
+const ChatList = () => {
   const isFocused = useIsFocused();
-  const setActiveTab = () => {
-    selectActiveTab(tabValue);
-  };
+  const navigation = useNavigation();
   const [members, setMembers] = useState([]);
   const [name, setName] = useState('');
   const [filteredName, setFilteredName] = useState([]);
   const [showLoader, setShowLoader] = useState(false);
-  const [value, setValue] = useState(0);
-  const {state} = useGlobalContext();
+
+  const {state, setStateObject, setActiveTab, userState, setUserState} =
+    useGlobalContext();
   const user = state.USER;
 
   const [firstData, setFirstData] = useState(0);
@@ -59,6 +58,7 @@ const ChatList = ({refresh, navigation, selectActiveTab, tabValue}) => {
         let newData = datas
           .sort((a, b) => b.date - a.date)
           .filter(el => el.tname !== user.tname);
+        setUserState(datas);
         setShowLoader(false);
         setMembers(newData);
         setFilteredName(newData);
@@ -68,25 +68,41 @@ const ChatList = ({refresh, navigation, selectActiveTab, tabValue}) => {
         showToast('error', e);
       });
   };
+  const getUserData = () => {
+    if (userState.length === 0) {
+      getMembers();
+    } else {
+      setShowLoader(false);
+      let newData = userState
+        .sort((a, b) => b.date - a.date)
+        .filter(el => el.tname !== user.tname);
+      setShowLoader(false);
+      setMembers(newData);
+      setFilteredName(newData);
+    }
+  };
 
   useEffect(() => {
-    getMembers();
+    getUserData();
   }, [isFocused]);
+
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
-        refresh();
+        setActiveTab(0);
         return true;
       },
     );
     return () => backHandler.remove();
-  }, [isFocused]);
+  }, []);
   useEffect(() => {}, [name, filteredName]);
   return (
     <View style={{flex: 1}}>
       <ScrollView>
-        <Text style={[styles.title, {marginBottom: responsiveHeight(1)}]}>
+        <Text
+          selectable
+          style={[styles.title, {marginBottom: responsiveHeight(1)}]}>
           GROUP CHAT
         </Text>
         <TouchableOpacity
@@ -99,10 +115,7 @@ const ChatList = ({refresh, navigation, selectActiveTab, tabValue}) => {
             },
           ]}
           onPress={() => {
-            navigation.navigate('WbtptaChatRoom', {
-              navigation: navigation,
-            });
-            DeviceEventEmitter.addListener('goBack', setActiveTab);
+            navigation.navigate('WbtptaChatRoom');
           }}>
           <Image
             source={require('../assets/images/maingrp.jpg')}
@@ -112,7 +125,9 @@ const ChatList = ({refresh, navigation, selectActiveTab, tabValue}) => {
               borderRadius: responsiveWidth(10),
             }}
           />
-          <Text style={styles.titleName}>WBTPTA AMTA WEST</Text>
+          <Text selectable style={styles.titleName}>
+            WBTPTA AMTA WEST
+          </Text>
         </TouchableOpacity>
         {user.question === 'admin' ? (
           <TouchableOpacity
@@ -125,10 +140,7 @@ const ChatList = ({refresh, navigation, selectActiveTab, tabValue}) => {
               },
             ]}
             onPress={() => {
-              navigation.navigate('WbtptaWorkingChatRoom', {
-                navigation: navigation,
-              });
-              DeviceEventEmitter.addListener('goBack', setActiveTab);
+              navigation.navigate('WbtptaWorkingChatRoom');
             }}>
             <Image
               source={require('../assets/images/workinggrp.jpg')}
@@ -138,7 +150,9 @@ const ChatList = ({refresh, navigation, selectActiveTab, tabValue}) => {
                 borderRadius: responsiveWidth(10),
               }}
             />
-            <Text style={styles.titleName}>WBTPTA WORKING GROUP</Text>
+            <Text selectable style={styles.titleName}>
+              WBTPTA WORKING GROUP
+            </Text>
           </TouchableOpacity>
         ) : null}
         {user.circle === 'admin' ? (
@@ -152,10 +166,7 @@ const ChatList = ({refresh, navigation, selectActiveTab, tabValue}) => {
               },
             ]}
             onPress={() => {
-              navigation.navigate('WeFourGroup', {
-                navigation: navigation,
-              });
-              DeviceEventEmitter.addListener('goBack', setActiveTab);
+              navigation.navigate('WeFourGroup');
             }}>
             <Image
               source={require('../assets/images/we4grp.jpg')}
@@ -165,10 +176,14 @@ const ChatList = ({refresh, navigation, selectActiveTab, tabValue}) => {
                 borderRadius: responsiveWidth(10),
               }}
             />
-            <Text style={styles.titleName}>𝖂𝖊 կ𝖔𝖚𝖗</Text>
+            <Text selectable style={styles.titleName}>
+              𝖂𝖊 կ𝖔𝖚𝖗
+            </Text>
           </TouchableOpacity>
         ) : null}
-        <Text style={[styles.title, {marginBottom: responsiveHeight(1)}]}>
+        <Text
+          selectable
+          style={[styles.title, {marginBottom: responsiveHeight(1)}]}>
           Chat With Users
         </Text>
         <View style={{marginBottom: responsiveHeight(6)}}>
@@ -236,11 +251,8 @@ const ChatList = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       },
                     ]}
                     onPress={() => {
-                      navigation.navigate('ChatRoom', {
-                        data: el,
-                        navigation: navigation,
-                      });
-                      DeviceEventEmitter.addListener('goBack', setActiveTab);
+                      navigation.navigate('ChatRoom');
+                      setStateObject(el);
                     }}>
                     <Image
                       source={{uri: el.url}}
@@ -251,13 +263,18 @@ const ChatList = ({refresh, navigation, selectActiveTab, tabValue}) => {
                       }}
                     />
 
-                    <Text style={styles.titleName}> {el.tname}</Text>
+                    <Text selectable style={styles.titleName}>
+                      {' '}
+                      {el.tname}
+                    </Text>
                   </TouchableOpacity>
                 </ScrollView>
               );
             })
           ) : (
-            <Text style={styles.label}>Teacher Not Found</Text>
+            <Text selectable style={styles.label}>
+              Teacher Not Found
+            </Text>
           )}
           <View
             style={{

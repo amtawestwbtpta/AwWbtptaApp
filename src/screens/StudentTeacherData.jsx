@@ -8,10 +8,9 @@ import {
   BackHandler,
   Platform,
   Linking,
-  DeviceEventEmitter,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import firestore from '@react-native-firebase/firestore';
@@ -31,16 +30,9 @@ import {notifyAll} from '../modules/notification';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import AnimatedSeacrch from '../components/AnimatedSeacrch';
 import {useGlobalContext} from '../context/Store';
-const StudentTeacherData = ({
-  refresh,
-  navigation,
-  selectActiveTab,
-  tabValue,
-}) => {
+const StudentTeacherData = () => {
   const isFocused = useIsFocused();
-  const setActiveTab = () => {
-    selectActiveTab(tabValue);
-  };
+  const navigation = useNavigation();
   const {
     state,
     teachersState,
@@ -52,6 +44,8 @@ const StudentTeacherData = ({
     schoolUpdateTime,
     setSchoolUpdateTime,
     setStateObject,
+    setStateArray,
+    setActiveTab,
   } = useGlobalContext();
   const user = state.USER;
   const [selectedSchool, setSelectedSchool] = useState('Select School Name');
@@ -239,7 +233,7 @@ const StudentTeacherData = ({
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
-        refresh();
+        setActiveTab(0);
         return true;
       },
     );
@@ -248,7 +242,11 @@ const StudentTeacherData = ({
   return (
     <View style={styles.container}>
       <ScrollView>
-        {showData && <Text style={styles.desc}>Select School Name</Text>}
+        {showData && (
+          <Text selectable style={styles.desc}>
+            Select School Name
+          </Text>
+        )}
 
         <TouchableOpacity
           style={[styles.dropDownnSelector, {marginTop: 5}]}
@@ -260,7 +258,9 @@ const StudentTeacherData = ({
             setShowData(false);
             setSchoolName('');
           }}>
-          <Text style={styles.dropDownText}>{filteredSchool.school}</Text>
+          <Text selectable style={styles.dropDownText}>
+            {filteredSchool.school}
+          </Text>
 
           {isClicked ? (
             <AntDesign name="up" size={30} color={THEME_COLOR} />
@@ -273,6 +273,7 @@ const StudentTeacherData = ({
               }}>
               {filteredSchool[0]?.school ? (
                 <Text
+                  selectable
                   style={[
                     styles.dropDownText,
                     {paddingRight: responsiveWidth(2)},
@@ -327,9 +328,9 @@ const StudentTeacherData = ({
                       schoolData.filter(el => el.udise.match(item.udise)),
                     );
                   }}>
-                  <Text style={styles.dropDownText}>{`${index + 1}. ${
-                    item.school
-                  }`}</Text>
+                  <Text selectable style={styles.dropDownText}>{`${
+                    index + 1
+                  }. ${item.school}`}</Text>
                 </TouchableOpacity>
               );
             })}
@@ -343,23 +344,23 @@ const StudentTeacherData = ({
               width: responsiveWidth(94),
             }}>
             <View style={styles.itemView}>
-              <Text style={styles.dropDownText}>
+              <Text selectable style={styles.dropDownText}>
                 SCHOOL NAME: {filteredSchool[0]?.school}
               </Text>
-              <Text style={styles.dropDownText}>
+              <Text selectable style={styles.dropDownText}>
                 GP NAME: {filteredSchool[0]?.gp}
               </Text>
-              <Text style={styles.dropDownText}>
+              <Text selectable style={styles.dropDownText}>
                 UDISE: {filteredSchool[0]?.udise}
               </Text>
-              <Text style={styles.dropDownText}>
+              <Text selectable style={styles.dropDownText}>
                 Total Teacher: {filteredData.length}
               </Text>
-              <Text style={styles.dropDownText}>
+              <Text selectable style={styles.dropDownText}>
                 Total Student {filteredSchool[0]?.year - 1}:{' '}
                 {filteredSchool[0]?.student}
               </Text>
-              <Text style={styles.dropDownText}>
+              <Text selectable style={styles.dropDownText}>
                 Total Student {filteredSchool[0]?.year}:{' '}
                 {filteredSchool[0]?.total_student}
               </Text>
@@ -390,7 +391,7 @@ const StudentTeacherData = ({
                   filteredSchool[0]?.total_student / filteredData.length,
                 ) > 35) ? (
                 <View>
-                  <Text style={styles.dropDownText}>
+                  <Text selectable style={styles.dropDownText}>
                     Student Teacher Ratio is{' '}
                     {Math.floor(
                       filteredSchool[0]?.total_student / filteredData.length,
@@ -407,7 +408,7 @@ const StudentTeacherData = ({
                   filteredSchool[0]?.total_student / filteredData.length,
                 ) <= 30 ? (
                 <View>
-                  <Text style={styles.dropDownText}>
+                  <Text selectable style={styles.dropDownText}>
                     Student Teacher Ratio is{' '}
                     {Math.floor(
                       filteredSchool[0]?.total_student / filteredData.length,
@@ -417,7 +418,7 @@ const StudentTeacherData = ({
                 </View>
               ) : (
                 <View>
-                  <Text style={styles.dropDownText}>
+                  <Text selectable style={styles.dropDownText}>
                     Student Teacher Ratio is{' '}
                     {Math.floor(
                       filteredSchool[0]?.total_student / filteredData.length,
@@ -428,23 +429,23 @@ const StudentTeacherData = ({
               )}
             </View>
             <View style={styles.itemView}>
-              <Text style={styles.dropDownText}>
+              <Text selectable style={styles.dropDownText}>
                 No. of Pre Primary Students: {filteredSchool[0]?.pp}
               </Text>
-              <Text style={styles.dropDownText}>
+              <Text selectable style={styles.dropDownText}>
                 No. of Class I Students: {filteredSchool[0]?.i}
               </Text>
-              <Text style={styles.dropDownText}>
+              <Text selectable style={styles.dropDownText}>
                 No. of Class II Students: {filteredSchool[0]?.ii}
               </Text>
-              <Text style={styles.dropDownText}>
+              <Text selectable style={styles.dropDownText}>
                 No. of Class III Students: {filteredSchool[0]?.iii}
               </Text>
-              <Text style={styles.dropDownText}>
+              <Text selectable style={styles.dropDownText}>
                 No. of Class IV Students: {filteredSchool[0]?.iv}
               </Text>
               {filteredSchool[0]?.v > 0 ? (
-                <Text style={styles.dropDownText}>
+                <Text selectable style={styles.dropDownText}>
                   No. of Class V Students: {filteredSchool[0]?.v}
                 </Text>
               ) : null}
@@ -455,48 +456,27 @@ const StudentTeacherData = ({
                 title={'All Teachers Salary'}
                 onClick={() => {
                   navigation.navigate('AllTeachersSalary');
-                  setStateObject({
-                    data: filteredData.sort((a, b) => a.rank - b.rank),
-                    navigation: navigation,
-                  });
-                  DeviceEventEmitter.addListener('goBack', setActiveTab);
+                  setStateArray(filteredData.sort((a, b) => a.rank - b.rank));
                 }}
               />
             ) : null}
             <ScrollView style={{marginBottom: responsiveHeight(8)}}>
               {filteredData.map((el, ind) => {
                 return (
-                  <TouchableOpacity
-                    style={styles.itemView}
-                    key={ind}
-                    onLongPress={() => {
-                      if (user.circle === 'admin') {
-                        {
-                          navigation.navigate('EditDetails');
-                          setStateObject({
-                            data: el,
-                            navigation: navigation,
-                          });
-                          DeviceEventEmitter.addListener(
-                            'goBack',
-                            setActiveTab,
-                          );
-                        }
-                      } else {
-                        showToast('success', `View Details Of ${el.tname}`);
-                      }
-                    }}>
-                    <Text style={styles.dropDownText}>Teacher: {ind + 1}</Text>
-                    <Text style={styles.dropDownText}>
+                  <TouchableOpacity style={styles.itemView} key={ind}>
+                    <Text selectable style={styles.dropDownText}>
+                      Teacher: {ind + 1}
+                    </Text>
+                    <Text selectable style={styles.dropDownText}>
                       Teacher Name: {el.tname}
                     </Text>
-                    <Text style={styles.dropDownText}>
+                    <Text selectable style={styles.dropDownText}>
                       Designation: {el.desig}
                     </Text>
                     {el.gender === 'male' && el.association === 'WBTPTA' ? (
                       <TouchableOpacity
                         onPress={() => makeCall(parseInt(el.phone))}>
-                        <Text style={styles.dropDownText}>
+                        <Text selectable style={styles.dropDownText}>
                           <Feather
                             name="phone-call"
                             size={18}
@@ -508,7 +488,7 @@ const StudentTeacherData = ({
                     ) : user.circle === 'admin' || user.question == 'admin' ? (
                       <TouchableOpacity
                         onPress={() => makeCall(parseInt(el.phone))}>
-                        <Text style={styles.dropDownText}>
+                        <Text selectable style={styles.dropDownText}>
                           <Feather
                             name="phone-call"
                             size={18}
@@ -519,49 +499,69 @@ const StudentTeacherData = ({
                       </TouchableOpacity>
                     ) : null}
 
-                    <Text style={styles.dropDownText}>
+                    <Text selectable style={styles.dropDownText}>
                       Association: {el.association}
                     </Text>
                     {user.circle === 'admin' ? (
                       <View>
-                        <Text style={styles.dropDownText}>DOB: {el.dob}</Text>
-                        <Text style={styles.dropDownText}>DOJ: {el.doj}</Text>
-                        <Text style={styles.dropDownText}>
+                        <Text selectable style={styles.dropDownText}>
+                          DOB: {el.dob}
+                        </Text>
+                        <Text selectable style={styles.dropDownText}>
+                          DOJ: {el.doj}
+                        </Text>
+                        <Text selectable style={styles.dropDownText}>
                           DOJ in This School: {el.dojnow}
                         </Text>
-                        <Text style={styles.dropDownText}>DOR: {el.dor}</Text>
-                        <Text style={styles.dropDownText}>
+                        <Text selectable style={styles.dropDownText}>
+                          DOR: {el.dor}
+                        </Text>
+                        <Text selectable style={styles.dropDownText}>
                           Training: {el.training}
                         </Text>
                       </View>
                     ) : null}
 
-                    <Text style={styles.dropDownText}>
+                    <Text selectable style={styles.dropDownText}>
                       Address: {el.address}
                     </Text>
                     {el.hoi === 'Yes' ? (
-                      <Text style={[styles.dropDownText, {color: 'green'}]}>
+                      <Text
+                        selectable
+                        style={[styles.dropDownText, {color: 'green'}]}>
                         Head of The Institute
                       </Text>
                     ) : null}
                     {user.circle === 'admin' ? (
-                      <CustomButton
-                        title={'Edit Details'}
-                        size={'small'}
-                        fontSize={responsiveFontSize(1.5)}
-                        color={'chocolate'}
-                        onClick={() => {
-                          navigation.navigate('EditDetails');
-                          setStateObject({
-                            data: el,
-                            navigation: navigation,
-                          });
-                          DeviceEventEmitter.addListener(
-                            'goBack',
-                            setActiveTab,
-                          );
-                        }}
-                      />
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          alignSelf: 'center',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          flexWrap: 'wrap',
+                        }}>
+                        <CustomButton
+                          title={'View Details'}
+                          size={'small'}
+                          fontSize={responsiveFontSize(1.5)}
+                          color={'darkgreen'}
+                          onClick={() => {
+                            navigation.navigate('ViewDetails');
+                            setStateObject(el);
+                          }}
+                        />
+                        <CustomButton
+                          title={'Edit Details'}
+                          size={'small'}
+                          fontSize={responsiveFontSize(1.5)}
+                          color={'chocolate'}
+                          onClick={() => {
+                            navigation.navigate('EditDetails');
+                            setStateObject(el);
+                          }}
+                        />
+                      </View>
                     ) : null}
                   </TouchableOpacity>
                 );
@@ -579,6 +579,7 @@ const StudentTeacherData = ({
               alignItems: 'center',
             }}>
             <Text
+              selectable
               style={{
                 fontSize: 23,
                 fontWeight: '500',

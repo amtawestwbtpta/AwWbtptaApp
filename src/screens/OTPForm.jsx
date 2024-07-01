@@ -94,8 +94,12 @@ const OTPForm = () => {
             style={styles.banner}
           />
           <View style={styles.card}>
-            <Text style={styles.title}>Forgot Password</Text>
-            <Text style={styles.label}>Enter Email</Text>
+            <Text selectable style={styles.title}>
+              Forgot Password
+            </Text>
+            <Text selectable style={styles.label}>
+              Enter Email
+            </Text>
             <CustomTextInput
               placeholder={'Enter Email'}
               value={email}

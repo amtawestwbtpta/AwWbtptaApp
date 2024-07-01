@@ -15,10 +15,10 @@ import {
 import {getSubmitYearInput} from '../modules/calculatefunctions';
 import DateTimePickerAndroid from '@react-native-community/datetimepicker';
 import CustomButton from '../components/CustomButton';
-import {useIsFocused} from '@react-navigation/native';
-const AgeCalculator = ({refresh}) => {
+import {useGlobalContext} from '../context/Store';
+const AgeCalculator = () => {
   const [fontColor, setFontColor] = useState(THEME_COLOR);
-  const isFocused = useIsFocused();
+  const {setActiveTab} = useGlobalContext();
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
@@ -112,17 +112,19 @@ const AgeCalculator = ({refresh}) => {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
-        refresh();
+        setActiveTab(0);
         return true;
       },
     );
     return () => backHandler.remove();
-  }, [isFocused]);
+  }, []);
 
   useEffect(() => {}, [age, date, date1, date2]);
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Age Calculator</Text>
+      <Text selectable style={styles.title}>
+        Age Calculator
+      </Text>
       <View
         style={{
           marginTop: responsiveHeight(2),
@@ -164,8 +166,12 @@ const AgeCalculator = ({refresh}) => {
       </View>
       {showSameDate ? (
         <View>
-          <Text style={styles.title}>Age as on Today</Text>
-          <Text style={styles.desc}>Select Date of Birth</Text>
+          <Text selectable style={styles.title}>
+            Age as on Today
+          </Text>
+          <Text selectable style={styles.desc}>
+            Select Date of Birth
+          </Text>
           <View>
             <TouchableOpacity
               style={{
@@ -180,6 +186,7 @@ const AgeCalculator = ({refresh}) => {
               }}
               onPress={() => setOpen(true)}>
               <Text
+                selectable
                 style={{
                   fontSize: responsiveFontSize(1.6),
                   color: fontColor,
@@ -207,8 +214,10 @@ const AgeCalculator = ({refresh}) => {
           </View>
           {showData ? (
             <View style={[styles.itemView, {marginTop: responsiveHeight(8)}]}>
-              <Text style={styles.title}>Age on Same Day:</Text>
-              <Text style={styles.title}>
+              <Text selectable style={styles.title}>
+                Age on Same Day:
+              </Text>
+              <Text selectable style={styles.title}>
                 {age.years} years, {age.months} months, {age.days} days
               </Text>
             </View>
@@ -217,8 +226,12 @@ const AgeCalculator = ({refresh}) => {
       ) : (
         <View>
           <View>
-            <Text style={styles.title}>Age Between Given Two Dates</Text>
-            <Text style={styles.desc}>Start Date</Text>
+            <Text selectable style={styles.title}>
+              Age Between Given Two Dates
+            </Text>
+            <Text selectable style={styles.desc}>
+              Start Date
+            </Text>
             <TouchableOpacity
               style={{
                 marginTop: 10,
@@ -232,6 +245,7 @@ const AgeCalculator = ({refresh}) => {
               }}
               onPress={() => setOpen1(true)}>
               <Text
+                selectable
                 style={{
                   fontSize: responsiveFontSize(1.6),
                   color: fontColor,
@@ -261,7 +275,9 @@ const AgeCalculator = ({refresh}) => {
           {showSecondDate ? (
             <View>
               <View style={{marginTop: responsiveHeight(2)}}>
-                <Text style={styles.desc}>End Date</Text>
+                <Text selectable style={styles.desc}>
+                  End Date
+                </Text>
                 <TouchableOpacity
                   style={{
                     marginTop: 10,
@@ -275,6 +291,7 @@ const AgeCalculator = ({refresh}) => {
                   }}
                   onPress={() => setOpen2(true)}>
                   <Text
+                    selectable
                     style={{
                       fontSize: responsiveFontSize(1.6),
                       color: fontColor,
@@ -313,8 +330,10 @@ const AgeCalculator = ({refresh}) => {
               {showBetweenAge ? (
                 <View
                   style={[styles.itemView, {marginTop: responsiveHeight(8)}]}>
-                  <Text style={styles.title}>Age on Same Day:</Text>
-                  <Text style={styles.title}>
+                  <Text selectable style={styles.title}>
+                    Age on Same Day:
+                  </Text>
+                  <Text selectable style={styles.title}>
                     {age.years} years, {age.months} months, {age.days} days
                   </Text>
                 </View>

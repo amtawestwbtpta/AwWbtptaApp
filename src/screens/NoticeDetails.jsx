@@ -8,11 +8,10 @@ import {
   Alert,
   BackHandler,
   FlatList,
-  DeviceEventEmitter,
   Linking,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import uuid from 'react-native-uuid';
 import {THEME_COLOR} from '../utils/Colors';
@@ -48,8 +47,8 @@ const NoticeDetails = () => {
   const user = state.USER;
   const teacher = state.TEACHER;
   const pdfRef = useRef();
-  let data = stateObject.data;
-  const navigation = stateObject.navigation;
+  let data = stateObject;
+  const navigation = useNavigation();
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [editReply, setEditReply] = useState('');
   const [reply, setReply] = useState('');
@@ -68,7 +67,8 @@ const NoticeDetails = () => {
   const [height, setHeight] = useState(1);
   const [pageNo, setPageNo] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
-
+  const [isLink, setIsLink] = useState(false);
+  const [textArr, setTextArr] = useState([]);
   const loadPrev = () => {
     setVisibleItems(prevVisibleItems => prevVisibleItems - 10);
     setFirstData(firstData - 10);
@@ -234,13 +234,26 @@ const NoticeDetails = () => {
       'hardwareBackPress',
       () => {
         navigation.navigate('Home');
-        DeviceEventEmitter.emit('goBack');
         return true;
       },
     );
     return () => backHandler.remove();
   }, []);
   useEffect(() => {}, [isFocused]);
+  useEffect(() => {
+    const txt = data.noticeText;
+    if (txt?.includes('https')) {
+      setIsLink(true);
+      const firstIndex = txt?.indexOf('https'); //find link start
+      const linkEnd = txt?.indexOf(' ', firstIndex); //find the end of link
+      const firstTextSection = txt?.slice(0, firstIndex);
+      const linkSection = txt?.slice(firstIndex, linkEnd);
+      const secondSection = txt?.slice(linkEnd);
+      setTextArr([firstTextSection, linkSection, secondSection]);
+    } else {
+      setIsLink(false);
+    }
+  }, []);
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <ScrollView nestedScrollEnabled={true}>
@@ -254,7 +267,9 @@ const NoticeDetails = () => {
           />
         </TouchableOpacity>
         <View style={styles.itemView}>
-          <Text style={styles.title}>{data.title}</Text>
+          <Text selectable style={styles.title}>
+            {data.title}
+          </Text>
         </View>
         <View
           style={[
@@ -264,11 +279,17 @@ const NoticeDetails = () => {
               marginTop: responsiveHeight(1),
             },
           ]}>
-          <Text style={styles.dropDownText}>
+          <Text selectable style={styles.dropDownText}>
             Posted On: {getDay(data.date)}
           </Text>
-          <Text style={styles.dropDownText}> {getMonthName(data.date)}</Text>
-          <Text style={styles.dropDownText}> {getFullYear(data.date)}</Text>
+          <Text selectable style={styles.dropDownText}>
+            {' '}
+            {getMonthName(data.date)}
+          </Text>
+          <Text selectable style={styles.dropDownText}>
+            {' '}
+            {getFullYear(data.date)}
+          </Text>
         </View>
 
         <View style={styles.itemImageView}>
@@ -393,7 +414,9 @@ const NoticeDetails = () => {
                     color={'green'}
                     size={30}
                   />
-                  <Text style={styles.text}>Download</Text>
+                  <Text selectable style={styles.text}>
+                    Download
+                  </Text>
                 </TouchableOpacity>
               )}
             </ScrollView>
@@ -409,9 +432,34 @@ const NoticeDetails = () => {
           )}
         </View>
 
-        <View style={styles.itemView}>
-          <Text style={styles.label}>{data.noticeText}</Text>
-        </View>
+        {!isLink ? (
+          <View style={styles.itemView}>
+            <Text selectable style={styles.label}>
+              {data.noticeText}
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.itemView}>
+            <View>
+              <Text selectable style={styles.label}>
+                {textArr[0]}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={async () => {
+                const supported = await Linking.canOpenURL(textArr[1]); //To check if URL is supported or not.
+                if (supported) {
+                  await Linking.openURL(textArr[1]); // It will open the URL on browser.
+                } else {
+                  showToast('error', 'Failed to open link');
+                }
+              }}>
+              <Text selectable style={styles.label}>
+                Click Here: {textArr[1]}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         <ScrollView>
           {showReplyBox ? (
@@ -463,7 +511,7 @@ const NoticeDetails = () => {
                 setShowReplies(false);
               }}>
               <Feather name={'plus-circle'} size={20} color={'darkgreen'} />
-              <Text style={[styles.text, {color: 'darkgreen'}]}>
+              <Text selectable style={[styles.text, {color: 'darkgreen'}]}>
                 {'Add New Reply'}
               </Text>
             </TouchableOpacity>
@@ -505,7 +553,9 @@ const NoticeDetails = () => {
           <View>
             {showReplies ? (
               <View>
-                <Text style={styles.title}>Notice Replies</Text>
+                <Text selectable style={styles.title}>
+                  Notice Replies
+                </Text>
                 <AnimatedSeacrch
                   value={search}
                   placeholder={'Search Reply Content'}
@@ -573,6 +623,7 @@ const NoticeDetails = () => {
                               alignItems: 'center',
                             }}>
                             <Text
+                              selectable
                               style={styles.text}
                               onPress={() => console.log(item)}>
                               Reply: {titleCase(item.reply)}
@@ -585,18 +636,18 @@ const NoticeDetails = () => {
                                 flexDirection: 'row',
                               },
                             ]}>
-                            <Text style={styles.dropDownText}>
+                            <Text selectable style={styles.dropDownText}>
                               Date: {getDay(item.date)}
                             </Text>
-                            <Text style={styles.dropDownText}>
+                            <Text selectable style={styles.dropDownText}>
                               {' '}
                               {getMonthName(item.date)}
                             </Text>
-                            <Text style={styles.dropDownText}>
+                            <Text selectable style={styles.dropDownText}>
                               {' '}
                               {getFullYear(item.date)}
                             </Text>
-                            <Text style={styles.dropDownText}>
+                            <Text selectable style={styles.dropDownText}>
                               {' , By: '}
                               {item.tname}
                             </Text>
@@ -609,14 +660,14 @@ const NoticeDetails = () => {
                                   flexDirection: 'row',
                                 },
                               ]}>
-                              <Text style={styles.dropDownText}>
+                              <Text selectable style={styles.dropDownText}>
                                 Updated At: {getDay(item.updatedAt)}
                               </Text>
-                              <Text style={styles.dropDownText}>
+                              <Text selectable style={styles.dropDownText}>
                                 {' '}
                                 {getMonthName(item.updatedAt)}
                               </Text>
-                              <Text style={styles.dropDownText}>
+                              <Text selectable style={styles.dropDownText}>
                                 {' '}
                                 {getFullYear(item.updatedAt)}
                               </Text>
@@ -662,7 +713,9 @@ const NoticeDetails = () => {
                       )}
                     />
                   ) : (
-                    <Text style={styles.text}>No Replies</Text>
+                    <Text selectable style={styles.text}>
+                      No Replies
+                    </Text>
                   )}
                 </ScrollView>
                 <View
@@ -724,7 +777,9 @@ const NoticeDetails = () => {
                   color={'green'}
                   size={40}
                 />
-                <Text style={[styles.text, {color: 'white'}]}>Download</Text>
+                <Text selectable style={[styles.text, {color: 'white'}]}>
+                  Download
+                </Text>
               </TouchableOpacity>
             );
           }}

@@ -7,18 +7,12 @@ import {
   ScrollView,
   BackHandler,
   Alert,
-  Platform,
-  Linking,
-  DeviceEventEmitter,
 } from 'react-native';
-import axios from 'axios';
 import React, {useState, useEffect, useRef} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import storage from '@react-native-firebase/storage';
 import {THEME_COLOR} from '../utils/Colors';
 import CustomButton from '../components/CustomButton';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Loader from '../components/Loader';
 import {
@@ -27,12 +21,8 @@ import {
   responsiveFontSize,
 } from 'react-native-responsive-dimensions';
 import {getSubmitDateInput} from '../modules/calculatefunctions';
-import Feather from 'react-native-vector-icons/Feather';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import Fontisto from 'react-native-vector-icons/Fontisto';
 import Toast from 'react-native-toast-message';
 import AnimatedSeacrch from '../components/AnimatedSeacrch';
-import {useGlobalContext} from '../context/Store';
 const TokensView = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
@@ -95,7 +85,6 @@ const TokensView = () => {
       'hardwareBackPress',
       () => {
         navigation.navigate('Home');
-        DeviceEventEmitter.emit('goBack');
         return true;
       },
     );
@@ -180,6 +169,7 @@ const TokensView = () => {
             />
           </TouchableOpacity>
           <Text
+            selectable
             style={{
               fontSize: responsiveFontSize(3),
               fontFamily: 'kalpurush',
@@ -216,7 +206,9 @@ const TokensView = () => {
         ref={scrollRef}
         nestedScrollEnabled={true}
         style={{marginTop: responsiveHeight(7)}}>
-        <Text style={styles.title}>All Device Tokens</Text>
+        <Text selectable style={styles.title}>
+          All Device Tokens
+        </Text>
         <View style={{margin: responsiveHeight(1)}}>
           <AnimatedSeacrch
             value={name}
@@ -267,15 +259,25 @@ const TokensView = () => {
         {filteredTokens.length > 0 ? (
           filteredTokens.map((el, index) => (
             <View style={styles.dataView} key={index}>
-              <Text style={styles.label}>Teacher's Name: {el.name}</Text>
-              <Text style={styles.label}>Username: {el.username}</Text>
-              <Text style={styles.label}>
+              <Text selectable style={styles.label}>
+                Teacher's Name: {el.name}
+              </Text>
+              <Text selectable style={styles.label}>
+                Username: {el.username}
+              </Text>
+              <Text selectable style={styles.label}>
                 Registered On:{' '}
                 {getSubmitDateInput(new Date(el.date).toLocaleDateString())}
               </Text>
-              <Text style={styles.label}>Device Brand: {el.brand}</Text>
-              <Text style={styles.label}>Device Model: {el.model}</Text>
-              <Text style={styles.label}>Android Version: {el.osVersion}</Text>
+              <Text selectable style={styles.label}>
+                Device Brand: {el.brand}
+              </Text>
+              <Text selectable style={styles.label}>
+                Device Model: {el.model}
+              </Text>
+              <Text selectable style={styles.label}>
+                Android Version: {el.osVersion}
+              </Text>
               <CustomButton
                 title={'Delete Token'}
                 color={'red'}
@@ -286,7 +288,9 @@ const TokensView = () => {
             </View>
           ))
         ) : (
-          <Text style={styles.label}>No Token Found</Text>
+          <Text selectable style={styles.label}>
+            No Token Found
+          </Text>
         )}
         <View
           style={{

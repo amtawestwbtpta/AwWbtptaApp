@@ -14,7 +14,10 @@ import {
 } from 'react-native-responsive-dimensions';
 import {getSubmitYearInput, getMonthDays} from '../modules/calculatefunctions';
 import DateTimePickerAndroid from '@react-native-community/datetimepicker';
-const RetirementDateCalculator = ({refresh}) => {
+import {useGlobalContext} from '../context/Store';
+
+const RetirementDateCalculator = () => {
+  const {setActiveTab} = useGlobalContext();
   const [retirementDate, setRetirementDate] = useState('');
   const [fontColor, setFontColor] = useState(THEME_COLOR);
   const [date, setDate] = useState(new Date());
@@ -76,7 +79,7 @@ const RetirementDateCalculator = ({refresh}) => {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
-        refresh();
+        setActiveTab(0);
         return true;
       },
     );
@@ -85,8 +88,12 @@ const RetirementDateCalculator = ({refresh}) => {
   useEffect(() => {}, [retirementDate]);
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Retirement Date Calculator</Text>
-      <Text style={styles.desc}>Select Date of Birth</Text>
+      <Text selectable style={styles.title}>
+        Retirement Date Calculator
+      </Text>
+      <Text selectable style={styles.desc}>
+        Select Date of Birth
+      </Text>
       <View>
         <TouchableOpacity
           style={{
@@ -101,6 +108,7 @@ const RetirementDateCalculator = ({refresh}) => {
           }}
           onPress={() => setOpen(true)}>
           <Text
+            selectable
             style={{
               fontSize: responsiveFontSize(1.6),
               color: fontColor,
@@ -128,7 +136,9 @@ const RetirementDateCalculator = ({refresh}) => {
       </View>
       {showData ? (
         <View style={[styles.itemView, {marginTop: responsiveHeight(8)}]}>
-          <Text style={styles.title}>Retirement Date is {retirementDate}</Text>
+          <Text selectable style={styles.title}>
+            Retirement Date is {retirementDate}
+          </Text>
         </View>
       ) : null}
     </View>

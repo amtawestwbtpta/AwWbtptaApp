@@ -6,20 +6,19 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
-  DeviceEventEmitter,
+  Linking,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {THEME_COLOR} from '../utils/Colors';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import CustomButton from '../components/CustomButton';
-import firestore from '@react-native-firebase/firestore';
 import {INR, IndianFormat} from '../modules/calculatefunctions';
 import {
   responsiveHeight,
   responsiveWidth,
   responsiveFontSize,
 } from 'react-native-responsive-dimensions';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -27,22 +26,12 @@ import RNExitApp from 'react-native-exit-app';
 import Carousel from 'react-native-reanimated-carousel';
 import ImageView from 'react-native-image-viewing';
 import {downloadFile} from '../modules/downloadFile';
-import {DA, HRA} from '../modules/constants';
+import {AppURL, DA, HRA, TelegramURL} from '../modules/constants';
 import {useGlobalContext} from '../context/Store';
-import Loader from '../components/Loader';
-const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
-  const {
-    state,
-    slideState,
-    setTeacherUpdateTime,
-    setSchoolUpdateTime,
-    setSlideUpdateTime,
-    setNoticeUpdateTime,
-    setMemoUpdateTime,
-    setQuestionUpdateTime,
-    setStateObject,
-  } = useGlobalContext();
+const Dashboard = () => {
+  const {state, slideState, setStateObject, teachersState} = useGlobalContext();
   const user = state.USER;
+  const navigation = useNavigation();
   const teacher = state.TEACHER;
   const isFocused = useIsFocused();
   const [showData, setShowData] = useState(false);
@@ -54,7 +43,6 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [titles, setTitles] = useState([]);
   const [photoNames, setPhotoNames] = useState([]);
-  const [visible, setVisible] = useState(false);
   const ifsc_ser = () => {
     fetch(`https://ifsc.razorpay.com/${teacher.ifsc}`)
       .then(res => res.json())
@@ -127,22 +115,6 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
     setTitles(t);
   };
 
-  const setActiveTab = () => {
-    selectActiveTab(tabValue);
-  };
-
-  const refreashAllStates = () => {
-    setTeacherUpdateTime(Date.now() - 1000 * 60 * 15);
-    setSchoolUpdateTime(Date.now() - 1000 * 60 * 15);
-    setSlideUpdateTime(Date.now() - 1000 * 60 * 15);
-    setNoticeUpdateTime(Date.now() - 1000 * 60 * 15);
-    setMemoUpdateTime(Date.now() - 1000 * 60 * 15);
-    setQuestionUpdateTime(Date.now() - 1000 * 60 * 15);
-    setTimeout(() => {
-      navigation.navigate('Home');
-    }, 500);
-  };
-
   useEffect(() => {
     ifsc_ser();
 
@@ -192,6 +164,7 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
                     backgroundColor: THEME_COLOR,
                   }}>
                   <Text
+                    selectable
                     style={[
                       styles.dataText,
                       {fontSize: responsiveFontSize(1.8), color: 'white'},
@@ -219,6 +192,7 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
                     backgroundColor: THEME_COLOR,
                   }}>
                   <Text
+                    selectable
                     style={[
                       styles.dataText,
                       {fontSize: responsiveFontSize(1.5), color: 'white'},
@@ -241,6 +215,7 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
               return (
                 <View>
                   <Text
+                    selectable
                     style={[
                       styles.dataText,
                       {fontSize: responsiveFontSize(1.8), color: 'white'},
@@ -249,6 +224,7 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
                   </Text>
 
                   <Text
+                    selectable
                     style={[
                       styles.dataText,
                       {fontSize: responsiveFontSize(1.5), color: 'white'},
@@ -277,6 +253,7 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
                       size={30}
                     />
                     <Text
+                      selectable
                       style={[
                         styles.dataText,
                         {fontSize: responsiveFontSize(1.5), color: 'white'},
@@ -327,6 +304,7 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
                       size={40}
                     />
                     <Text
+                      selectable
                       style={[
                         styles.dataText,
                         {fontSize: responsiveFontSize(1.5), color: 'white'},
@@ -350,6 +328,7 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
                       color={'white'}
                     />
                     <Text
+                      selectable
                       style={[
                         styles.dataText,
                         {fontSize: responsiveFontSize(1.5), color: 'white'},
@@ -387,7 +366,7 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
                 }}
                 onPress={() => {
                   navigation.navigate('ChangePhoto');
-                  DeviceEventEmitter.addListener('goBack', setActiveTab);
+                  
                 }}>
                 <MaterialCommunityIcons
                   name="camera-flip-outline"
@@ -398,7 +377,7 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
             </TouchableOpacity>
           ) : null}
 
-          <Text style={styles.title}>
+          <Text selectable style={styles.title}>
             {`Welcome ${teacher.tname}, ${teacher.desig} of \n ${teacher.school}!`}
           </Text>
 
@@ -417,132 +396,158 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
           {showData ? (
             <ScrollView style={{marginBottom: 20, marginTop: 10}}>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>Name: {teacher.tname}</Text>
+                <Text selectable style={styles.dataText}>
+                  Name: {teacher.tname}
+                </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
                   Father's Name: {teacher.fname}
                 </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>School: {teacher.school}</Text>
+                <Text selectable style={styles.dataText}>
+                  School: {teacher.school}
+                </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>UDISE: {teacher.udise}</Text>
+                <Text selectable style={styles.dataText}>
+                  UDISE: {teacher.udise}
+                </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
                   Designation: {teacher.desig}
                 </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
                   Gram Panchayet: {teacher.gp}
                 </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>Mobile: {teacher.phone}</Text>
+                <Text selectable style={styles.dataText}>
+                  Mobile: {teacher.phone}
+                </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>Email: {teacher.email}</Text>
+                <Text selectable style={styles.dataText}>
+                  Email: {teacher.email}
+                </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
                   Date of Birth: {teacher.dob}
                 </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
                   Date of Joining: {teacher.doj}
                 </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
                   DOJ in Present School: {teacher.dojnow}
                 </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
                   Date of Retirement: {teacher.dor}
                 </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
                   Employee ID: {teacher.empid}
                 </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
                   Training: {teacher.training}
                 </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>PAN: {teacher.pan}</Text>
+                <Text selectable style={styles.dataText}>
+                  PAN: {teacher.pan}
+                </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>Address: {teacher.address}</Text>
+                <Text selectable style={styles.dataText}>
+                  Address: {teacher.address}
+                </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>BANK: {teacher.bank}</Text>
+                <Text selectable style={styles.dataText}>
+                  BANK: {teacher.bank}
+                </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
                   Account No: {teacher.account}
                 </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>IFS Code: {teacher.ifsc}</Text>
+                <Text selectable style={styles.dataText}>
+                  IFS Code: {teacher.ifsc}
+                </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.bankDataText}>
+                <Text selectable style={styles.bankDataText}>
                   Bank Name: {bankData.BANK}
                 </Text>
-                <Text style={styles.bankDataText}>
+                <Text selectable style={styles.bankDataText}>
                   Branch: {bankData.BRANCH}
                 </Text>
-                <Text style={styles.bankDataText}>
+                <Text selectable style={styles.bankDataText}>
                   Address: {bankData.ADDRESS}
                 </Text>
-                <Text style={styles.bankDataText}>MICR: {bankData.MICR}</Text>
+                <Text selectable style={styles.bankDataText}>
+                  MICR: {bankData.MICR}
+                </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
                   BASIC: ₹ {IndianFormat(basicpay)}
                 </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>DA: ₹ {IndianFormat(da)}</Text>
+                <Text selectable style={styles.dataText}>
+                  DA: ₹ {IndianFormat(da)}
+                </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>HRA: ₹ {IndianFormat(hra)}</Text>
+                <Text selectable style={styles.dataText}>
+                  HRA: ₹ {IndianFormat(hra)}
+                </Text>
               </View>
               {addl ? (
                 <View style={styles.dataView}>
-                  <Text style={styles.dataText}>
+                  <Text selectable style={styles.dataText}>
                     Additional Pay: ₹ {IndianFormat(addl)}
                   </Text>
                 </View>
               ) : null}
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
                   Gross Pay: ₹ {IndianFormat(gross)}
                 </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>GPF: ₹ {IndianFormat(gpf)}</Text>
+                <Text selectable style={styles.dataText}>
+                  GPF: ₹ {IndianFormat(gpf)}
+                </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
                   PTAX: ₹ {IndianFormat(ptax)}
                 </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
                   Net Pay: ₹ {IndianFormat(netpay)}
                 </Text>
               </View>
               <View style={styles.dataView}>
-                <Text style={styles.dataText}>
+                <Text selectable style={styles.dataText}>
                   Net Pay in Words: {INR(netpay)}
                 </Text>
               </View>
@@ -564,11 +569,7 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
                 color={'blueviolet'}
                 onClick={() => {
                   navigation.navigate('EditDetails');
-                  setStateObject({
-                    data: teacher,
-                    navigation: navigation,
-                  });
-                  DeviceEventEmitter.addListener('goBack', setActiveTab);
+                  setStateObject(teacher);
                 }}
               />
             </ScrollView>
@@ -580,70 +581,118 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
                     justifyContent: 'center',
                     alignItems: 'center',
                     alignSelf: 'center',
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
                   }}>
                   <CustomButton
+                    size={'small'}
+                    fontSize={responsiveFontSize(1.3)}
                     title={'View Registered Users'}
                     color={'crimson'}
                     onClick={() => {
-                      navigation.navigate('RegUsers', {
-                        navigation: navigation,
-                      });
-                      DeviceEventEmitter.addListener('goBack', setActiveTab);
+                      navigation.navigate('RegUsers');
                     }}
                   />
-                  <CustomButton
-                    title={'Refresh'}
-                    color={'olivedrab'}
-                    size={'small'}
-                    onClick={() => refreashAllStates()}
-                  />
+
                   {user.showAccount && (
                     <CustomButton
+                      size={'small'}
+                      fontSize={responsiveFontSize(1.5)}
                       title={'Accounts'}
                       color={'orangered'}
                       onClick={() => {
-                        navigation.navigate('Accounts', {
-                          navigation: navigation,
-                        });
-                        DeviceEventEmitter.addListener('goBack', setActiveTab);
+                        navigation.navigate('Accounts');
                       }}
                     />
                   )}
 
                   <CustomButton
+                    size={'small'}
+                    fontSize={responsiveFontSize(1.5)}
                     title={'Update Slide Photos'}
                     color={'darkolivegreen'}
                     onClick={() => {
-                      navigation.navigate('UpdateSlides', {
-                        navigation: navigation,
-                      });
-                      DeviceEventEmitter.addListener('goBack', setActiveTab);
-                    }}
-                  />
-                </View>
-              ) : null}
-              {user.question === 'admin' && (
-                <View>
-                  <CustomButton
-                    title={'Question Section'}
-                    color={'blueviolet'}
-                    onClick={() => {
-                      navigation.navigate('QuestionSection', {
-                        navigation: navigation,
-                      });
-                      DeviceEventEmitter.addListener('goBack', setActiveTab);
+                      navigation.navigate('UpdateSlides');
                     }}
                   />
                   <CustomButton
+                    size={'small'}
+                    fontSize={responsiveFontSize(1.5)}
                     title={'Tokens Section'}
-                    color={'purple'}
+                    color={'brown'}
                     onClick={() => {
                       navigation.navigate('TokensView');
-                      DeviceEventEmitter.addListener('goBack', setActiveTab);
                     }}
                   />
+
+                  <CustomButton
+                    size={'small'}
+                    fontSize={responsiveFontSize(1.5)}
+                    title={"Teacher's Service Life"}
+                    color={'darkgreen'}
+                    onClick={() => {
+                      navigation.navigate('TeacherServiceLife');
+                    }}
+                  />
+                  <CustomButton
+                    size={'small'}
+                    fontSize={responsiveFontSize(1.5)}
+                    title={'Yearwise Teachers'}
+                    color={'deeppink'}
+                    onClick={() => {
+                      navigation.navigate('YearwiseTeachers');
+                    }}
+                  />
+
+                  {user.question === 'admin' && (
+                    <CustomButton
+                      size={'small'}
+                      fontSize={responsiveFontSize(1.5)}
+                      title={'Question Section'}
+                      color={'blueviolet'}
+                      onClick={() => {
+                        navigation.navigate('QuestionSection');
+                      }}
+                    />
+                  )}
                 </View>
-              )}
+              ) : null}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                }}>
+                <CustomButton
+                  size={'small'}
+                  fontSize={responsiveFontSize(1.5)}
+                  title={'Update App'}
+                  color={'rebeccapurple'}
+                  onClick={async () => {
+                    const supported = await Linking.canOpenURL(AppURL); //To check if URL is supported or not.
+                    if (supported) {
+                      await Linking.openURL(AppURL); // It will open the URL on browser.
+                    } else {
+                      Alert.alert(`Can't open this URL: ${AppURL}`);
+                    }
+                  }}
+                />
+                <CustomButton
+                  size={'small'}
+                  fontSize={responsiveFontSize(1.5)}
+                  title={'Telegram'}
+                  color={'dodgerblue'}
+                  onClick={async () => {
+                    const supported = await Linking.canOpenURL(TelegramURL); //To check if URL is supported or not.
+                    if (supported) {
+                      await Linking.openURL(TelegramURL); // It will open the URL on browser.
+                    } else {
+                      Alert.alert(`Can't open this URL: ${TelegramURL}`);
+                    }
+                  }}
+                />
+              </View>
 
               <View
                 style={{
@@ -678,7 +727,7 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
                     size={responsiveFontSize(4)}
                     color={'red'}
                   />
-                  <Text style={{color: 'red', fontWeight: 'bold'}}>
+                  <Text selectable style={{color: 'red', fontWeight: 'bold'}}>
                     Exit App
                   </Text>
                 </TouchableOpacity>
@@ -708,7 +757,7 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
                     size={responsiveFontSize(4)}
                     color={'red'}
                   />
-                  <Text style={{color: 'red', fontWeight: 'bold'}}>
+                  <Text selectable style={{color: 'red', fontWeight: 'bold'}}>
                     Sign Out
                   </Text>
                 </TouchableOpacity>
@@ -717,7 +766,6 @@ const Dashboard = ({navigation, selectActiveTab, tabValue}) => {
           )}
         </View>
       </ScrollView>
-      <Loader visible={visible} />
     </View>
   );
 };

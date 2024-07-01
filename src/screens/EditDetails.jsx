@@ -9,7 +9,7 @@ import {
   DeviceEventEmitter,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import {THEME_COLOR} from '../utils/Colors';
 import CustomTextInput from '../components/CustomTextInput';
@@ -31,8 +31,8 @@ const EditDetails = () => {
   const {state, teachersState, setTeachersState, stateObject} =
     useGlobalContext();
   const user = state.USER;
-  const data = stateObject.data;
-  const navigation = stateObject.navigation;
+  const data = stateObject;
+  const navigation = useNavigation();
   const [editMember, setEditMember] = useState(data);
   const [disable, setDisable] = useState(true);
   const [bankData, setBankData] = useState({});
@@ -74,7 +74,7 @@ const EditDetails = () => {
   const updateData = async () => {
     let equalObject = compareObjects(data, editMember);
     if (!equalObject) {
-      const url = `https://awwbtpta.vercel.app/api/updself`;
+      const url = `https://awwbtpta.vercel.app/api/updteacher`;
       let response = await axios.post(url, editMember);
       let record = response.data;
       if (record.success) {
@@ -140,8 +140,7 @@ const EditDetails = () => {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
-        navigation.navigate('Home');
-        DeviceEventEmitter.emit('goBack');
+        navigation.goBack();
         return true;
       },
     );
@@ -150,12 +149,24 @@ const EditDetails = () => {
   useEffect(() => {}, [editMember, data]);
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>DETAILS OF {data?.tname}</Text>
+      <CustomButton
+        title={'Go Back'}
+        size={'small'}
+        color={'purple'}
+        onClick={() => {
+          navigation.goBack();
+        }}
+      />
+      <Text selectable style={styles.heading}>
+        DETAILS OF {data?.tname}
+      </Text>
       <ScrollView
         style={{
           marginTop: responsiveHeight(2),
         }}>
-        <Text style={styles.dataText}>Name</Text>
+        <Text selectable style={styles.dataText}>
+          Name
+        </Text>
         <CustomTextInput
           placeholder={'Enter Member Name'}
           value={editMember?.tname}
@@ -164,7 +175,9 @@ const EditDetails = () => {
             setEditMember({...editMember, tname: text});
           }}
         />
-        <Text style={styles.dataText}>Father's Name</Text>
+        <Text selectable style={styles.dataText}>
+          Father's Name
+        </Text>
         <CustomTextInput
           placeholder={"Enter Father's Name"}
           value={editMember?.fname}
@@ -175,7 +188,9 @@ const EditDetails = () => {
         />
         {user.circle === 'admin' ? (
           <>
-            <Text style={styles.dataText}>Gender</Text>
+            <Text selectable style={styles.dataText}>
+              Gender
+            </Text>
 
             <View
               style={{
@@ -185,6 +200,7 @@ const EditDetails = () => {
                 marginBottom: responsiveHeight(0.5),
               }}>
               <Text
+                selectable
                 style={[styles.title, {paddingRight: responsiveWidth(1.5)}]}>
                 Male
               </Text>
@@ -204,9 +220,13 @@ const EditDetails = () => {
                 value={isMale}
               />
 
-              <Text style={[styles.title, {paddingRight: 5}]}>Female</Text>
+              <Text selectable style={[styles.title, {paddingRight: 5}]}>
+                Female
+              </Text>
             </View>
-            <Text style={styles.dataText}>UDISE</Text>
+            <Text selectable style={styles.dataText}>
+              UDISE
+            </Text>
             <CustomTextInput
               placeholder={'Enter UDISE'}
               value={editMember?.udise}
@@ -215,7 +235,9 @@ const EditDetails = () => {
                 setEditMember({...editMember, udise: text});
               }}
             />
-            <Text style={styles.dataText}>Designation</Text>
+            <Text selectable style={styles.dataText}>
+              Designation
+            </Text>
 
             <View
               style={{
@@ -225,6 +247,7 @@ const EditDetails = () => {
                 marginBottom: responsiveHeight(0.5),
               }}>
               <Text
+                selectable
                 style={[styles.title, {paddingRight: responsiveWidth(1.5)}]}>
                 AT
               </Text>
@@ -244,22 +267,48 @@ const EditDetails = () => {
                 value={isDesigEnabled}
               />
 
-              <Text style={[styles.title, {paddingRight: 5}]}>HT</Text>
+              <Text selectable style={[styles.title, {paddingRight: 5}]}>
+                HT
+              </Text>
             </View>
-            {user.circle === 'admin' ? (
-              <View>
-                <Text style={styles.dataText}>Employee ID</Text>
-                <CustomTextInput
-                  placeholder={'Enter Employee ID'}
-                  value={editMember?.empid}
-                  onChangeText={text => {
-                    setDisable(false);
-                    setEditMember({...editMember, empid: text});
-                  }}
-                />
-              </View>
-            ) : null}
-            <Text style={styles.dataText}>Gram Panchayet</Text>
+
+            <View>
+              <Text selectable style={styles.dataText}>
+                Employee ID
+              </Text>
+              <CustomTextInput
+                placeholder={'Enter Employee ID'}
+                value={editMember?.empid}
+                onChangeText={text => {
+                  setDisable(false);
+                  setEditMember({...editMember, empid: text});
+                }}
+              />
+            </View>
+            <View>
+              <Text selectable style={styles.dataText}>
+                Teacher Rank
+              </Text>
+              <CustomTextInput
+                placeholder={'Enter Employee ID'}
+                value={editMember?.rank?.toString()}
+                onChangeText={text => {
+                  setDisable(false);
+                  if (text === '') {
+                    setEditMember({
+                      ...editMember,
+                      rank: '',
+                    });
+                  } else {
+                    setEditMember({...editMember, rank: parseInt(text)});
+                  }
+                }}
+              />
+            </View>
+
+            <Text selectable style={styles.dataText}>
+              Gram Panchayet
+            </Text>
 
             <TouchableOpacity
               style={[styles.dropDownnSelector, {marginTop: 5}]}
@@ -275,6 +324,7 @@ const EditDetails = () => {
                     justifyContent: 'space-between',
                   }}>
                   <Text
+                    selectable
                     style={[
                       styles.dropDownText,
                       {paddingRight: responsiveWidth(2)},
@@ -291,6 +341,7 @@ const EditDetails = () => {
                     justifyContent: 'space-between',
                   }}>
                   <Text
+                    selectable
                     style={[
                       styles.dropDownText,
                       {paddingRight: responsiveWidth(2)},
@@ -316,13 +367,17 @@ const EditDetails = () => {
                         setEditMember({...editMember, gp: item.gp});
                         setDisable(false);
                       }}>
-                      <Text style={styles.dropDownText}>{item.gp}</Text>
+                      <Text selectable style={styles.dropDownText}>
+                        {item.gp}
+                      </Text>
                     </TouchableOpacity>
                   );
                 })}
               </ScrollView>
             ) : null}
-            <Text style={styles.dataText}>Training Status</Text>
+            <Text selectable style={styles.dataText}>
+              Training Status
+            </Text>
             <CustomTextInput
               placeholder={'Enter Training Status'}
               value={editMember?.training}
@@ -331,7 +386,9 @@ const EditDetails = () => {
                 setEditMember({...editMember, training: text});
               }}
             />
-            <Text style={styles.dataText}>Association</Text>
+            <Text selectable style={styles.dataText}>
+              Association
+            </Text>
             <CustomTextInput
               placeholder={'Enter Association'}
               value={editMember?.association}
@@ -340,7 +397,9 @@ const EditDetails = () => {
                 setEditMember({...editMember, association: text});
               }}
             />
-            <Text style={styles.dataText}>Teacher Search Name</Text>
+            <Text selectable style={styles.dataText}>
+              Teacher Search Name
+            </Text>
             <CustomTextInput
               placeholder={'Enter Teacher Search Name'}
               value={editMember?.tsname}
@@ -349,7 +408,9 @@ const EditDetails = () => {
                 setEditMember({...editMember, tsname: text});
               }}
             />
-            <Text style={styles.dataText}>Access</Text>
+            <Text selectable style={styles.dataText}>
+              Access
+            </Text>
 
             <View
               style={{
@@ -359,6 +420,7 @@ const EditDetails = () => {
                 marginBottom: responsiveHeight(0.5),
               }}>
               <Text
+                selectable
                 style={[styles.title, {paddingRight: responsiveWidth(1.5)}]}>
                 Member
               </Text>
@@ -378,9 +440,13 @@ const EditDetails = () => {
                 value={isAdmin}
               />
 
-              <Text style={[styles.title, {paddingRight: 5}]}>Admin</Text>
+              <Text selectable style={[styles.title, {paddingRight: 5}]}>
+                Admin
+              </Text>
             </View>
-            <Text style={styles.dataText}>Question Access</Text>
+            <Text selectable style={styles.dataText}>
+              Question Access
+            </Text>
 
             <View
               style={{
@@ -390,6 +456,7 @@ const EditDetails = () => {
                 marginBottom: responsiveHeight(0.5),
               }}>
               <Text
+                selectable
                 style={[styles.title, {paddingRight: responsiveWidth(1.5)}]}>
                 Member
               </Text>
@@ -409,9 +476,13 @@ const EditDetails = () => {
                 value={isQuesAdmin}
               />
 
-              <Text style={[styles.title, {paddingRight: 5}]}>Admin</Text>
+              <Text selectable style={[styles.title, {paddingRight: 5}]}>
+                Admin
+              </Text>
             </View>
-            <Text style={styles.dataText}>Disability</Text>
+            <Text selectable style={styles.dataText}>
+              Disability
+            </Text>
 
             <View
               style={{
@@ -421,6 +492,7 @@ const EditDetails = () => {
                 marginBottom: responsiveHeight(0.5),
               }}>
               <Text
+                selectable
                 style={[styles.title, {paddingRight: responsiveWidth(1.5)}]}>
                 NO
               </Text>
@@ -440,9 +512,13 @@ const EditDetails = () => {
                 value={isDisabled}
               />
 
-              <Text style={[styles.title, {paddingRight: 5}]}>YES</Text>
+              <Text selectable style={[styles.title, {paddingRight: 5}]}>
+                YES
+              </Text>
             </View>
-            <Text style={styles.dataText}>IS HOI?</Text>
+            <Text selectable style={styles.dataText}>
+              IS HOI?
+            </Text>
 
             <View
               style={{
@@ -452,6 +528,7 @@ const EditDetails = () => {
                 marginBottom: responsiveHeight(0.5),
               }}>
               <Text
+                selectable
                 style={[styles.title, {paddingRight: responsiveWidth(1.5)}]}>
                 NO
               </Text>
@@ -471,9 +548,13 @@ const EditDetails = () => {
                 value={isHoi}
               />
 
-              <Text style={[styles.title, {paddingRight: 5}]}>YES</Text>
+              <Text selectable style={[styles.title, {paddingRight: 5}]}>
+                YES
+              </Text>
             </View>
-            <Text style={styles.dataText}>Service Status</Text>
+            <Text selectable style={styles.dataText}>
+              Service Status
+            </Text>
 
             <View
               style={{
@@ -483,6 +564,7 @@ const EditDetails = () => {
                 marginBottom: responsiveHeight(0.5),
               }}>
               <Text
+                selectable
                 style={[styles.title, {paddingRight: responsiveWidth(1.5)}]}>
                 Retired
               </Text>
@@ -502,11 +584,15 @@ const EditDetails = () => {
                 value={isInservice}
               />
 
-              <Text style={[styles.title, {paddingRight: 5}]}>In Service</Text>
+              <Text selectable style={[styles.title, {paddingRight: 5}]}>
+                In Service
+              </Text>
             </View>
           </>
         ) : null}
-        <Text style={styles.dataText}>Mobile</Text>
+        <Text selectable style={styles.dataText}>
+          Mobile
+        </Text>
         <CustomTextInput
           placeholder={'Enter Mobile'}
           value={editMember?.phone}
@@ -516,7 +602,9 @@ const EditDetails = () => {
             setEditMember({...editMember, phone: text});
           }}
         />
-        <Text style={styles.dataText}>Email</Text>
+        <Text selectable style={styles.dataText}>
+          Email
+        </Text>
         <CustomTextInput
           placeholder={'Enter Email'}
           value={editMember?.email}
@@ -526,7 +614,9 @@ const EditDetails = () => {
             setEditMember({...editMember, email: text});
           }}
         />
-        <Text style={styles.dataText}>Date of Birth</Text>
+        <Text selectable style={styles.dataText}>
+          Date of Birth
+        </Text>
         <CustomTextInput
           placeholder={'Enter Date of Birth'}
           value={editMember?.dob}
@@ -536,7 +626,9 @@ const EditDetails = () => {
             setEditMember({...editMember, dob: text});
           }}
         />
-        <Text style={styles.dataText}>Date of Joining</Text>
+        <Text selectable style={styles.dataText}>
+          Date of Joining
+        </Text>
         <CustomTextInput
           placeholder={'Enter Date of Joining'}
           value={editMember?.doj}
@@ -546,7 +638,9 @@ const EditDetails = () => {
             setEditMember({...editMember, doj: text});
           }}
         />
-        <Text style={styles.dataText}>Date of Joining in Current School</Text>
+        <Text selectable style={styles.dataText}>
+          Date of Joining in Current School
+        </Text>
         <CustomTextInput
           placeholder={'Enter Date of Joining in Current School'}
           value={editMember?.dojnow}
@@ -556,7 +650,9 @@ const EditDetails = () => {
             setEditMember({...editMember, dojnow: text});
           }}
         />
-        <Text style={styles.dataText}>Date of Retirement</Text>
+        <Text selectable style={styles.dataText}>
+          Date of Retirement
+        </Text>
         <CustomTextInput
           placeholder={'Enter Date of Retirement'}
           value={editMember?.dor}
@@ -567,7 +663,9 @@ const EditDetails = () => {
           }}
         />
 
-        <Text style={styles.dataText}>PAN</Text>
+        <Text selectable style={styles.dataText}>
+          PAN
+        </Text>
         <CustomTextInput
           placeholder={'Enter PAN'}
           value={editMember?.pan}
@@ -576,7 +674,9 @@ const EditDetails = () => {
             setEditMember({...editMember, pan: text});
           }}
         />
-        <Text style={styles.dataText}>Address</Text>
+        <Text selectable style={styles.dataText}>
+          Address
+        </Text>
         <CustomTextInput
           placeholder={'Enter Address'}
           value={editMember?.address}
@@ -590,7 +690,9 @@ const EditDetails = () => {
 
         {user.circle === 'admin' ? (
           <View>
-            <Text style={styles.dataText}>Bank</Text>
+            <Text selectable style={styles.dataText}>
+              Bank
+            </Text>
             <CustomTextInput
               placeholder={'Enter Bank'}
               value={editMember?.bank}
@@ -600,7 +702,9 @@ const EditDetails = () => {
                 setEditMember({...editMember, bank: text});
               }}
             />
-            <Text style={styles.dataText}>Account No</Text>
+            <Text selectable style={styles.dataText}>
+              Account No
+            </Text>
             <CustomTextInput
               placeholder={'Enter Account No'}
               value={editMember?.account}
@@ -610,7 +714,9 @@ const EditDetails = () => {
                 setEditMember({...editMember, account: text});
               }}
             />
-            <Text style={styles.dataText}>IFS Code</Text>
+            <Text selectable style={styles.dataText}>
+              IFS Code
+            </Text>
             <CustomTextInput
               placeholder={'Enter IFS Code'}
               value={editMember?.ifsc}
@@ -622,18 +728,22 @@ const EditDetails = () => {
               }}
             />
             <View style={styles.dataView}>
-              <Text style={styles.bankDataText}>
+              <Text selectable style={styles.bankDataText}>
                 Bank Name: {bankData?.BANK}
               </Text>
-              <Text style={styles.bankDataText}>
+              <Text selectable style={styles.bankDataText}>
                 Branch: {bankData?.BRANCH}
               </Text>
-              <Text style={styles.bankDataText}>
+              <Text selectable style={styles.bankDataText}>
                 Address: {bankData?.ADDRESS}
               </Text>
-              <Text style={styles.bankDataText}>MICR: {bankData?.MICR}</Text>
+              <Text selectable style={styles.bankDataText}>
+                MICR: {bankData?.MICR}
+              </Text>
             </View>
-            <Text style={styles.dataText}>July BASIC</Text>
+            <Text selectable style={styles.dataText}>
+              July BASIC
+            </Text>
             <CustomTextInput
               placeholder={'Enter July BASIC'}
               value={editMember?.basic.toString()}
@@ -643,154 +753,244 @@ const EditDetails = () => {
                 setEditMember({...editMember, basic: parseInt(text)});
               }}
             />
-            <Text style={styles.dataText}>July DA</Text>
+            <Text selectable style={styles.dataText}>
+              July DA
+            </Text>
             <CustomTextInput
               placeholder={'Enter July DA'}
               value={editMember?.da.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
-                setEditMember({...editMember, da: parseInt(text)});
+                if (text !== '') {
+                  setEditMember({...editMember, da: parseInt(text)});
+                } else {
+                  setEditMember({...editMember, da: ''});
+                }
               }}
             />
-            <Text style={styles.dataText}>July HRA</Text>
+            <Text selectable style={styles.dataText}>
+              July HRA
+            </Text>
             <CustomTextInput
               placeholder={'Enter July HRA'}
               value={editMember?.hra.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
-                setEditMember({...editMember, hra: parseInt(text)});
+                if (text !== '') {
+                  setEditMember({...editMember, hra: parseInt(text)});
+                } else {
+                  setEditMember({...editMember, hra: ''});
+                }
               }}
             />
-            <Text style={styles.dataText}>July Gross</Text>
+            <Text selectable style={styles.dataText}>
+              July Gross
+            </Text>
             <CustomTextInput
               placeholder={'Enter July Gross'}
               value={editMember?.gross.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
-                setEditMember({...editMember, gross: parseInt(text)});
+                if (text !== '') {
+                  setEditMember({...editMember, gross: parseInt(text)});
+                } else {
+                  setEditMember({...editMember, gross: ''});
+                }
               }}
             />
-            <Text style={styles.dataText}>July Net Pay</Text>
+            <Text selectable style={styles.dataText}>
+              July Net Pay
+            </Text>
             <CustomTextInput
               placeholder={'Enter July Net Pay'}
               value={editMember?.netpay.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
-                setEditMember({...editMember, netpay: parseInt(text)});
+                if (text !== '') {
+                  setEditMember({...editMember, netpay: parseInt(text)});
+                } else {
+                  setEditMember({...editMember, netpay: ''});
+                }
               }}
             />
-            <Text style={styles.dataText}>June BASIC</Text>
+            <Text selectable style={styles.dataText}>
+              June BASIC
+            </Text>
             <CustomTextInput
               placeholder={'Enter June BASIC'}
               value={editMember?.mbasic.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
-                setEditMember({...editMember, mbasic: parseInt(text)});
+                if (text !== '') {
+                  setEditMember({...editMember, mbasic: parseInt(text)});
+                } else {
+                  setEditMember({...editMember, mbasic: ''});
+                }
               }}
             />
-            <Text style={styles.dataText}>June DA</Text>
+            <Text selectable style={styles.dataText}>
+              June DA
+            </Text>
             <CustomTextInput
               placeholder={'Enter June DA'}
               value={editMember?.mda.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
-                setEditMember({...editMember, mda: parseInt(text)});
+                if (text !== '') {
+                  setEditMember({...editMember, mda: parseInt(text)});
+                } else {
+                  setEditMember({...editMember, mda: ''});
+                }
               }}
             />
-            <Text style={styles.dataText}>June HRA</Text>
+            <Text selectable style={styles.dataText}>
+              June HRA
+            </Text>
             <CustomTextInput
               placeholder={'Enter June HRA'}
               value={editMember?.mhra.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
-                setEditMember({...editMember, mhra: parseInt(text)});
+                if (text !== '') {
+                  setEditMember({...editMember, mhra: parseInt(text)});
+                } else {
+                  setEditMember({...editMember, mhra: ''});
+                }
               }}
             />
-            <Text style={styles.dataText}>June Gross</Text>
+            <Text selectable style={styles.dataText}>
+              June Gross
+            </Text>
             <CustomTextInput
               placeholder={'Enter June Gross'}
               value={editMember?.mgross.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
-                setEditMember({...editMember, mgross: parseInt(text)});
+                if (text !== '') {
+                  setEditMember({...editMember, mgross: parseInt(text)});
+                } else {
+                  setEditMember({...editMember, mgross: ''});
+                }
               }}
             />
-            <Text style={styles.dataText}>June Net Pay</Text>
+            <Text selectable style={styles.dataText}>
+              June Net Pay
+            </Text>
             <CustomTextInput
               placeholder={'Enter June Net Pay'}
               value={editMember?.mnetpay.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
-                setEditMember({...editMember, mnetpay: parseInt(text)});
+                if (text !== '') {
+                  setEditMember({...editMember, mnetpay: parseInt(text)});
+                } else {
+                  setEditMember({...editMember, mnetpay: ''});
+                }
               }}
             />
-            <Text style={styles.dataText}>GPF</Text>
+            <Text selectable style={styles.dataText}>
+              GPF
+            </Text>
             <CustomTextInput
               placeholder={'Enter GPF'}
               value={editMember?.gpf.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
-                setEditMember({...editMember, gpf: parseInt(text)});
+                if (text !== '') {
+                  setEditMember({...editMember, gpf: parseInt(text)});
+                } else {
+                  setEditMember({...editMember, gpf: ''});
+                }
               }}
             />
-            <Text style={styles.dataText}>Previous GPF</Text>
+            <Text selectable style={styles.dataText}>
+              Previous GPF
+            </Text>
             <CustomTextInput
               placeholder={'Enter Previous GPF'}
               value={editMember?.gpfprev.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
-                setEditMember({...editMember, gpfprev: parseInt(text)});
+                if (text !== '') {
+                  setEditMember({...editMember, gpfprev: parseInt(text)});
+                } else {
+                  setEditMember({...editMember, gpfprev: ''});
+                }
               }}
             />
-            <Text style={styles.dataText}>Additional</Text>
+            <Text selectable style={styles.dataText}>
+              Additional
+            </Text>
             <CustomTextInput
               placeholder={'Enter Additional'}
               value={editMember?.addl.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
-                setEditMember({...editMember, addl: parseInt(text)});
+                if (text !== '') {
+                  setEditMember({...editMember, addl: parseInt(text)});
+                } else {
+                  setEditMember({...editMember, addl: ''});
+                }
               }}
             />
-            <Text style={styles.dataText}>Medical Allowance</Text>
+            <Text selectable style={styles.dataText}>
+              Medical Allowance
+            </Text>
             <CustomTextInput
               placeholder={'Enter Medical Allowance'}
               value={editMember?.ma.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
-                setEditMember({...editMember, ma: parseInt(text)});
+                if (text !== '') {
+                  setEditMember({...editMember, ma: parseInt(text)});
+                } else {
+                  setEditMember({...editMember, ma: ''});
+                }
               }}
             />
-            <Text style={styles.dataText}>GSLI</Text>
+            <Text selectable style={styles.dataText}>
+              GSLI
+            </Text>
             <CustomTextInput
               placeholder={'Enter GSLI'}
               value={editMember?.gsli.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
-                setEditMember({...editMember, gsli: parseInt(text)});
+                if (text !== '') {
+                  setEditMember({...editMember, gsli: parseInt(text)});
+                } else {
+                  setEditMember({...editMember, gsli: ''});
+                }
               }}
             />
-            <Text style={styles.dataText}>Bonus</Text>
+            <Text selectable style={styles.dataText}>
+              Bonus
+            </Text>
             <CustomTextInput
               placeholder={'Enter Bonus'}
               value={editMember?.bonus.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
-                setEditMember({...editMember, bonus: parseInt(text)});
+                if (text !== '') {
+                  setEditMember({...editMember, bonus: parseInt(text)});
+                } else {
+                  setEditMember({...editMember, bonus: ''});
+                }
               }}
             />
           </View>
@@ -803,8 +1003,11 @@ const EditDetails = () => {
           />
           <CustomButton
             title={'Go Back'}
+            size={'small'}
             color={'purple'}
-            onClick={() => navigation.navigate('Home')}
+            onClick={() => {
+              navigation.goBack();
+            }}
           />
         </View>
       </ScrollView>

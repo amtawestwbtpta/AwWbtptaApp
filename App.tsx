@@ -1,9 +1,34 @@
-import {View, Text, LogBox, KeyboardAvoidingView} from 'react-native';
-import React from 'react';
+import {View, LogBox, KeyboardAvoidingView, Alert} from 'react-native';
+import React, {useEffect} from 'react';
 import {GlobalContextProvider} from './src/context/Store';
 import AppNavigator from './src/navigation/AppNavigator';
+import messaging from '@react-native-firebase/messaging';
+import {
+  notificationListener,
+  onDisplayNotification,
+  requestUserPermission,
+} from './src/modules/notification';
 LogBox.ignoreAllLogs();
 const App = () => {
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      Alert.alert(
+        'New Notification From AWWBTPTA',
+        `${remoteMessage.notification?.body}\n${remoteMessage.notification?.title}`,
+      );
+
+      onDisplayNotification(
+        remoteMessage.notification?.title,
+        remoteMessage.notification?.body,
+      );
+    });
+
+    return unsubscribe;
+  }, []);
+  useEffect(() => {
+    requestUserPermission();
+    notificationListener();
+  }, []);
   return (
     <GlobalContextProvider>
       <View style={{flex: 1}}>

@@ -117,8 +117,12 @@ const Signup = () => {
           />
 
           <View style={styles.card}>
-            <Text style={styles.title}>Sign Up</Text>
-            <Text style={styles.label}>Enter Your Employee ID</Text>
+            <Text selectable style={styles.title}>
+              Sign Up
+            </Text>
+            <Text selectable style={styles.label}>
+              Enter Your Employee ID
+            </Text>
             <CustomTextInput
               placeholder={'Enter Employee ID'}
               title={'Employee ID'}

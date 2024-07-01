@@ -10,9 +10,8 @@ import {
   BackHandler,
   Image,
   Switch,
-  DeviceEventEmitter,
 } from 'react-native';
-import React, {useContext, useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {THEME_COLOR} from '../utils/Colors';
 import CustomButton from '../components/CustomButton';
 import CustomTextInput from '../components/CustomTextInput';
@@ -21,7 +20,7 @@ import storage from '@react-native-firebase/storage';
 import Toast from 'react-native-toast-message';
 import Loader from '../components/Loader';
 import uuid from 'react-native-uuid';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -44,9 +43,9 @@ import {Image as Img} from 'react-native-compressor';
 const {width, height} = Dimensions.get('window');
 import DateTimePickerAndroid from '@react-native-community/datetimepicker';
 import {useGlobalContext} from '../context/Store';
-const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
+const Memo = () => {
   const isFocused = useIsFocused();
-
+  const navigation = useNavigation();
   const {
     state,
     memoState,
@@ -54,6 +53,7 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
     setStateObject,
     memoUpdateTime,
     setMemoUpdateTime,
+    setActiveTab,
   } = useGlobalContext();
   const user = state.USER;
   const docId = uuid.v4().split('-')[0];
@@ -101,10 +101,6 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
     setEditOpen('');
     setEditMemoDate(currentSelectedDate);
     setFontColor('black');
-  };
-
-  const setActiveTab = () => {
-    selectActiveTab(tabValue);
   };
 
   const addmemo = async () => {
@@ -410,7 +406,7 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
-        refresh();
+        setActiveTab(0);
         return true;
       },
     );
@@ -432,7 +428,9 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
           alignItems: 'center',
           alignSelf: 'center',
         }}>
-        <Text style={styles.title}>Memo Numbers</Text>
+        <Text selectable style={styles.title}>
+          Memo Numbers
+        </Text>
         {user.circle === 'admin' || user.question === 'admin' ? (
           <TouchableOpacity
             style={{
@@ -451,7 +449,7 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
               size={20}
               color={THEME_COLOR}
             />
-            <Text style={styles.title}>
+            <Text selectable style={styles.title}>
               {!showAddmemo ? 'Hide Add Memo' : 'Add New Memo'}
             </Text>
           </TouchableOpacity>
@@ -483,6 +481,7 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
                 }}
                 onPress={() => setOpen(true)}>
                 <Text
+                  selectable
                   style={{
                     fontSize: responsiveFontSize(1.6),
                     color: fontColor,
@@ -524,6 +523,7 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
                 marginBottom: responsiveHeight(1),
               }}>
               <Text
+                selectable
                 style={[styles.title, {paddingRight: responsiveWidth(1.5)}]}>
                 Without Image/ File
               </Text>
@@ -542,13 +542,13 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
                 value={addImage}
               />
 
-              <Text style={[styles.title, {paddingRight: 5}]}>
+              <Text selectable style={[styles.title, {paddingRight: 5}]}>
                 With Image/ File
               </Text>
             </View>
             {addImage ? (
               <View style={{margin: responsiveHeight(1)}}>
-                <Text style={[styles.label, {marginBottom: 5}]}>
+                <Text selectable style={[styles.label, {marginBottom: 5}]}>
                   Upload memo Picture
                 </Text>
 
@@ -601,7 +601,9 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
                           tintColor: THEME_COLOR,
                         }}
                       />
-                      <Text style={styles.icon}>Camera</Text>
+                      <Text selectable style={styles.icon}>
+                        Camera
+                      </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={async () => {
@@ -645,7 +647,9 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
                           tintColor: THEME_COLOR,
                         }}
                       />
-                      <Text style={styles.icon}>Gallery</Text>
+                      <Text selectable style={styles.icon}>
+                        Gallery
+                      </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={async () => {
@@ -687,7 +691,9 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
                           tintColor: THEME_COLOR,
                         }}
                       />
-                      <Text style={styles.icon}>File</Text>
+                      <Text selectable style={styles.icon}>
+                        File
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 ) : (
@@ -774,7 +780,7 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
                             try {
                             } catch (error) {}
                           }}>
-                          <Text style={{color: 'red'}}>
+                          <Text selectable style={{color: 'red'}}>
                             <MaterialIcons name="cancel" size={20} />
                           </Text>
                         </TouchableOpacity>
@@ -861,12 +867,7 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
                           setStateObject({
                             data: el,
                             navigation: navigation,
-                            tabValue: tabValue,
                           });
-                          DeviceEventEmitter.addListener(
-                            'goBack',
-                            setActiveTab,
-                          );
                         }}>
                         {showmemoIcon ? (
                           <Image
@@ -918,6 +919,7 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
                           )}
                           <View style={{paddingLeft: 5, paddingRight: 5}}>
                             <Text
+                              selectable
                               style={[
                                 styles.label,
                                 {paddingLeft: responsiveWidth(5)},
@@ -925,6 +927,7 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
                               ({ind + 1}) {el.title.slice(0, 30) + '...'}
                             </Text>
                             <Text
+                              selectable
                               style={[
                                 styles.label,
                                 {paddingLeft: responsiveWidth(5)},
@@ -957,7 +960,7 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
                                   dateStringToDateObj(el.memoDate),
                                 );
                               }}>
-                              <Text>
+                              <Text selectable>
                                 <FontAwesome5
                                   name="edit"
                                   size={20}
@@ -971,7 +974,7 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
                               onPress={() => {
                                 showConfirmDialog(el);
                               }}>
-                              <Text>
+                              <Text selectable>
                                 <Ionicons
                                   name="trash-bin"
                                   size={20}
@@ -1022,6 +1025,7 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
           <View style={styles.modalView}>
             <View style={styles.mainView}>
               <Text
+                selectable
                 style={{
                   fontSize: responsiveFontSize(3),
                   fontWeight: '500',
@@ -1059,6 +1063,7 @@ const Memo = ({refresh, navigation, selectActiveTab, tabValue}) => {
                   }}
                   onPress={() => setEditOpen(true)}>
                   <Text
+                    selectable
                     style={{
                       fontSize: responsiveFontSize(1.6),
                       color: fontColor,

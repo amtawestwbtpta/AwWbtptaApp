@@ -33,15 +33,16 @@ import CustomTextInput from '../components/CustomTextInput';
 import {notifyAll} from '../modules/notification';
 import {useGlobalContext} from '../context/Store';
 import {AppURL} from '../modules/constants';
-const Downloads = ({navigation, refresh}) => {
+const Downloads = () => {
   const isFocused = useIsFocused();
+
   const docId = uuid.v4().split('-')[0];
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [showLoader, setShowLoader] = useState(false);
   const [fileName, setFileName] = useState('');
   const [addFile, setAddFile] = useState(true);
-  const {state} = useGlobalContext();
+  const {state, setActiveTab} = useGlobalContext();
   const user = state.USER;
   const [visible, setVisible] = useState(false);
   const [fileType, setFileType] = useState('');
@@ -211,12 +212,12 @@ const Downloads = ({navigation, refresh}) => {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
-        refresh();
+        setActiveTab(0);
         return true;
       },
     );
     return () => backHandler.remove();
-  }, [isFocused]);
+  }, []);
   return (
     <View style={{flex: 1}}>
       <ScrollView>
@@ -238,7 +239,7 @@ const Downloads = ({navigation, refresh}) => {
               size={20}
               color={THEME_COLOR}
             />
-            <Text style={[styles.label, {paddingLeft: 5}]}>
+            <Text selectable style={[styles.label, {paddingLeft: 5}]}>
               {!addFile ? 'Hide Upload File' : 'Upload New File'}
             </Text>
           </TouchableOpacity>
@@ -246,7 +247,9 @@ const Downloads = ({navigation, refresh}) => {
 
         {addFile ? (
           <View>
-            <Text style={[styles.title, {marginBottom: responsiveHeight(1)}]}>
+            <Text
+              selectable
+              style={[styles.title, {marginBottom: responsiveHeight(1)}]}>
               Downloads
             </Text>
             <View style={{marginBottom: responsiveHeight(1)}}>
@@ -306,8 +309,12 @@ const Downloads = ({navigation, refresh}) => {
                   justifyContent: 'flex-start',
                 },
               ]}>
-              <Text style={styles.label}>1) Our Android App</Text>
-              <Text style={styles.label}>Format: APK</Text>
+              <Text selectable style={styles.label}>
+                1) Our Android App
+              </Text>
+              <Text selectable style={styles.label}>
+                Format: APK
+              </Text>
 
               <View
                 style={{
@@ -323,7 +330,7 @@ const Downloads = ({navigation, refresh}) => {
                       await Linking.openURL(AppURL); // It will open the URL on browser.
                     }
                   }}>
-                  <Text style={[styles.label, {color: 'purple'}]}>
+                  <Text selectable style={[styles.label, {color: 'purple'}]}>
                     Download
                   </Text>
                 </TouchableOpacity>
@@ -341,10 +348,10 @@ const Downloads = ({navigation, refresh}) => {
                           justifyContent: 'flex-start',
                         },
                       ]}>
-                      <Text style={styles.label}>
+                      <Text selectable style={styles.label}>
                         {`${ind + 2}) ${el.fileName}`}
                       </Text>
-                      <Text style={styles.label}>
+                      <Text selectable style={styles.label}>
                         Format:{' '}
                         {el.fileType === 'application/pdf'
                           ? 'PDF'
@@ -387,7 +394,9 @@ const Downloads = ({navigation, refresh}) => {
                         }}>
                         <TouchableOpacity
                           onPress={() => downloadFile(el.url, el.fileName)}>
-                          <Text style={[styles.label, {color: 'purple'}]}>
+                          <Text
+                            selectable
+                            style={[styles.label, {color: 'purple'}]}>
                             Download
                           </Text>
                         </TouchableOpacity>
@@ -402,7 +411,9 @@ const Downloads = ({navigation, refresh}) => {
                             <TouchableOpacity
                               style={{paddingLeft: responsiveWidth(5)}}
                               onPress={() => showConfirmDialog(el)}>
-                              <Text style={[styles.label, {color: 'red'}]}>
+                              <Text
+                                selectable
+                                style={[styles.label, {color: 'red'}]}>
                                 Delete
                               </Text>
                             </TouchableOpacity>
@@ -414,6 +425,7 @@ const Downloads = ({navigation, refresh}) => {
                                 setEditFileId(el.id);
                               }}>
                               <Text
+                                selectable
                                 style={[styles.label, {color: 'blueviolet'}]}>
                                 Edit File Name
                               </Text>
@@ -426,7 +438,9 @@ const Downloads = ({navigation, refresh}) => {
                 );
               })
             ) : (
-              <Text style={styles.label}>File Not Found</Text>
+              <Text selectable style={styles.label}>
+                File Not Found
+              </Text>
             )}
             <View
               style={{
@@ -506,6 +520,7 @@ const Downloads = ({navigation, refresh}) => {
                   elevation: 5,
                 }}>
                 <Text
+                  selectable
                   style={{
                     fontSize: responsiveFontSize(2),
                     fontWeight: '600',
@@ -567,6 +582,7 @@ const Downloads = ({navigation, refresh}) => {
                     <Ionicons name="document" color={'white'} size={20} />
                   </View>
                   <Text
+                    selectable
                     style={[styles.label, {paddingLeft: responsiveWidth(2)}]}>
                     {documentName}
                   </Text>
@@ -618,6 +634,7 @@ const Downloads = ({navigation, refresh}) => {
         <View style={styles.modalView}>
           <View style={styles.mainView}>
             <Text
+              selectable
               style={{
                 fontSize: responsiveFontSize(3),
                 fontWeight: '500',

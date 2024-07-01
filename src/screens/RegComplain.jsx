@@ -25,14 +25,15 @@ import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AnimatedSeacrch from '../components/AnimatedSeacrch';
 import CustomButton from '../components/CustomButton';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import uuid from 'react-native-uuid';
 import {isEmpty} from '../modules/calculatefunctions';
 import {notifyAll} from '../modules/notification';
 import {getDay, getFullYear, getMonthName} from '../modules/calculatefunctions';
 import {useGlobalContext} from '../context/Store';
-const RegComplain = ({refresh, navigation}) => {
-  const {state} = useGlobalContext();
+const RegComplain = () => {
+  const navigation = useNavigation();
+  const {state, setActiveTab, setStateObject} = useGlobalContext();
   const user = state.USER;
   const teacher = state.TEACHER;
   const complainId = user.id + '-' + uuid.v4().split('-')[0];
@@ -226,7 +227,7 @@ const RegComplain = ({refresh, navigation}) => {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
-        refresh();
+        setActiveTab(0);
         return true;
       },
     );
@@ -254,7 +255,7 @@ const RegComplain = ({refresh, navigation}) => {
             size={20}
             color={THEME_COLOR}
           />
-          <Text style={styles.text}>
+          <Text selectable style={styles.text}>
             {showAddComplain ? 'Hide Add Complain' : 'Add New Complain'}
           </Text>
         </TouchableOpacity>
@@ -295,7 +296,9 @@ const RegComplain = ({refresh, navigation}) => {
         </View>
         {!showAddComplain && (
           <View>
-            <Text style={styles.title}>Teachers Complains</Text>
+            <Text selectable style={styles.title}>
+              Teachers Complains
+            </Text>
             <AnimatedSeacrch
               value={search}
               onChangeText={text => setSearch(text)}
@@ -355,8 +358,12 @@ const RegComplain = ({refresh, navigation}) => {
                         backgroundColor: 'white',
                         borderRadius: responsiveWidth(3),
                       }}>
-                      <Text style={styles.text}>Name: {item.tname}</Text>
-                      <Text style={styles.text}>Complain: {item.title}</Text>
+                      <Text selectable style={styles.text}>
+                        Name: {item.tname}
+                      </Text>
+                      <Text selectable style={styles.text}>
+                        Complain: {item.title}
+                      </Text>
                       <View
                         style={[
                           styles.dateView,
@@ -365,14 +372,14 @@ const RegComplain = ({refresh, navigation}) => {
                             marginTop: responsiveHeight(1),
                           },
                         ]}>
-                        <Text style={styles.dropDownText}>
+                        <Text selectable style={styles.dropDownText}>
                           Posted On: {getDay(item.date)}
                         </Text>
-                        <Text style={styles.dropDownText}>
+                        <Text selectable style={styles.dropDownText}>
                           {' '}
                           {getMonthName(item.date)}
                         </Text>
-                        <Text style={styles.dropDownText}>
+                        <Text selectable style={styles.dropDownText}>
                           {' '}
                           {getFullYear(item.date)}
                         </Text>
@@ -392,13 +399,13 @@ const RegComplain = ({refresh, navigation}) => {
                             alignItems: 'center',
                             alignSelf: 'center',
                           }}
-                          onPress={() =>
-                            navigation.navigate('ComplainDetails', {
-                              data: item,
-                              navigation: navigation,
-                            })
-                          }>
-                          <Text style={[styles.text, {color: 'darkred'}]}>
+                          onPress={() => {
+                            navigation.navigate('ComplainDetails');
+                            setStateObject(item);
+                          }}>
+                          <Text
+                            selectable
+                            style={[styles.text, {color: 'darkred'}]}>
                             Reply to This Problem
                           </Text>
                           <FontAwesome
@@ -427,7 +434,9 @@ const RegComplain = ({refresh, navigation}) => {
                   )}
                 />
               ) : (
-                <Text style={styles.text}>No Complain</Text>
+                <Text selectable style={styles.text}>
+                  No Complain
+                </Text>
               )}
             </ScrollView>
             <View

@@ -15,6 +15,7 @@ const CustomButton = ({
   color,
   size,
   fontSize,
+  fontColor,
   marginBottom,
   marginTop,
 }) => {
@@ -26,14 +27,16 @@ const CustomButton = ({
         {
           backgroundColor: btnDisable ? 'red' : color ? color : THEME_COLOR,
           width:
-            size === 'small'
+            size === 'xsmall'
+              ? 70
+              : size === 'small'
               ? 90
               : size === 'medium'
               ? 110
               : Dimensions.get('window').width - 100,
-          height: size === 'small' ? 40 : 50,
-          paddingLeft: size === 'small' ? 2.5 : 10,
-          paddingRight: size === 'small' ? 2.5 : 10,
+          height: size === 'xsmall' ? 35 : size === 'small' ? 40 : 50,
+          paddingLeft: size === 'xsmall' ? 2 : size === 'small' ? 2.5 : 10,
+          paddingRight: size === 'xsmall' ? 2 : size === 'small' ? 2.5 : 10,
           marginRight: size === 'small' ? 5 : 0,
           marginBottom: marginBottom ? marginBottom : 5,
           marginTop: marginTop ? marginTop : 5,
@@ -42,7 +45,7 @@ const CustomButton = ({
       onPress={() => onClick()}>
       <Text
         style={{
-          color: 'white',
+          color: fontColor ? fontColor : 'white',
           fontSize: fontSize ? fontSize : 18,
           fontWeight: 'bold',
           textAlign: 'center',

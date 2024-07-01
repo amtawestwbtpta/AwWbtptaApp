@@ -138,7 +138,9 @@ const UpdateAccounts = ({refresh, myData, data, total}) => {
   ]);
   return (
     <View style={{flex: 1}}>
-      <Text style={styles.label}>Select Transfering Admin's Name</Text>
+      <Text selectable style={styles.label}>
+        Select Transfering Admin's Name
+      </Text>
 
       <TouchableOpacity
         style={[styles.dropDownnSelector, {marginTop: 5}]}
@@ -160,6 +162,7 @@ const UpdateAccounts = ({refresh, myData, data, total}) => {
         {isClicked ? (
           <View style={{flexDirection: 'row'}}>
             <Text
+              selectable
               style={[styles.dropDownText, {paddingRight: responsiveWidth(2)}]}>
               {selectedText}
             </Text>
@@ -169,6 +172,7 @@ const UpdateAccounts = ({refresh, myData, data, total}) => {
         ) : (
           <View style={{flexDirection: 'row'}}>
             <Text
+              selectable
               style={[styles.dropDownText, {paddingRight: responsiveWidth(2)}]}>
               {selectedText}
             </Text>
@@ -197,14 +201,16 @@ const UpdateAccounts = ({refresh, myData, data, total}) => {
                     data.filter(el => el.name !== item.name),
                   );
                 }}>
-                <Text style={styles.dropDownText}>{item.name}</Text>
+                <Text selectable style={styles.dropDownText}>
+                  {item.name}
+                </Text>
               </TouchableOpacity>
             );
           })}
         </View>
       ) : null}
       {showTrData && (
-        <Text style={styles.label}>
+        <Text selectable style={styles.label}>
           {titleCase(
             `${transferingAccount.name}'s Total Amount: ₹${transferingAccount.cash}`,
           )}
@@ -227,6 +233,7 @@ const UpdateAccounts = ({refresh, myData, data, total}) => {
             {isReceivingClicked ? (
               <View style={{flexDirection: 'row'}}>
                 <Text
+                  selectable
                   style={[
                     styles.dropDownText,
                     {paddingRight: responsiveWidth(2)},
@@ -239,6 +246,7 @@ const UpdateAccounts = ({refresh, myData, data, total}) => {
             ) : (
               <View style={{flexDirection: 'row'}}>
                 <Text
+                  selectable
                   style={[
                     styles.dropDownText,
                     {paddingRight: responsiveWidth(2)},
@@ -269,14 +277,16 @@ const UpdateAccounts = ({refresh, myData, data, total}) => {
                       );
                       setShowRcData(true);
                     }}>
-                    <Text style={styles.dropDownText}>{item.name}</Text>
+                    <Text selectable style={styles.dropDownText}>
+                      {item.name}
+                    </Text>
                   </TouchableOpacity>
                 );
               })}
             </View>
           ) : null}
           {showRcData && (
-            <Text style={styles.label}>
+            <Text selectable style={styles.label}>
               {titleCase(
                 `${receivingAccount.name}'s Total Amount: ₹${receivingAccount.cash}`,
               )}
@@ -308,7 +318,7 @@ const UpdateAccounts = ({refresh, myData, data, total}) => {
 
             {parseFloat(transferingAmount) > 0 && (
               <View style={styles.itemView}>
-                <Text style={styles.label}>
+                <Text selectable style={styles.label}>
                   {titleCase(
                     `${
                       transferingAccount.name
@@ -317,7 +327,7 @@ const UpdateAccounts = ({refresh, myData, data, total}) => {
                     }`,
                   )}
                 </Text>
-                <Text style={styles.label}>
+                <Text selectable style={styles.label}>
                   {titleCase(
                     `${receivingAccount.name}'s Total Amount After Transfer: ₹${
                       receivingAccount.cash + parseFloat(transferingAmount)

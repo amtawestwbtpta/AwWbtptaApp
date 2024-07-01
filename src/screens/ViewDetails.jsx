@@ -8,7 +8,7 @@ import {
   DeviceEventEmitter,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {THEME_COLOR} from '../utils/Colors';
 import {INR} from '../modules/calculatefunctions';
 import {
@@ -21,9 +21,9 @@ import CustomButton from '../components/CustomButton';
 import {useGlobalContext} from '../context/Store';
 import {DA, HRA} from '../modules/constants';
 const ViewDetails = () => {
-  const {state, stateObject, setStateObject} = useGlobalContext();
+  const {state, stateObject} = useGlobalContext();
   const isFocused = useIsFocused();
-  const navigation = stateObject.navigation;
+  const navigation = useNavigation();
   const user = state.USER;
   let {
     udise,
@@ -54,7 +54,7 @@ const ViewDetails = () => {
     gsli,
     fname,
     dataYear,
-  } = stateObject.data;
+  } = stateObject;
   const [bankData, setBankData] = useState({});
   const ifsc_ser = () => {
     fetch(`https://ifsc.razorpay.com/${ifsc}`)
@@ -117,7 +117,9 @@ const ViewDetails = () => {
   }, [isFocused]);
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>DETAILS OF {tname}</Text>
+      <Text selectable style={styles.title}>
+        DETAILS OF {tname}
+      </Text>
       <ScrollView
         style={{
           marginTop: responsiveHeight(2),
@@ -125,163 +127,240 @@ const ViewDetails = () => {
         {user.circle == 'admin' && (
           <CustomButton
             title={'Edit Details'}
+            fontSize={responsiveFontSize(1.5)}
+            size={'small'}
             marginBottom={responsiveHeight(1)}
-            onClick={() =>
-              navigation.navigate('EditDetails', {
-                data: stateObject.data,
-                navigation: navigation,
-              })
-            }
+            onClick={() => navigation.navigate('EditDetails')}
           />
         )}
+        <CustomButton
+          title={'Go Back'}
+          color={'purple'}
+          size={'small'}
+          onClick={() => {
+            navigation.navigate('Home');
+            DeviceEventEmitter.emit('goBack');
+          }}
+        />
         <TouchableOpacity
           style={styles.dataView}
           onPress={() => Clipboard.setString(tname)}>
-          <Text style={styles.dataText}>Name: {tname}</Text>
+          <Text selectable style={styles.dataText}>
+            Name: {tname}
+          </Text>
         </TouchableOpacity>
         {user.circle === 'admin' && (
           <TouchableOpacity
             style={styles.dataView}
             onPress={() => Clipboard.setString(tname)}>
-            <Text style={styles.dataText}>Access: {circle}</Text>
+            <Text selectable style={styles.dataText}>
+              Access: {circle}
+            </Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity
           style={styles.dataView}
           onPress={() => Clipboard.setString(fname)}>
-          <Text style={styles.dataText}>Father's Name: {fname}</Text>
+          <Text selectable style={styles.dataText}>
+            Father's Name: {fname}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.dataView}
           onPress={() => Clipboard.setString(school)}>
-          <Text style={styles.dataText}>School: {school}</Text>
+          <Text selectable style={styles.dataText}>
+            School: {school}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.dataView}
           onPress={() => Clipboard.setString(udise)}>
-          <Text style={styles.dataText}>UDISE: {udise}</Text>
+          <Text selectable style={styles.dataText}>
+            UDISE: {udise}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.dataView}
           onPress={() => Clipboard.setString(desig)}>
-          <Text style={styles.dataText}>Designation: {desig}</Text>
+          <Text selectable style={styles.dataText}>
+            Designation: {desig}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.dataView}
           onPress={() => Clipboard.setString(gp)}>
-          <Text style={styles.dataText}>Gram Panchayet: {gp}</Text>
+          <Text selectable style={styles.dataText}>
+            Gram Panchayet: {gp}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.dataView}
           onPress={() => Clipboard.setString(phone)}>
-          <Text style={styles.dataText}>Mobile: {phone}</Text>
+          <Text selectable style={styles.dataText}>
+            Mobile: {phone}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.dataView}
           onPress={() => Clipboard.setString(email)}>
-          <Text style={styles.dataText}>Email: {email}</Text>
+          <Text selectable style={styles.dataText}>
+            Email: {email}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.dataView}
           onPress={() => Clipboard.setString(dob)}>
-          <Text style={styles.dataText}>Date of Birth: {dob}</Text>
+          <Text selectable style={styles.dataText}>
+            Date of Birth: {dob}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.dataView}
           onPress={() => Clipboard.setString(doj)}>
-          <Text style={styles.dataText}>Date of Joining: {doj}</Text>
+          <Text selectable style={styles.dataText}>
+            Date of Joining: {doj}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.dataView}
           onPress={() => Clipboard.setString(dojnow)}>
-          <Text style={styles.dataText}>DOJ in Present School: {dojnow}</Text>
+          <Text selectable style={styles.dataText}>
+            DOJ in Present School: {dojnow}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.dataView}
           onPress={() => Clipboard.setString(dor)}>
-          <Text style={styles.dataText}>Date of Retirement: {dor}</Text>
+          <Text selectable style={styles.dataText}>
+            Date of Retirement: {dor}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.dataView}
           onPress={() => Clipboard.setString(empid)}>
-          <Text style={styles.dataText}>Employee ID: {empid}</Text>
+          <Text selectable style={styles.dataText}>
+            Employee ID: {empid}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.dataView}>
-          <Text style={styles.dataText}>Training: {training}</Text>
+          <Text selectable style={styles.dataText}>
+            Training: {training}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.dataView}
           onPress={() => Clipboard.setString(pan)}>
-          <Text style={styles.dataText}>PAN: {pan}</Text>
+          <Text selectable style={styles.dataText}>
+            PAN: {pan}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.dataView}
           onPress={() => Clipboard.setString(address)}>
-          <Text style={styles.dataText}>Address: {address}</Text>
+          <Text selectable style={styles.dataText}>
+            Address: {address}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.dataView}>
-          <Text style={styles.dataText}>BANK: {bank}</Text>
+          <Text selectable style={styles.dataText}>
+            BANK: {bank}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.dataView}
           onPress={() => Clipboard.setString(account)}>
-          <Text style={styles.dataText}>Account No: {account}</Text>
+          <Text selectable style={styles.dataText}>
+            Account No: {account}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.dataView}
           onPress={() => Clipboard.setString(ifsc)}>
-          <Text style={styles.dataText}>IFS Code: {ifsc}</Text>
+          <Text selectable style={styles.dataText}>
+            IFS Code: {ifsc}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.dataView}>
-          <Text style={styles.bankDataText}>Bank Name: {bankData.BANK}</Text>
-          <Text style={styles.bankDataText}>Branch: {bankData.BRANCH}</Text>
-          <Text style={styles.bankDataText}>Address: {bankData.ADDRESS}</Text>
-          <Text style={styles.bankDataText}>MICR: {bankData.MICR}</Text>
+          <Text selectable style={styles.bankDataText}>
+            Bank Name: {bankData.BANK}
+          </Text>
+          <Text selectable style={styles.bankDataText}>
+            Branch: {bankData.BRANCH}
+          </Text>
+          <Text selectable style={styles.bankDataText}>
+            Address: {bankData.ADDRESS}
+          </Text>
+          <Text selectable style={styles.bankDataText}>
+            MICR: {bankData.MICR}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.dataView}>
-          <Text style={styles.dataText}>BASIC: {basicpay}</Text>
+          <Text selectable style={styles.dataText}>
+            BASIC: {basicpay}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.dataView}>
-          <Text style={styles.dataText}>DA: {da}</Text>
+          <Text selectable style={styles.dataText}>
+            DA: {da}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.dataView}>
-          <Text style={styles.dataText}>HRA: {hra}</Text>
+          <Text selectable style={styles.dataText}>
+            HRA: {hra}
+          </Text>
         </TouchableOpacity>
         {addl ? (
           <TouchableOpacity style={styles.dataView}>
-            <Text style={styles.dataText}>Additional Pay: {addl}</Text>
+            <Text selectable style={styles.dataText}>
+              Additional Pay: {addl}
+            </Text>
           </TouchableOpacity>
         ) : null}
         <TouchableOpacity style={styles.dataView}>
-          <Text style={styles.dataText}>Gross Pay: {gross}</Text>
+          <Text selectable style={styles.dataText}>
+            Gross Pay: {gross}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.dataView}>
-          <Text style={styles.dataText}>GPF: {gpf}</Text>
+          <Text selectable style={styles.dataText}>
+            GPF: {gpf}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.dataView}>
-          <Text style={styles.dataText}>PTAX: {ptax}</Text>
+          <Text selectable style={styles.dataText}>
+            PTAX: {ptax}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.dataView}>
-          <Text style={styles.dataText}>Net Pay: {netpay}</Text>
+          <Text selectable style={styles.dataText}>
+            Net Pay: {netpay}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.dataView, {marginBottom: responsiveHeight(2)}]}
           onPress={() => Clipboard.setString(INR(netpay))}>
-          <Text style={styles.dataText}>Net Pay in Words: {INR(netpay)}</Text>
+          <Text selectable style={styles.dataText}>
+            Net Pay in Words: {INR(netpay)}
+          </Text>
         </TouchableOpacity>
         {user.circle == 'admin' && (
           <CustomButton
             title={'Edit Details'}
+            fontSize={responsiveFontSize(1.5)}
+            size={'small'}
             marginBottom={responsiveHeight(1)}
-            onClick={() => {
-              navigation.navigate('EditDetails');
-              setStateObject({
-                data: data,
-                navigation: navigation,
-              });
-            }}
+            onClick={() => navigation.navigate('EditDetails')}
           />
         )}
+        <CustomButton
+          title={'Go Back'}
+          size={'small'}
+          color={'purple'}
+          onClick={() => {
+            navigation.navigate('Home');
+            DeviceEventEmitter.emit('goBack');
+          }}
+        />
       </ScrollView>
     </View>
   );

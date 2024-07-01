@@ -308,7 +308,9 @@ const Registration = props => {
       />
 
       <View style={styles.card}>
-        <Text style={styles.title}>Sign Up</Text>
+        <Text selectable style={styles.title}>
+          Sign Up
+        </Text>
         <CustomTextInput
           placeholder={'Enter Email'}
           title={'Email'}
@@ -363,7 +365,7 @@ const Registration = props => {
           }
         />
 
-        <Text style={[styles.label, {marginBottom: 5}]}>
+        <Text selectable style={[styles.label, {marginBottom: 5}]}>
           Upload Profile Picture
         </Text>
 
@@ -411,7 +413,9 @@ const Registration = props => {
                   tintColor: THEME_COLOR,
                 }}
               />
-              <Text style={styles.label}>Open Camera</Text>
+              <Text selectable style={styles.label}>
+                Open Camera
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={async () => {
@@ -450,7 +454,9 @@ const Registration = props => {
                   tintColor: THEME_COLOR,
                 }}
               />
-              <Text style={styles.label}>Open Gallery</Text>
+              <Text selectable style={styles.label}>
+                Open Gallery
+              </Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -478,7 +484,7 @@ const Registration = props => {
               </View>
               <View>
                 <TouchableOpacity onPress={() => setPath('')}>
-                  <Text style={{color: 'red'}}>
+                  <Text selectable style={{color: 'red'}}>
                     <MaterialIcons name="cancel" size={20} />
                   </Text>
                 </TouchableOpacity>

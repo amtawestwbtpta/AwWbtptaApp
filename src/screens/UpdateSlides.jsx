@@ -13,7 +13,7 @@ import storage from '@react-native-firebase/storage';
 import {THEME_COLOR} from '../utils/Colors';
 import CustomButton from '../components/CustomButton';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useIsFocused, useRoute} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Loader from '../components/Loader';
 import {
   responsiveHeight,
@@ -30,8 +30,8 @@ import {downloadFile} from '../modules/downloadFile';
 import {useGlobalContext} from '../context/Store';
 const UpdateSlides = () => {
   const isFocused = useIsFocused();
-  const route = useRoute();
-  const navigation = route.params.navigation;
+
+  const navigation = useNavigation();
   const docId = uuid.v4().split('-')[0];
   const [showLoader, setShowLoader] = useState(false);
   const {state, slideState, setSlideState} = useGlobalContext();
@@ -69,23 +69,6 @@ const UpdateSlides = () => {
   };
 
   const getphotos = async () => {
-    // setShowLoader(true);
-    // await firestore()
-    //   .collection('slides')
-    //   .get()
-    //   .then(snapshot => {
-    //     const data = snapshot.docs.map(doc => ({
-    //       ...doc.data(),
-    //       id: doc.id,
-    //     }));
-    //     setSlides(data);
-    //     setFilteredData(data);
-    //     setShowLoader(false);
-    //   })
-    //   .catch(e => {
-    //     setShowLoader(false);
-    //     console.log(e);
-    //   });
     setSlides(slideState);
     setFilteredData(slideState);
   };
@@ -362,6 +345,7 @@ const UpdateSlides = () => {
             />
           </TouchableOpacity>
           <Text
+            selectable
             style={{
               fontSize: responsiveFontSize(3),
               fontFamily: 'kalpurush',
@@ -413,7 +397,7 @@ const UpdateSlides = () => {
               size={20}
               color={THEME_COLOR}
             />
-            <Text style={[styles.label, {paddingLeft: 5}]}>
+            <Text selectable style={[styles.label, {paddingLeft: 5}]}>
               {!addFile ? 'Hide Upload Image' : 'Upload New Image'}
             </Text>
           </TouchableOpacity>
@@ -422,7 +406,9 @@ const UpdateSlides = () => {
         {!showEditView ? (
           addFile ? (
             <View>
-              <Text style={[styles.title, {marginBottom: responsiveHeight(1)}]}>
+              <Text
+                selectable
+                style={[styles.title, {marginBottom: responsiveHeight(1)}]}>
                 Slide Photos
               </Text>
 
@@ -477,10 +463,10 @@ const UpdateSlides = () => {
                             borderRadius: responsiveWidth(1),
                           }}
                         />
-                        <Text style={styles.label}>
+                        <Text selectable style={styles.label}>
                           {`${ind + 1}) Title: ${el.title}`}
                         </Text>
-                        <Text style={styles.label}>
+                        <Text selectable style={styles.label}>
                           Description: {el.description}
                         </Text>
 
@@ -493,7 +479,9 @@ const UpdateSlides = () => {
                           }}>
                           <TouchableOpacity
                             onPress={() => downloadFile(el.url, el.fileName)}>
-                            <Text style={[styles.label, {color: 'purple'}]}>
+                            <Text
+                              selectable
+                              style={[styles.label, {color: 'purple'}]}>
                               Download
                             </Text>
                           </TouchableOpacity>
@@ -501,7 +489,9 @@ const UpdateSlides = () => {
                             <TouchableOpacity
                               style={{paddingLeft: responsiveWidth(5)}}
                               onPress={() => showConfirmDialog(el)}>
-                              <Text style={[styles.label, {color: 'red'}]}>
+                              <Text
+                                selectable
+                                style={[styles.label, {color: 'red'}]}>
                                 Delete
                               </Text>
                             </TouchableOpacity>
@@ -522,6 +512,7 @@ const UpdateSlides = () => {
                                 setOriginalPhotoName(el.photoName);
                               }}>
                               <Text
+                                selectable
                                 style={[styles.label, {color: 'darkgreen'}]}>
                                 Edit
                               </Text>
@@ -533,7 +524,9 @@ const UpdateSlides = () => {
                   );
                 })
               ) : (
-                <Text style={styles.label}>File Not Found</Text>
+                <Text selectable style={styles.label}>
+                  File Not Found
+                </Text>
               )}
               <View
                 style={{
@@ -643,6 +636,7 @@ const UpdateSlides = () => {
                     />
                   </View>
                   <Text
+                    selectable
                     style={[styles.title, {paddingLeft: responsiveWidth(2)}]}>
                     Select Photo
                   </Text>
@@ -723,7 +717,9 @@ const UpdateSlides = () => {
               alignSelf: 'center',
               marginTop: responsiveHeight(1),
             }}>
-            <Text style={[styles.label, {paddingLeft: responsiveWidth(2)}]}>
+            <Text
+              selectable
+              style={[styles.label, {paddingLeft: responsiveWidth(2)}]}>
               Edit Title
             </Text>
             <CustomTextInput
@@ -734,7 +730,9 @@ const UpdateSlides = () => {
                 setDisable(false);
               }}
             />
-            <Text style={[styles.label, {paddingLeft: responsiveWidth(2)}]}>
+            <Text
+              selectable
+              style={[styles.label, {paddingLeft: responsiveWidth(2)}]}>
               Edit Description
             </Text>
             <CustomTextInput
@@ -745,7 +743,9 @@ const UpdateSlides = () => {
                 setDisable(false);
               }}
             />
-            <Text style={[styles.label, {paddingLeft: responsiveWidth(2)}]}>
+            <Text
+              selectable
+              style={[styles.label, {paddingLeft: responsiveWidth(2)}]}>
               Edit Photo
             </Text>
             <TouchableOpacity

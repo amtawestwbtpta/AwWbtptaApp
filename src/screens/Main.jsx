@@ -44,16 +44,14 @@ import RNExitApp from 'react-native-exit-app';
 import Modal from 'react-native-modal';
 import Downloads from './Downloads';
 const Main = () => {
-  const {state} = useGlobalContext();
+  const {state, activeTab, setActiveTab} = useGlobalContext();
 
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-  const [activeTab, setActiveTab] = useState(0);
+
   const [isClicked, setIsClicked] = useState(false);
   const [textColor, setTextColor] = useState(THEME_COLOR);
-  const selectActiveTab = tab => {
-    setActiveTab(tab);
-  };
+
   const AnimatedBtn = Animated.createAnimatedComponent(TouchableOpacity);
 
   const animatedBtn0X = useSharedValue(0);
@@ -251,7 +249,7 @@ const Main = () => {
     if (!state) {
       navigation.navigate('Login');
     }
-    refresh();
+    // refresh();
   }, [isFocused]);
   const backAction = () => {
     Alert.alert('Hold On!', 'Are You Sure To Exit App?', [
@@ -304,6 +302,7 @@ const Main = () => {
             />
           </TouchableOpacity>
           <Text
+            selectable
             style={{
               fontSize: responsiveFontSize(3),
               fontFamily: 'kalpurush',
@@ -345,96 +344,31 @@ const Main = () => {
           alignSelf: 'center',
         }}>
         {activeTab === 0 ? (
-          <Dashboard
-            refresh={refresh}
-            selectActiveTab={selectActiveTab}
-            navigation={navigation}
-            tabValue={activeTab}
-          />
+          <Dashboard />
         ) : activeTab === 0.5 ? (
-          <Notice
-            refresh={refresh}
-            selectActiveTab={selectActiveTab}
-            navigation={navigation}
-            tabValue={activeTab}
-          />
+          <Notice />
         ) : activeTab === 11 ? (
-          <Memo
-            refresh={refresh}
-            selectActiveTab={selectActiveTab}
-            navigation={navigation}
-            tabValue={activeTab}
-          />
+          <Memo />
         ) : activeTab === 1 ? (
-          <TeachersDetails
-            refresh={refresh}
-            selectActiveTab={selectActiveTab}
-            navigation={navigation}
-            tabValue={activeTab}
-          />
+          <TeachersDetails />
         ) : activeTab === 2 ? (
-          <StudentTeacherData
-            refresh={refresh}
-            selectActiveTab={selectActiveTab}
-            navigation={navigation}
-            tabValue={activeTab}
-          />
+          <StudentTeacherData />
         ) : activeTab === 3 ? (
-          <GPWiseSchoolData
-            refresh={refresh}
-            selectActiveTab={selectActiveTab}
-            navigation={navigation}
-            tabValue={activeTab}
-          />
+          <GPWiseSchoolData />
         ) : activeTab === 4 ? (
-          <RetirementDateCalculator
-            refresh={refresh}
-            selectActiveTab={selectActiveTab}
-            navigation={navigation}
-            tabValue={activeTab}
-          />
+          <RetirementDateCalculator />
         ) : activeTab === 5 ? (
-          <AgeCalculator
-            refresh={refresh}
-            selectActiveTab={selectActiveTab}
-            navigation={navigation}
-            tabValue={activeTab}
-          />
+          <AgeCalculator />
         ) : activeTab === 6 ? (
-          <TaxCalculator
-            refresh={refresh}
-            selectActiveTab={selectActiveTab}
-            navigation={navigation}
-            tabValue={activeTab}
-          />
+          <TaxCalculator />
         ) : activeTab === 7 ? (
-          <RegComplain
-            refresh={refresh}
-            selectActiveTab={selectActiveTab}
-            navigation={navigation}
-            tabValue={activeTab}
-          />
+          <RegComplain />
         ) : activeTab === 8 ? (
-          <ChangeUP
-            refresh={refresh}
-            selectActiveTab={selectActiveTab}
-            navigation={navigation}
-            tabValue={activeTab}
-          />
+          <ChangeUP />
         ) : activeTab === 9 ? (
-          <ChatList
-            refresh={refresh}
-            selectActiveTab={selectActiveTab}
-            navigation={navigation}
-            tabValue={activeTab}
-          />
+          <ChatList />
         ) : activeTab === 10 ? (
-          <Downloads
-            refresh={refresh}
-            selectActiveTab={selectActiveTab}
-            navigation={navigation}
-            tabValue={activeTab}
-          />
+          <Downloads />
         ) : null}
       </View>
       <Modal
@@ -497,6 +431,7 @@ const Main = () => {
                         color={activeTab == 0 ? 'purple' : THEME_COLOR}
                       />
                       <Text
+                        selectable
                         style={[
                           styles.bottomText,
                           {color: activeTab == 0 ? 'purple' : THEME_COLOR},
@@ -519,6 +454,7 @@ const Main = () => {
                         color={activeTab == 0.5 ? 'purple' : THEME_COLOR}
                       />
                       <Text
+                        selectable
                         style={[
                           styles.bottomText,
                           {color: activeTab == 0.5 ? 'purple' : THEME_COLOR},
@@ -541,6 +477,7 @@ const Main = () => {
                         color={activeTab == 11 ? 'purple' : THEME_COLOR}
                       />
                       <Text
+                        selectable
                         style={[
                           styles.bottomText,
                           {
@@ -566,6 +503,7 @@ const Main = () => {
                         color={activeTab == 1 ? 'purple' : THEME_COLOR}
                       />
                       <Text
+                        selectable
                         style={[
                           styles.bottomText,
                           {color: activeTab == 1 ? 'purple' : THEME_COLOR},
@@ -591,6 +529,7 @@ const Main = () => {
                         }}
                       />
                       <Text
+                        selectable
                         style={[
                           styles.bottomText,
                           {color: activeTab == 2 ? 'purple' : THEME_COLOR},
@@ -613,6 +552,7 @@ const Main = () => {
                         color={activeTab == 3 ? 'purple' : THEME_COLOR}
                       />
                       <Text
+                        selectable
                         style={[
                           styles.bottomText,
                           {
@@ -638,6 +578,7 @@ const Main = () => {
                         color={activeTab == 4 ? 'purple' : THEME_COLOR}
                       />
                       <Text
+                        selectable
                         style={[
                           styles.bottomText,
                           {
@@ -663,6 +604,7 @@ const Main = () => {
                         color={activeTab == 5 ? 'purple' : THEME_COLOR}
                       />
                       <Text
+                        selectable
                         style={[
                           styles.bottomText,
                           {
@@ -691,6 +633,7 @@ const Main = () => {
                         }}
                       />
                       <Text
+                        selectable
                         style={[
                           styles.bottomText,
                           {
@@ -716,6 +659,7 @@ const Main = () => {
                         color={activeTab == 7 ? 'purple' : THEME_COLOR}
                       />
                       <Text
+                        selectable
                         style={[
                           styles.bottomText,
                           {
@@ -741,6 +685,7 @@ const Main = () => {
                         color={activeTab == 8 ? 'purple' : THEME_COLOR}
                       />
                       <Text
+                        selectable
                         style={[
                           styles.bottomText,
                           {
@@ -767,6 +712,7 @@ const Main = () => {
                         color={activeTab == 9 ? 'purple' : THEME_COLOR}
                       />
                       <Text
+                        selectable
                         style={[
                           styles.bottomText,
                           {
@@ -792,6 +738,7 @@ const Main = () => {
                         color={activeTab == 10 ? 'purple' : THEME_COLOR}
                       />
                       <Text
+                        selectable
                         style={[
                           styles.bottomText,
                           {
@@ -812,6 +759,7 @@ const Main = () => {
                         color={'green'}
                       />
                       <Text
+                        selectable
                         style={[
                           styles.bottomText,
                           {
@@ -836,7 +784,9 @@ const Main = () => {
                         size={responsiveFontSize(3)}
                         color={'red'}
                       />
-                      <Text style={{color: 'red', fontWeight: 'bold'}}>
+                      <Text
+                        selectable
+                        style={{color: 'red', fontWeight: 'bold'}}>
                         Exit App
                       </Text>
                     </TouchableOpacity>

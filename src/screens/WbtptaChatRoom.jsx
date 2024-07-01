@@ -14,7 +14,7 @@ import {THEME_COLOR} from '../utils/Colors';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import {Bubble, GiftedChat, InputToolbar, Send} from 'react-native-gifted-chat';
-import {useIsFocused, useRoute} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import uuid from 'react-native-uuid';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -40,11 +40,10 @@ import {Image as Img} from 'react-native-compressor';
 import {useGlobalContext} from '../context/Store';
 const WbtptaChatRoom = () => {
   const docId = uuid.v4().split('-')[0];
-  const route = useRoute();
 
   const {state} = useGlobalContext();
   const user = state.USER;
-  const navigation = route.params.navigation;
+  const navigation = useNavigation();
   const isFocused = useIsFocused();
   const [showModal, setShowModal] = useState(false);
   const [messageList, setMessageList] = useState([]);
@@ -275,34 +274,6 @@ const WbtptaChatRoom = () => {
       });
   };
 
-  //   const deleteMessageOnlyMe = async id => {
-  //     await firestore()
-  //       .collection('wbtptaGroupChat')
-  //       .doc('wbtptaGroupChat')
-  //       .collection('messages')
-  //       .where('user.uid', '==', id)
-  //       .get()
-  //       .then(querySnapshot => {
-  //         querySnapshot.forEach(async documentSnapshot => {
-  //           await firestore()
-  //             .collection('wbtptaGroupChat')
-  //             .doc('wbtptaGroupChat')
-  //             .collection('messages')
-  //             .doc(documentSnapshot.id)
-  //             .delete()
-  //             .then(async () => {
-  //               showToast('success', 'Message Deleted');
-  //             })
-  //             .catch(e => {
-  //               console.log(e);
-  //             });
-  //         });
-  //       })
-  //       .catch(e => {
-  //         console.log(e);
-  //       });
-  //   };
-
   function renderLoading() {
     return <Loader />;
   }
@@ -315,7 +286,6 @@ const WbtptaChatRoom = () => {
       'hardwareBackPress',
       () => {
         navigation.navigate('Home');
-
         return true;
       },
     );
@@ -373,7 +343,9 @@ const WbtptaChatRoom = () => {
             paddingRight: responsiveWidth(1),
           }}
         />
-        <Text style={styles.title}>AMTA WEST WBTPTA</Text>
+        <Text selectable style={styles.title}>
+          AMTA WEST WBTPTA
+        </Text>
       </View>
 
       <GiftedChat
@@ -469,6 +441,7 @@ const WbtptaChatRoom = () => {
                       }}></View>
                     <View style={{flexDirection: 'row'}}>
                       <Text
+                        selectable
                         style={[
                           styles.label,
                           {
@@ -650,7 +623,7 @@ const WbtptaChatRoom = () => {
                       alignItems: 'center',
                       padding: 3,
                     }}>
-                    <Text style={[styles.label, {color: 'white'}]}>
+                    <Text selectable style={[styles.label, {color: 'white'}]}>
                       {`Document Name: ${documentName} Attached`}
                     </Text>
                   </View>
@@ -736,7 +709,9 @@ const WbtptaChatRoom = () => {
       <Modal visible={showModal} transparent>
         <View style={styles.modalView}>
           <View style={styles.mainView}>
-            <Text style={{color: 'lightsteelblue'}}>Delete Message?</Text>
+            <Text selectable style={{color: 'lightsteelblue'}}>
+              Delete Message?
+            </Text>
 
             <View
               style={{
@@ -747,7 +722,9 @@ const WbtptaChatRoom = () => {
                   setShowModal(false);
                   deleteMessageEveryOne(targetMessage);
                 }}>
-                <Text style={styles.modalText}>Delete For everyone</Text>
+                <Text selectable style={styles.modalText}>
+                  Delete For everyone
+                </Text>
               </TouchableOpacity>
               {/* <TouchableOpacity
                   style={{paddingLeft: responsiveWidth(6)}}
@@ -755,14 +732,16 @@ const WbtptaChatRoom = () => {
                     setShowModal(false);
                     deleteMessageOnlyMe(targetMessage);
                   }}>
-                  <Text style={styles.modalText}>Delete For me</Text>
+                  <Text selectable style={styles.modalText}>Delete For me</Text>
                 </TouchableOpacity> */}
               <TouchableOpacity
                 style={{paddingLeft: responsiveWidth(14)}}
                 onPress={() => {
                   setShowModal(false);
                 }}>
-                <Text style={styles.modalText}>Cancel</Text>
+                <Text selectable style={styles.modalText}>
+                  Cancel
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -849,7 +828,9 @@ const WbtptaChatRoom = () => {
                   }}>
                   <Ionicons name="document" color={'white'} size={20} />
                 </View>
-                <Text style={styles.docText}>Document</Text>
+                <Text selectable style={styles.docText}>
+                  Document
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={{
@@ -902,7 +883,9 @@ const WbtptaChatRoom = () => {
                   }}>
                   <Fontisto name="camera" color={'white'} size={20} />
                 </View>
-                <Text style={styles.docText}>Camera</Text>
+                <Text selectable style={styles.docText}>
+                  Camera
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={{
@@ -962,7 +945,9 @@ const WbtptaChatRoom = () => {
                     }}
                   />
                 </View>
-                <Text style={styles.docText}>Gallery</Text>
+                <Text selectable style={styles.docText}>
+                  Gallery
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={{
@@ -1016,7 +1001,9 @@ const WbtptaChatRoom = () => {
                     size={20}
                   />
                 </View>
-                <Text style={styles.docText}>Video</Text>
+                <Text selectable style={styles.docText}>
+                  Video
+                </Text>
               </TouchableOpacity>
             </View>
           </View>

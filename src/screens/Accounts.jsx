@@ -7,12 +7,12 @@ import {
   ScrollView,
   BackHandler,
 } from 'react-native';
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {THEME_COLOR} from '../utils/Colors';
 import CustomButton from '../components/CustomButton';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useIsFocused, useRoute} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Loader from '../components/Loader';
 import {
   responsiveHeight,
@@ -33,8 +33,7 @@ import uuid from 'react-native-uuid';
 import CustomTextInput from '../components/CustomTextInput';
 const Accounts = () => {
   const isFocused = useIsFocused();
-  const route = useRoute();
-  const navigation = route.params.navigation;
+  const navigation = useNavigation();
   const accountId = uuid.v4();
   const [showLoader, setShowLoader] = useState(false);
   const [data, setData] = useState([]);
@@ -158,7 +157,6 @@ const Accounts = () => {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
-        // navigation.navigate('Home');
         navigation.navigate('Home');
         return true;
       },
@@ -176,16 +174,28 @@ const Accounts = () => {
             alignSelf: 'center',
           }}>
           {activeTab == 0 ? (
-            <Text style={styles.title}>Admin Accounts Dashboard</Text>
+            <Text selectable style={styles.title}>
+              Admin Accounts Dashboard
+            </Text>
           ) : activeTab == 1 ? (
-            <Text style={styles.title}>Admin Accounts Transfer Cash</Text>
+            <Text selectable style={styles.title}>
+              Admin Accounts Transfer Cash
+            </Text>
           ) : activeTab == 2 ? (
-            <Text style={styles.title}>Admin Accounts Update Cash</Text>
+            <Text selectable style={styles.title}>
+              Admin Accounts Update Cash
+            </Text>
           ) : activeTab == 3 ? (
-            <Text style={styles.title}>Admin Accounts Ledger</Text>
+            <Text selectable style={styles.title}>
+              Admin Accounts Ledger
+            </Text>
           ) : null}
-          <Text style={styles.label}>Welcome {adminName}!</Text>
-          <Text style={styles.label}>You Have ₹{myData.cash}</Text>
+          <Text selectable style={styles.label}>
+            Welcome {adminName}!
+          </Text>
+          <Text selectable style={styles.label}>
+            You Have ₹{myData.cash}
+          </Text>
           <TouchableOpacity
             style={{
               alignItems: 'center',
@@ -204,7 +214,9 @@ const Accounts = () => {
               size={20}
               color={THEME_COLOR}
             />
-            <Text style={[styles.label, {paddingLeft: responsiveWidth(2)}]}>
+            <Text
+              selectable
+              style={[styles.label, {paddingLeft: responsiveWidth(2)}]}>
               {showAddAccount ? 'Hide Add Account' : 'Add New Account'}
             </Text>
           </TouchableOpacity>
@@ -337,7 +349,9 @@ const Accounts = () => {
               style={[styles.bottomBtn, {paddingLeft: 5}]}
               onPress={() => navigation.navigate('Home')}>
               <Entypo name="back" size={30} color={THEME_COLOR} />
-              <Text style={[styles.bottomText, {color: THEME_COLOR}]}>
+              <Text
+                selectable
+                style={[styles.bottomText, {color: THEME_COLOR}]}>
                 Go Back
               </Text>
             </TouchableOpacity>
@@ -350,6 +364,7 @@ const Accounts = () => {
                 color={activeTab == 0 ? 'purple' : THEME_COLOR}
               />
               <Text
+                selectable
                 style={[
                   styles.bottomText,
                   {color: activeTab == 0 ? 'purple' : THEME_COLOR},
@@ -366,6 +381,7 @@ const Accounts = () => {
                 color={activeTab == 1 ? 'purple' : THEME_COLOR}
               />
               <Text
+                selectable
                 style={[
                   styles.bottomText,
                   {color: activeTab == 1 ? 'purple' : THEME_COLOR},
@@ -382,6 +398,7 @@ const Accounts = () => {
                 color={activeTab == 2 ? 'purple' : THEME_COLOR}
               />
               <Text
+                selectable
                 style={[
                   styles.bottomText,
                   {color: activeTab == 2 ? 'purple' : THEME_COLOR},
@@ -398,6 +415,7 @@ const Accounts = () => {
                 color={activeTab == 3 ? 'purple' : THEME_COLOR}
               />
               <Text
+                selectable
                 style={[
                   styles.bottomText,
                   {color: activeTab == 3 ? 'purple' : THEME_COLOR},

@@ -76,9 +76,15 @@ const ExitApp = () => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-        <Text style={styles.logoText}>See</Text>
-        <Text style={styles.logoText}>You</Text>
-        <Text style={styles.logoText}>Again</Text>
+        <Text selectable style={styles.logoText}>
+          See
+        </Text>
+        <Text selectable style={styles.logoText}>
+          You
+        </Text>
+        <Text selectable style={styles.logoText}>
+          Again
+        </Text>
       </View>
       <View style={{margin: responsiveHeight(2)}}>
         <ActivityIndicator size={50} color={'white'} />

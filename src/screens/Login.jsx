@@ -122,35 +122,37 @@ const Login = () => {
             let userRecord = JSON.stringify(snapShot.docs[0]._data);
             if (compare(inputField.password, record.password)) {
               if (!record.disabled) {
-                await firestore()
-                  .collection('tokens')
-                  .where('token', '==', token)
-                  .get()
-                  .then(async snapShot => {
-                    const tokendatas = snapShot.docs.map(doc => ({
-                      ...doc.data(),
-                      id: doc.id,
-                    }));
-                    if (tokendatas.length === 0) {
-                      await firestore().collection('tokens').doc(docId).set({
-                        id: docId,
-                        token: token,
-                        date: Date.now(),
-                        username: inputField.username,
-                        name: record.tname,
-                        circle: record.circle,
-                        question: record.question,
-                        model: DeviceInfo.getModel(),
-                        brand: DeviceInfo.getBrand(),
-                        os: DeviceInfo.getSystemName(),
-                        osVersion: DeviceInfo.getSystemVersion(),
-                      });
-                    }
-                  })
-                  .catch(e => {
-                    showToast('success', `This is A new Device`);
-                    console.log(e);
-                  });
+                if (!__DEV__) {
+                  await firestore()
+                    .collection('tokens')
+                    .where('token', '==', token)
+                    .get()
+                    .then(async snapShot => {
+                      const tokendatas = snapShot.docs.map(doc => ({
+                        ...doc.data(),
+                        id: doc.id,
+                      }));
+                      if (tokendatas.length === 0) {
+                        await firestore().collection('tokens').doc(docId).set({
+                          id: docId,
+                          token: token,
+                          date: Date.now(),
+                          username: inputField.username,
+                          name: record.tname,
+                          circle: record.circle,
+                          question: record.question,
+                          model: DeviceInfo.getModel(),
+                          brand: DeviceInfo.getBrand(),
+                          os: DeviceInfo.getSystemName(),
+                          osVersion: DeviceInfo.getSystemVersion(),
+                        });
+                      }
+                    })
+                    .catch(e => {
+                      showToast('success', `This is A new Device`);
+                      console.log(e);
+                    });
+                }
 
                 await firestore()
                   .collection('teachers')
@@ -276,7 +278,9 @@ const Login = () => {
 
       <View style={styles.card}>
         <Toast />
-        <Text style={styles.title}>Login</Text>
+        <Text selectable style={styles.title}>
+          Login
+        </Text>
         <CustomTextInput
           value={inputField.username}
           title={'Username'}
@@ -285,7 +289,9 @@ const Login = () => {
           onChangeText={text => setInputField({...inputField, username: text})}
         />
         {errField.usernameErr.length > 0 && (
-          <Text style={styles.textErr}>{errField.usernameErr}</Text>
+          <Text selectable style={styles.textErr}>
+            {errField.usernameErr}
+          </Text>
         )}
         <CustomTextInput
           secure={true}
@@ -298,12 +304,14 @@ const Login = () => {
           }}
         />
         {errField.passwordErr.length > 0 && (
-          <Text style={styles.textErr}>{errField.passwordErr}</Text>
+          <Text selectable style={styles.textErr}>
+            {errField.passwordErr}
+          </Text>
         )}
 
         <CustomButton title="Login" onClick={submitForm} />
         <View style={styles.row}>
-          <Text style={{color: 'black', fontSize: 18}}>
+          <Text selectable style={{color: 'black', fontSize: 18}}>
             Don't Have an Account?
           </Text>
           <TouchableOpacity
@@ -315,6 +323,7 @@ const Login = () => {
             }}
             onPress={() => navigation.navigate('Signup')}>
             <Text
+              selectable
               style={styles.account}
               // onPress={() => navigation.navigate('Signup')}
             >
@@ -323,7 +332,9 @@ const Login = () => {
           </TouchableOpacity>
         </View>
         <View style={[styles.row, {marginTop: 20}]}>
-          <Text style={{color: 'black', fontSize: 18}}>Forgot Password?</Text>
+          <Text selectable style={{color: 'black', fontSize: 18}}>
+            Forgot Password?
+          </Text>
           <TouchableOpacity
             onPress={() => navigation.navigate('OTPForm')}
             style={{
@@ -332,11 +343,15 @@ const Login = () => {
               borderRadius: 5,
               marginLeft: 5,
             }}>
-            <Text style={styles.account}>Press Here</Text>
+            <Text selectable style={styles.account}>
+              Press Here
+            </Text>
           </TouchableOpacity>
         </View>
         <View style={[styles.row, {marginTop: 20}]}>
-          <Text style={{color: 'black', fontSize: 18}}>Feeling Trouble?</Text>
+          <Text selectable style={{color: 'black', fontSize: 18}}>
+            Feeling Trouble?
+          </Text>
           <TouchableOpacity
             onPress={openURI}
             style={{
@@ -345,7 +360,9 @@ const Login = () => {
               borderRadius: 5,
               marginLeft: 5,
             }}>
-            <Text style={styles.account}>Press Here</Text>
+            <Text selectable style={styles.account}>
+              Press Here
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

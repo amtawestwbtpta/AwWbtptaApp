@@ -38,7 +38,8 @@ const MemoDetails = () => {
   const [showLoader, setShowLoader] = useState(false);
   const [pageNo, setPageNo] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
-
+  const [isLink, setIsLink] = useState(false);
+  const [textArr, setTextArr] = useState([]);
   useEffect(() => {}, [isFocused, data]);
 
   useEffect(() => {
@@ -52,7 +53,20 @@ const MemoDetails = () => {
     );
     return () => backHandler.remove();
   }, []);
-
+  useEffect(() => {
+    const txt = data.noticeText;
+    if (txt?.includes('https')) {
+      setIsLink(true);
+      const firstIndex = txt?.indexOf('https'); //find link start
+      const linkEnd = txt?.indexOf(' ', firstIndex); //find the end of link
+      const firstTextSection = txt?.slice(0, firstIndex);
+      const linkSection = txt?.slice(firstIndex, linkEnd);
+      const secondSection = txt?.slice(linkEnd);
+      setTextArr([firstTextSection, linkSection, secondSection]);
+    } else {
+      setIsLink(false);
+    }
+  }, []);
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <ScrollView nestedScrollEnabled={true}>
@@ -66,7 +80,9 @@ const MemoDetails = () => {
           />
         </TouchableOpacity>
         <View style={styles.itemView}>
-          <Text style={styles.title}>{data.title}</Text>
+          <Text selectable style={styles.title}>
+            {data.title}
+          </Text>
         </View>
         <View
           style={[
@@ -76,11 +92,17 @@ const MemoDetails = () => {
               marginTop: responsiveHeight(1),
             },
           ]}>
-          <Text style={styles.dropDownText}>
+          <Text selectable style={styles.dropDownText}>
             Posted On: {getDay(data.date)}
           </Text>
-          <Text style={styles.dropDownText}> {getMonthName(data.date)}</Text>
-          <Text style={styles.dropDownText}> {getFullYear(data.date)}</Text>
+          <Text selectable style={styles.dropDownText}>
+            {' '}
+            {getMonthName(data.date)}
+          </Text>
+          <Text selectable style={styles.dropDownText}>
+            {' '}
+            {getFullYear(data.date)}
+          </Text>
         </View>
 
         <View style={styles.itemImageView}>
@@ -214,24 +236,61 @@ const MemoDetails = () => {
               color={'green'}
               size={30}
             />
-            <Text style={[styles.text, {color: 'green'}]}>Download</Text>
+            <Text selectable style={[styles.text, {color: 'green'}]}>
+              Download
+            </Text>
           </TouchableOpacity>
         )}
 
         <View style={styles.itemView}>
-          <Text style={styles.title}>{data.title}</Text>
+          <Text selectable style={styles.title}>
+            {data.title}
+          </Text>
         </View>
         <View style={styles.itemView}>
-          <Text style={styles.title}>Memo Number</Text>
-          <Text style={styles.title}>{data.memoNumber}</Text>
+          <Text selectable style={styles.title}>
+            Memo Number
+          </Text>
+          <Text selectable style={styles.title}>
+            {data.memoNumber}
+          </Text>
         </View>
         <View style={styles.itemView}>
-          <Text style={styles.title}>Memo Date</Text>
-          <Text style={styles.title}>{data.memoDate}</Text>
+          <Text selectable style={styles.title}>
+            Memo Date
+          </Text>
+          <Text selectable style={styles.title}>
+            {data.memoDate}
+          </Text>
         </View>
-        <View style={styles.itemView}>
-          <Text style={styles.label}>{data.memoText}</Text>
-        </View>
+        {!isLink ? (
+          <View style={styles.itemView}>
+            <Text selectable style={styles.label}>
+              {data.memoText}
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.itemView}>
+            <View>
+              <Text selectable style={styles.label}>
+                {textArr[0]}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={async () => {
+                const supported = await Linking.canOpenURL(textArr[1]); //To check if URL is supported or not.
+                if (supported) {
+                  await Linking.openURL(textArr[1]); // It will open the URL on browser.
+                } else {
+                  showToast('error', 'Failed to open link');
+                }
+              }}>
+              <Text selectable style={styles.label}>
+                Click Here: {textArr[1]}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </ScrollView>
       {data.type === 'image/jpeg' && (
         <ImageView
@@ -258,7 +317,9 @@ const MemoDetails = () => {
                   color={'green'}
                   size={40}
                 />
-                <Text style={[styles.text, {color: 'white'}]}>Download</Text>
+                <Text selectable style={[styles.text, {color: 'white'}]}>
+                  Download
+                </Text>
               </TouchableOpacity>
             );
           }}

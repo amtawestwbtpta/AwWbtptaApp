@@ -5,10 +5,9 @@ import {
   View,
   TouchableOpacity,
   BackHandler,
-  DeviceEventEmitter,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {useIsFocused} from '@react-navigation/native';
+import React, {useEffect, useRef, useState} from 'react';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import {THEME_COLOR} from '../utils/Colors';
 import CustomButton from '../components/CustomButton';
@@ -22,7 +21,7 @@ import {
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import CircularProgress from 'react-native-circular-progress-indicator';
 import {useGlobalContext} from '../context/Store';
-const GPWiseSchoolData = ({refresh, navigation, selectActiveTab, tabValue}) => {
+const GPWiseSchoolData = () => {
   const {
     state,
     teachersState,
@@ -34,12 +33,13 @@ const GPWiseSchoolData = ({refresh, navigation, selectActiveTab, tabValue}) => {
     schoolUpdateTime,
     setSchoolUpdateTime,
     setStateObject,
+    setActiveTab,
+    setStateArray,
   } = useGlobalContext();
   const user = state.USER;
   const isFocused = useIsFocused();
-  const setActiveTab = () => {
-    selectActiveTab(tabValue);
-  };
+  const navigation = useNavigation();
+
   const [gp, setGp] = useState([
     {gp: 'Select GP Name'},
     {gp: 'AMORAGORI'},
@@ -87,7 +87,7 @@ const GPWiseSchoolData = ({refresh, navigation, selectActiveTab, tabValue}) => {
   const [isClicked, setIsClicked] = useState(false);
   const [otherClicked, setOtherClicked] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
-
+  const [selectedGpName, setSelectedGpName] = useState('');
   const [editSchool, setEditSchool] = useState({
     id: 'schools101',
     school: 'AMORAGORI GIRLS PRIMARY SCHOOL',
@@ -102,7 +102,14 @@ const GPWiseSchoolData = ({refresh, navigation, selectActiveTab, tabValue}) => {
     v: 0,
     total_student: 18,
   });
+  const scrollRef = useRef();
 
+  const scrollToTop = () => {
+    scrollRef.current?.scrollTo({
+      y: 0,
+      animated: true,
+    });
+  };
   const showToast = (type, text) => {
     Toast.show({
       type: type,
@@ -171,6 +178,7 @@ const GPWiseSchoolData = ({refresh, navigation, selectActiveTab, tabValue}) => {
       setTeacherData(
         teachersState.sort((a, b) => b.desig.localeCompare(a.desig)),
       );
+      setShowLoader(false);
     }
     const schDifference = (Date.now() - schoolUpdateTime) / 1000 / 60 / 15;
     if (schDifference >= 1 || schoolState.length === 0) {
@@ -179,11 +187,15 @@ const GPWiseSchoolData = ({refresh, navigation, selectActiveTab, tabValue}) => {
     } else {
       setschoolData(schoolState);
       setFilteredSchool(schoolState);
+      setShowLoader(false);
     }
   };
 
   useEffect(() => {
     getMainData();
+    setFilteredData(teachersState.filter(item => item.gp === gp[0].gp));
+    setFilteredSchool(schoolState.filter(item => item.gp === gp[0].gp));
+    scrollToTop();
   }, [isFocused]);
 
   useEffect(() => {}, [
@@ -198,17 +210,23 @@ const GPWiseSchoolData = ({refresh, navigation, selectActiveTab, tabValue}) => {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
-        refresh();
+        setActiveTab(0);
         return true;
       },
     );
     return () => backHandler.remove();
-  }, [isFocused]);
+  }, []);
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>GP Wise School Data</Text>
-      <ScrollView>
-        {showData && <Text style={styles.desc}>Select GP Name</Text>}
+      <Text selectable style={styles.title}>
+        GP Wise School Data
+      </Text>
+      <ScrollView ref={scrollRef}>
+        {showData && (
+          <Text selectable style={styles.desc}>
+            Select GP Name
+          </Text>
+        )}
         <TouchableOpacity
           style={[styles.dropDownnSelector, {marginTop: 5}]}
           onPress={() => {
@@ -227,15 +245,14 @@ const GPWiseSchoolData = ({refresh, navigation, selectActiveTab, tabValue}) => {
                 justifyContent: 'space-between',
                 width: '100%',
               }}>
-              {gp[0].gp ? (
-                <Text
-                  style={[
-                    styles.dropDownText,
-                    {paddingRight: responsiveWidth(2)},
-                  ]}>
-                  {gp[0].gp}
-                </Text>
-              ) : null}
+              <Text
+                selectable
+                style={[
+                  styles.dropDownText,
+                  {paddingRight: responsiveWidth(2)},
+                ]}>
+                {gp[0].gp}
+              </Text>
 
               <AntDesign name="down" size={30} color={THEME_COLOR} />
             </View>
@@ -265,7 +282,9 @@ const GPWiseSchoolData = ({refresh, navigation, selectActiveTab, tabValue}) => {
                     );
                     setGp(gp.filter(el => el.gp.match(item.gp)));
                   }}>
-                  <Text style={styles.dropDownText}>{item.gp}</Text>
+                  <Text selectable style={styles.dropDownText}>
+                    {item.gp}
+                  </Text>
                 </TouchableOpacity>
               );
             })}
@@ -280,23 +299,23 @@ const GPWiseSchoolData = ({refresh, navigation, selectActiveTab, tabValue}) => {
               marginBottom: responsiveHeight(8),
             }}>
             {filteredSchool.length > 0 ? (
-              <Text style={styles.dropDownText}>
+              <Text selectable style={styles.dropDownText}>
                 Total School: {filteredSchool.length}
               </Text>
             ) : null}
             {filteredSchool.length > 1 ? (
               <View>
-                <Text style={styles.dropDownText}>
+                <Text selectable style={styles.dropDownText}>
                   Total Teacher: {selectedGPTeacher.length}
                 </Text>
-                <Text style={styles.dropDownText}>
+                <Text selectable style={styles.dropDownText}>
                   Total WBTPTA Teacher:{' '}
                   {
                     selectedGPTeacher.filter(el => el.association === 'WBTPTA')
                       .length
                   }
                 </Text>
-                <Text style={styles.dropDownText}>
+                <Text selectable style={styles.dropDownText}>
                   Total OTHER Teacher:{' '}
                   {
                     selectedGPTeacher.filter(el => el.association !== 'WBTPTA')
@@ -404,22 +423,30 @@ const GPWiseSchoolData = ({refresh, navigation, selectActiveTab, tabValue}) => {
               let selectedSchool = el.udise;
               return (
                 <View key={ind} style={styles.itemView}>
-                  <Text style={styles.dropDownText}>SL. NO.: {ind + 1} </Text>
-                  <Text style={styles.dropDownText}>SCHOOL NAME:</Text>
-                  <Text style={styles.dropDownText}>{el.school},</Text>
-                  <Text style={styles.dropDownText}>UDISE: {el.udise}</Text>
+                  <Text selectable style={styles.dropDownText}>
+                    SL. NO.: {ind + 1}{' '}
+                  </Text>
+                  <Text selectable style={styles.dropDownText}>
+                    SCHOOL NAME:
+                  </Text>
+                  <Text selectable style={styles.dropDownText}>
+                    {el.school},
+                  </Text>
+                  <Text selectable style={styles.dropDownText}>
+                    UDISE: {el.udise}
+                  </Text>
 
-                  <Text style={styles.dropDownText}>
+                  <Text selectable style={styles.dropDownText}>
                     TOTAL TEACHER:{' '}
                     {
                       teacherData.filter(el => el.udise.match(selectedSchool))
                         .length
                     }
                   </Text>
-                  <Text style={styles.dropDownText}>
+                  <Text selectable style={styles.dropDownText}>
                     TOTAL STUDENT: {el.total_student}
                   </Text>
-                  <Text style={styles.dropDownText}>
+                  <Text selectable style={styles.dropDownText}>
                     S/T RATIO:{' '}
                     {Math.floor(
                       el.total_student /
@@ -444,6 +471,7 @@ const GPWiseSchoolData = ({refresh, navigation, selectActiveTab, tabValue}) => {
                               flexWrap: 'wrap',
                             }}>
                             <Text
+                              selectable
                               style={[
                                 styles.dropDownText,
                                 {
@@ -458,38 +486,62 @@ const GPWiseSchoolData = ({refresh, navigation, selectActiveTab, tabValue}) => {
                               ({elem.association})
                             </Text>
                             {user?.circle === 'admin' && (
-                              <TouchableOpacity
+                              <View
                                 style={{
-                                  backgroundColor: 'red',
-                                  margin: responsiveWidth(1),
-                                  padding: responsiveWidth(1),
-                                  borderRadius: responsiveWidth(1),
-                                  resizeMode: 'contain',
-                                }}
-                                onPress={() => {
-                                  navigation.navigate('EditDetails');
-                                  setStateObject({
-                                    data: elem,
-                                    navigation: navigation,
-                                  });
-                                  DeviceEventEmitter.addListener(
-                                    'goBack',
-                                    setActiveTab,
-                                  );
+                                  flexDirection: 'row',
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                  alignSelf: 'center',
+                                  flexWrap: 'wrap',
                                 }}>
-                                <Text style={{color: 'white', fontSize: 12}}>
-                                  Edit
-                                </Text>
-                              </TouchableOpacity>
+                                <TouchableOpacity
+                                  style={{
+                                    backgroundColor: 'purple',
+                                    margin: responsiveWidth(1),
+                                    padding: responsiveWidth(1),
+                                    borderRadius: responsiveWidth(1),
+                                    resizeMode: 'contain',
+                                  }}
+                                  onPress={() => {
+                                    navigation.navigate('ViewDetails');
+                                    setStateObject(elem);
+                                  }}>
+                                  <Text
+                                    selectable
+                                    style={{color: 'white', fontSize: 12}}>
+                                    View
+                                  </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                  style={{
+                                    backgroundColor: 'red',
+                                    margin: responsiveWidth(1),
+                                    padding: responsiveWidth(1),
+                                    borderRadius: responsiveWidth(1),
+                                    resizeMode: 'contain',
+                                  }}
+                                  onPress={() => {
+                                    navigation.navigate('EditDetails');
+                                    setStateObject(elem);
+                                  }}>
+                                  <Text
+                                    selectable
+                                    style={{color: 'white', fontSize: 12}}>
+                                    Edit
+                                  </Text>
+                                </TouchableOpacity>
+                              </View>
                             )}
                           </View>
                         ))
                     ) : otherClicked ? (
-                      <Text style={styles.dropDownText}>
+                      <Text selectable style={styles.dropDownText}>
                         All Are WBTPTA Teachers
                       </Text>
                     ) : (
-                      <Text style={styles.dropDownText}>No WBTPTA Teacher</Text>
+                      <Text selectable style={styles.dropDownText}>
+                        No WBTPTA Teacher
+                      </Text>
                     )}
                     {user.circle === 'admin' ||
                     user.udise === selectedSchool ? (
@@ -497,15 +549,10 @@ const GPWiseSchoolData = ({refresh, navigation, selectActiveTab, tabValue}) => {
                         title={'All Teachers Salary'}
                         onClick={() => {
                           navigation.navigate('AllTeachersSalary');
-                          setStateObject({
-                            data: teacherData.filter(el =>
+                          setStateArray(
+                            teacherData.filter(el =>
                               el.udise.match(selectedSchool),
                             ),
-                            navigation: navigation,
-                          });
-                          DeviceEventEmitter.addListener(
-                            'goBack',
-                            setActiveTab,
                           );
                         }}
                       />

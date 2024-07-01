@@ -144,6 +144,7 @@ const ChangePhoto = () => {
   return (
     <View style={{flex: 1}}>
       <Text
+        selectable
         style={{
           fontSize: responsiveFontSize(4),
           fontWeight: '600',
@@ -214,7 +215,9 @@ const ChangePhoto = () => {
                   tintColor: THEME_COLOR,
                 }}
               />
-              <Text style={styles.label}>Open Camera</Text>
+              <Text selectable style={styles.label}>
+                Open Camera
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={async () => {
@@ -255,7 +258,9 @@ const ChangePhoto = () => {
                   tintColor: THEME_COLOR,
                 }}
               />
-              <Text style={styles.label}>Open Gallery</Text>
+              <Text selectable style={styles.label}>
+                Open Gallery
+              </Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -296,7 +301,7 @@ const ChangePhoto = () => {
                     setPath('');
                     setDisable(true);
                   }}>
-                  <Text style={{color: 'red'}}>
+                  <Text selectable style={{color: 'red'}}>
                     <MaterialIcons name="cancel" size={20} />
                   </Text>
                 </TouchableOpacity>
