@@ -597,7 +597,6 @@ const NoticeDetails = () => {
                 </View>
                 <ScrollView
                   style={{alignSelf: 'center'}}
-                  horizontal={true}
                   contentContainerStyle={{
                     justifyContent: 'center',
                     alignItems: 'center',

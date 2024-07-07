@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
   Linking,
+  Dimensions,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {THEME_COLOR} from '../utils/Colors';
@@ -20,7 +21,10 @@ import {
 } from 'react-native-responsive-dimensions';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import RNExitApp from 'react-native-exit-app';
 import Carousel from 'react-native-reanimated-carousel';
@@ -29,7 +33,7 @@ import {downloadFile} from '../modules/downloadFile';
 import {AppURL, DA, HRA, TelegramURL} from '../modules/constants';
 import {useGlobalContext} from '../context/Store';
 const Dashboard = () => {
-  const {state, slideState, setStateObject, teachersState} = useGlobalContext();
+  const {state, slideState, setStateObject, setActiveTab} = useGlobalContext();
   const user = state.USER;
   const navigation = useNavigation();
   const teacher = state.TEACHER;
@@ -43,6 +47,7 @@ const Dashboard = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [titles, setTitles] = useState([]);
   const [photoNames, setPhotoNames] = useState([]);
+  const [showTabs, setShowTabs] = useState(false);
   const ifsc_ser = () => {
     fetch(`https://ifsc.razorpay.com/${teacher.ifsc}`)
       .then(res => res.json())
@@ -634,15 +639,6 @@ const Dashboard = () => {
                       navigation.navigate('TeacherServiceLife');
                     }}
                   />
-                  <CustomButton
-                    size={'small'}
-                    fontSize={responsiveFontSize(1.5)}
-                    title={'Yearwise Teachers'}
-                    color={'deeppink'}
-                    onClick={() => {
-                      navigation.navigate('YearwiseTeachers');
-                    }}
-                  />
 
                   {user.question === 'admin' && (
                     <CustomButton
@@ -664,6 +660,341 @@ const Dashboard = () => {
                   alignItems: 'center',
                   alignSelf: 'center',
                 }}>
+                <CustomButton
+                  size={'small'}
+                  fontSize={responsiveFontSize(1.5)}
+                  title={showTabs ? 'Hide Menu' : 'Show Menu'}
+                  color={THEME_COLOR}
+                  onClick={() => {
+                    setShowTabs(!showTabs);
+                  }}
+                />
+              </View>
+              {showTabs && (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    alignSelf: 'center',
+                    flexWrap: 'wrap',
+                  }}>
+                  <TouchableOpacity
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: 90,
+                      height: 40,
+                      paddingLeft: 2.5,
+                      paddingRight: 2.5,
+                      marginRight: 5,
+                      marginBottom: 5,
+                      marginTop: 5,
+                      borderRadius: 10,
+                      backgroundColor: THEME_COLOR,
+                    }}
+                    onPress={() => setActiveTab(0.5)}>
+                    <AntDesign name="notification" size={15} color={'white'} />
+                    <Text selectable style={{color: 'white'}}>
+                      Notices
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: 90,
+                      height: 40,
+                      paddingLeft: 2.5,
+                      paddingRight: 2.5,
+                      marginRight: 5,
+                      marginBottom: 5,
+                      marginTop: 5,
+                      borderRadius: 10,
+                      backgroundColor: THEME_COLOR,
+                    }}
+                    onPress={() => setActiveTab(11)}>
+                    <Entypo name="newsletter" size={15} color={'white'} />
+                    <Text selectable style={{color: 'white'}}>
+                      Memos
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: 90,
+                      height: 40,
+                      paddingLeft: 2.5,
+                      paddingRight: 2.5,
+                      marginRight: 5,
+                      marginBottom: 5,
+                      marginTop: 5,
+                      borderRadius: 10,
+                      backgroundColor: THEME_COLOR,
+                    }}
+                    onPress={() => setActiveTab(1)}>
+                    <MaterialCommunityIcons
+                      name="account-search"
+                      size={15}
+                      color={'white'}
+                    />
+                    <Text selectable style={{color: 'white'}}>
+                      Teachers
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: 90,
+                      height: 40,
+                      paddingLeft: 2.5,
+                      paddingRight: 2.5,
+                      marginRight: 5,
+                      marginBottom: 5,
+                      marginTop: 5,
+                      borderRadius: 10,
+                      backgroundColor: THEME_COLOR,
+                    }}
+                    onPress={() => setActiveTab(2)}>
+                    <Image
+                      source={require('../assets/images/ratio.png')}
+                      style={{
+                        width: responsiveWidth(5),
+                        height: responsiveWidth(5),
+                        tintColor: 'white',
+                      }}
+                    />
+                    <Text selectable style={{color: 'white'}}>
+                      S/T Ratio
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: 90,
+                      height: 40,
+                      paddingLeft: 2.5,
+                      paddingRight: 2.5,
+                      marginRight: 5,
+                      marginBottom: 5,
+                      marginTop: 5,
+                      borderRadius: 10,
+                      backgroundColor: THEME_COLOR,
+                    }}
+                    onPress={() => setActiveTab(3)}>
+                    <MaterialCommunityIcons
+                      name="map-marker-distance"
+                      size={15}
+                      color={'white'}
+                    />
+                    <Text selectable style={{color: 'white'}}>
+                      GP Data
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: 90,
+                      height: 40,
+                      paddingLeft: 2.5,
+                      paddingRight: 2.5,
+                      marginRight: 5,
+                      marginBottom: 5,
+                      marginTop: 5,
+                      borderRadius: 10,
+                      backgroundColor: THEME_COLOR,
+                    }}
+                    onPress={() => setActiveTab(4)}>
+                    <Text
+                      selectable
+                      style={{
+                        color: 'white',
+                        textAlign: 'center',
+                        fontSize: responsiveFontSize(1.5),
+                      }}>
+                      {`Retirement\nCalculator`}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: 90,
+                      height: 40,
+                      paddingLeft: 2.5,
+                      paddingRight: 2.5,
+                      marginRight: 5,
+                      marginBottom: 5,
+                      marginTop: 5,
+                      borderRadius: 10,
+                      backgroundColor: THEME_COLOR,
+                    }}
+                    onPress={() => setActiveTab(5)}>
+                    <Text
+                      selectable
+                      style={{
+                        color: 'white',
+                        textAlign: 'center',
+                        fontSize: responsiveFontSize(1.5),
+                      }}>
+                      {`Age\nCalculator`}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: 90,
+                      height: 40,
+                      paddingLeft: 2.5,
+                      paddingRight: 2.5,
+                      marginRight: 5,
+                      marginBottom: 5,
+                      marginTop: 5,
+                      borderRadius: 10,
+                      backgroundColor: THEME_COLOR,
+                    }}
+                    onPress={() => setActiveTab(6)}>
+                    <Text
+                      selectable
+                      style={{
+                        color: 'white',
+                        textAlign: 'center',
+                        fontSize: responsiveFontSize(1.5),
+                      }}>
+                      {`Tax\nCalculator`}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: 90,
+                      height: 40,
+                      paddingLeft: 2.5,
+                      paddingRight: 2.5,
+                      marginRight: 5,
+                      marginBottom: 5,
+                      marginTop: 5,
+                      borderRadius: 10,
+                      backgroundColor: THEME_COLOR,
+                    }}
+                    onPress={() => setActiveTab(7)}>
+                    <MaterialIcons
+                      name="report-problem"
+                      size={15}
+                      color={'white'}
+                    />
+                    <Text
+                      selectable
+                      style={{
+                        color: 'white',
+                        textAlign: 'center',
+                      }}>
+                      Complain
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: 90,
+                      height: 40,
+                      paddingLeft: 2.5,
+                      paddingRight: 2.5,
+                      marginRight: 5,
+                      marginBottom: 5,
+                      marginTop: 5,
+                      borderRadius: 10,
+                      backgroundColor: THEME_COLOR,
+                    }}
+                    onPress={() => setActiveTab(8)}>
+                    <FontAwesome6 name="user-gear" size={15} color={'white'} />
+                    <Text
+                      selectable
+                      style={{
+                        color: 'white',
+                        textAlign: 'center',
+                      }}>
+                      User U & P
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: 90,
+                      height: 40,
+                      paddingLeft: 2.5,
+                      paddingRight: 2.5,
+                      marginRight: 5,
+                      marginBottom: 5,
+                      marginTop: 5,
+                      borderRadius: 10,
+                      backgroundColor: THEME_COLOR,
+                    }}
+                    onPress={() => setActiveTab(9)}>
+                    <Ionicons
+                      name="chatbubble-ellipses-sharp"
+                      size={15}
+                      color={'white'}
+                    />
+                    <Text
+                      selectable
+                      style={{
+                        color: 'white',
+                        textAlign: 'center',
+                      }}>
+                      Chat
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: 90,
+                      height: 40,
+                      paddingLeft: 2.5,
+                      paddingRight: 2.5,
+                      marginRight: 5,
+                      marginBottom: 5,
+                      marginTop: 5,
+                      borderRadius: 10,
+                      backgroundColor: THEME_COLOR,
+                    }}
+                    onPress={() => setActiveTab(10)}>
+                    <Entypo name="download" size={15} color={'white'} />
+                    <Text
+                      selectable
+                      style={{
+                        color: 'white',
+                        textAlign: 'center',
+                      }}>
+                      Downloads
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                }}>
+                <CustomButton
+                  size={'small'}
+                  fontSize={responsiveFontSize(1.5)}
+                  title={'Yearwise Teachers'}
+                  color={'deeppink'}
+                  onClick={() => {
+                    navigation.navigate('YearwiseTeachers');
+                  }}
+                />
                 <CustomButton
                   size={'small'}
                   fontSize={responsiveFontSize(1.5)}

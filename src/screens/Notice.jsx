@@ -109,7 +109,7 @@ const Notice = () => {
             type: type,
           })
           .then(async () => {
-            setNoticeState([
+            let newData = [
               ...noticeState,
               {
                 id: docId,
@@ -121,20 +121,10 @@ const Notice = () => {
                 photoName: docId + '-' + photoName,
                 type: type,
               },
-            ]);
-            setAllNotices([
-              ...noticeState,
-              {
-                id: docId,
-                date: Date.now(),
-                addedBy: user.tname,
-                title: title,
-                noticeText: noticeText,
-                url: url,
-                photoName: docId + '-' + photoName,
-                type: type,
-              },
-            ]);
+            ];
+            newData = newData.sort((a, b) => b.date - a.date);
+            setNoticeState(newData);
+            setAllNotices(newData);
             setNoticeUpdateTime(Date.now());
             let noticeTitle = `New Notice added By ${user.tname}`;
             let body = noticeText;
@@ -174,7 +164,7 @@ const Notice = () => {
             type: '',
           })
           .then(async () => {
-            setNoticeState([
+            let newData = [
               ...noticeState,
               {
                 id: docId,
@@ -186,20 +176,10 @@ const Notice = () => {
                 photoName: '',
                 type: '',
               },
-            ]);
-            setAllNotices([
-              ...noticeState,
-              {
-                id: docId,
-                date: Date.now(),
-                addedBy: user.tname,
-                title: title,
-                noticeText: noticeText,
-                url: '',
-                photoName: '',
-                type: '',
-              },
-            ]);
+            ];
+            newData = newData.sort((a, b) => b.date - a.date);
+            setNoticeState(newData);
+            setAllNotices(newData);
             setNoticeUpdateTime(Date.now());
             let noticeTitle = `New Notice added By ${user.tname}`;
             let body = `Title: ${title}, Notice: ${noticeText}`;
@@ -297,7 +277,6 @@ const Notice = () => {
                   )
                   .catch(e => console.log(e)),
             );
-            getNoticeData();
           })
           .catch(e => console.log(e));
 
@@ -404,7 +383,7 @@ const Notice = () => {
   useEffect(() => {
     getNoticeData();
   }, [isFocused]);
-  useEffect(() => {}, [addImage, photoName, uri, noticeState]);
+  useEffect(() => {}, [addImage, photoName, uri, noticeState, allNotices]);
 
   return (
     <View

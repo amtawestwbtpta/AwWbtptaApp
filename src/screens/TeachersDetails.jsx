@@ -1039,7 +1039,7 @@ const TeachersDetails = () => {
   };
   useEffect(() => {
     getMainData();
-    scrollToTop();
+    // scrollToTop();
   }, [isFocused]);
 
   useEffect(() => {

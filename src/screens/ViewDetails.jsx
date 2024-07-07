@@ -108,7 +108,7 @@ const ViewDetails = () => {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
-        navigation.navigate('Home');
+        navigation.goBack();
         DeviceEventEmitter.emit('goBack');
         return true;
       },
@@ -138,7 +138,7 @@ const ViewDetails = () => {
           color={'purple'}
           size={'small'}
           onClick={() => {
-            navigation.navigate('Home');
+            navigation.goBack();
             DeviceEventEmitter.emit('goBack');
           }}
         />
@@ -357,7 +357,7 @@ const ViewDetails = () => {
           size={'small'}
           color={'purple'}
           onClick={() => {
-            navigation.navigate('Home');
+            navigation.goBack();
             DeviceEventEmitter.emit('goBack');
           }}
         />

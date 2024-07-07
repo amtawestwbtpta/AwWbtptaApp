@@ -32,6 +32,7 @@ import bcrypt from 'react-native-bcrypt';
 import isaac from 'isaac';
 import uuid from 'react-native-uuid';
 import DeviceInfo from 'react-native-device-info';
+import {TelegramURL} from '../modules/constants';
 const Login = () => {
   const docId = uuid.v4();
   const navigation = useNavigation();
@@ -227,7 +228,7 @@ const Login = () => {
   };
 
   const openURI = async () => {
-    const url = 'https://telegram.me/+dvabXN-YCJ1lM2E1';
+    const url = TelegramURL;
     const supported = await Linking.canOpenURL(url); //To check if URL is supported or not.
     if (supported) {
       await Linking.openURL(url); // It will open the URL on browser.

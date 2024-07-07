@@ -1,10 +1,14 @@
 import {ScrollView, StyleSheet, Text, View, BackHandler} from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {THEME_COLOR} from '../utils/Colors';
 import CustomButton from '../components/CustomButton';
-import {IndianFormat} from '../modules/calculatefunctions';
-import {DA, HRA} from '../modules/constants';
+import {
+  GetMonthName,
+  IndianFormat,
+  months,
+} from '../modules/calculatefunctions';
+import {DA, HRA, NEXTDA, PREV6DA, PREVDA} from '../modules/constants';
 import {
   responsiveHeight,
   responsiveWidth,
@@ -14,11 +18,18 @@ import {useGlobalContext} from '../context/Store';
 const AllTeachersSalary = () => {
   const {stateArray} = useGlobalContext();
   const isFocused = useIsFocused();
-
   const data = stateArray;
   const navigation = useNavigation();
+  const [school, setSchool] = useState('');
+  const today = new Date();
+  const date = new Date();
+  const [index, setIndex] = useState(today.getMonth() + 1);
+  const [month, setMonth] = useState(GetMonthName(today.getMonth()));
+  const thisMonth = GetMonthName(today.getMonth());
 
-  useEffect(() => {}, [isFocused]);
+  useEffect(() => {
+    setSchool(stateArray[0]?.school);
+  }, [isFocused]);
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
@@ -39,12 +50,43 @@ const AllTeachersSalary = () => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-        <Text
-          selectable
-          style={
-            styles.title
-          }>{`ALL TEACHERS SALARY DATA OF\n ${data[0].school}`}</Text>
-        {data.map((el, index) => {
+        <View style={styles.dataView}>
+          <Text selectable style={styles.bankDataText}>
+            Select Month
+          </Text>
+        </View>
+        <View
+          style={{
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+            alignSelf: 'center',
+            flexDirection: 'row',
+            margin: responsiveWidth(1),
+            flexWrap: 'wrap',
+            width: responsiveWidth(95),
+          }}>
+          {months.slice(0, months.indexOf(thisMonth) + 1).map((el, ind) => {
+            return (
+              <CustomButton
+                key={ind}
+                title={el}
+                color={month === el ? 'green' : null}
+                fontColor={month === el ? 'seashell' : null}
+                size={'small'}
+                onClick={() => {
+                  setMonth(el);
+                  setIndex(ind + 1);
+                }}
+              />
+            );
+          })}
+        </View>
+        <Text selectable style={styles.title}>
+          {' '}
+          All Teacher's Salary Data for The Month of {month.toUpperCase()} of{' '}
+          {school}
+        </Text>
+        {data.map((el, ind) => {
           let basic = el.basic;
           let mbasic = el.mbasic;
           let addl = el.addl;
@@ -52,18 +94,39 @@ const AllTeachersSalary = () => {
           let gpf = el.gpf;
           let gsli = el.gsli;
           let disability = el.disability;
-          let date = new Date();
+          let prevmbasic = el.prevmbasic;
+          let dataYear = el.dataYear;
+          let da;
 
           // console.log(junelast)
           let basicpay;
           let ptax;
-          if (date.getMonth() > 5) {
-            basicpay = basic;
+          if (dataYear === date.getFullYear()) {
+            if (index > 6) {
+              basicpay = basic;
+              da = Math.round(basicpay * DA);
+            } else {
+              basicpay = mbasic;
+              if (index < 4) {
+                da = Math.round(basicpay * PREVDA);
+              } else {
+                da = Math.round(basicpay * DA);
+              }
+            }
+          } else if (dataYear === date.getFullYear() - 1) {
+            basicpay = prevmbasic;
+            da = Math.round(basicpay * PREV6DA);
           } else {
-            basicpay = mbasic;
+            if (index > 6) {
+              basicpay = RoundTo(basic + basic * 0.03, 100);
+              da = Math.round(basicpay * NEXTDA);
+            } else {
+              basicpay = basic;
+              da = Math.round(basicpay * DA);
+            }
           }
 
-          let da = Math.round(basicpay * DA);
+          // let da = Math.round(basicpay * DA);
           let hra = Math.round(basicpay * HRA);
 
           let gross = basicpay + da + hra + addl + ma;
@@ -90,9 +153,9 @@ const AllTeachersSalary = () => {
           let netpay = gross - deduction;
 
           return (
-            <View style={styles.dataView} key={index}>
+            <View style={styles.dataView} key={ind}>
               <Text selectable style={styles.dataText}>
-                ({index + 1})
+                ({ind + 1})
               </Text>
               <View
                 style={{

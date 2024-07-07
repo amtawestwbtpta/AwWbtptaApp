@@ -22,9 +22,9 @@ import firestore from '@react-native-firebase/firestore';
 import Loader from '../components/Loader';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {useGlobalContext} from '../context/Store';
 import {
-  getServiceAge,
   getServiceLife,
   monthNamesWithIndex,
   uniqArray,
@@ -32,7 +32,9 @@ import {
 import Toast from 'react-native-toast-message';
 const YearwiseTeachers = () => {
   const {
+    state,
     teachersState,
+    setStateObject,
     setTeachersState,
     teacherUpdateTime,
     setTeacherUpdateTime,
@@ -41,6 +43,7 @@ const YearwiseTeachers = () => {
     schoolUpdateTime,
     setSchoolUpdateTime,
   } = useGlobalContext();
+  const user = state.USER;
   const ref = useRef();
   const isFocused = useIsFocused();
   const navigation = useNavigation();
@@ -51,9 +54,11 @@ const YearwiseTeachers = () => {
   const [selectedYear, setSelectedYear] = useState('');
   const [joiningMonths, setJoiningMonths] = useState([]);
   const [serviceArray, setServiceArray] = useState([]);
-
+  const [monthText, setMonthText] = useState('');
+  const [showAllDetails, setShowAllDetails] = useState(
+    user.circle === 'admin' ? true : false,
+  );
   const handleChange = el => {
-    setSelectedYear(el);
     let x = [];
     let y = [];
     data.map(teacher => {
@@ -70,10 +75,12 @@ const YearwiseTeachers = () => {
         });
       }
     });
+
     setSelectedYear(el);
     setFilteredData(x);
     setMoreFilteredData(x);
-    setJoiningMonths(uniqArray(y).sort((a, b) => a.rank - b.rank));
+    setJoiningMonths(uniqArray(y));
+    setMonthText('');
   };
   const handleMonthChange = month => {
     let x = [];
@@ -85,6 +92,7 @@ const YearwiseTeachers = () => {
       }
     });
     setFilteredData(x);
+    setMonthText(month.monthName);
   };
   const makeCall = phoneNumber => {
     let dial;
@@ -208,6 +216,16 @@ const YearwiseTeachers = () => {
       getData();
     }
   };
+  const getArrayLength = year => {
+    let x = [];
+    data.map(teacher => {
+      const joiningYear = teacher.doj.split('-')[2];
+      if (joiningYear === year) {
+        x.push(teacher);
+      }
+    });
+    return x.length;
+  };
   useEffect(() => {
     getMainData();
   }, [isFocused]);
@@ -284,7 +302,7 @@ const YearwiseTeachers = () => {
               right: 10,
               height: 50,
               backgroundColor: '#fff',
-              opacity: 0.3,
+              opacity: 0.1,
               borderRadius: 100,
               zIndex: 1000,
             }}
@@ -308,7 +326,7 @@ const YearwiseTeachers = () => {
               right: 10,
               height: 50,
               backgroundColor: '#fff',
-              opacity: 0.3,
+              opacity: 0.1,
               borderRadius: 100,
               zIndex: 1000,
             }}
@@ -337,33 +355,61 @@ const YearwiseTeachers = () => {
             alignItems: 'center',
             alignSelf: 'center',
             flexDirection: 'row',
-            margin: responsiveHeight(1),
+            margin: responsiveWidth(1),
             flexWrap: 'wrap',
-            width: responsiveWidth(90),
+            width: responsiveWidth(95),
           }}>
           {serviceArray.length > 0 &&
             serviceArray.map((year, index) => (
-              <View>
+              <View
+                key={index}
+                style={{
+                  marginHorizontal: responsiveWidth(0.3),
+                  marginVertical: responsiveHeight(0.3),
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                  borderRadius: responsiveWidth(3),
+                  backgroundColor: 'lightgoldenrodyellow',
+                  padding: responsiveWidth(0.5),
+                }}>
                 <CustomButton
                   title={year}
                   size={'xsmall'}
+                  color={selectedYear === year ? 'green' : null}
+                  fontColor={selectedYear === year ? 'seashell' : null}
                   key={index}
                   onClick={() => handleChange(year)}
                 />
                 <Text
                   style={{
-                    color: 'chocolate',
+                    color: 'magenta',
                     fontSize: responsiveFontSize(1.3),
                     alignSelf: 'center',
                     textAlign: 'center',
                   }}>
-                  {new Date().getFullYear() - parseInt(year)} Year
+                  {new Date().getFullYear() - parseInt(year) > 1
+                    ? new Date().getFullYear() - parseInt(year) + ' Years'
+                    : new Date().getFullYear() - parseInt(year) === 1
+                    ? new Date().getFullYear() - parseInt(year) + ' Year'
+                    : 'This Year'}
+                </Text>
+                <Text
+                  style={{
+                    color: 'blue',
+                    fontSize: responsiveFontSize(1.3),
+                    alignSelf: 'center',
+                    textAlign: 'center',
+                    marginTop: responsiveHeight(0.1),
+                  }}>
+                  {getArrayLength(year) +
+                    `${getArrayLength(year) > 1 ? ' Teachers' : ' Teacher'}`}
                 </Text>
               </View>
             ))}
         </View>
 
-        {selectedYear ? (
+        {user.circle === 'admin' && selectedYear ? (
           <View>
             {joiningMonths.length > 1 && (
               <View style={styles.dataView}>
@@ -384,17 +430,36 @@ const YearwiseTeachers = () => {
               }}>
               {joiningMonths.length > 1 &&
                 joiningMonths.map((month, index) => (
-                  <View>
+                  <View
+                    style={{
+                      marginHorizontal: responsiveWidth(0.3),
+                      marginVertical: responsiveHeight(0.3),
+                      justifyContent: 'evenly',
+                      alignItems: 'center',
+                      alignSelf: 'center',
+                      borderRadius: responsiveWidth(3),
+                      backgroundColor: 'lightgoldenrodyellow',
+                      padding: responsiveWidth(0.5),
+                    }}
+                    key={index}>
                     <CustomButton
                       title={month.monthName}
-                      size={'small'}
+                      size={'xsmall'}
+                      color={
+                        month.monthName === monthText
+                          ? 'mediumspringgreen'
+                          : null
+                      }
+                      fontColor={
+                        month.monthName === monthText ? 'indigo' : null
+                      }
                       fontSize={responsiveFontSize(1.5)}
                       key={index}
                       onClick={() => handleMonthChange(month)}
                     />
                     <Text
                       style={{
-                        color: 'chocolate',
+                        color: 'magenta',
                         fontSize: responsiveFontSize(1.3),
                         alignSelf: 'center',
                         textAlign: 'center',
@@ -410,16 +475,43 @@ const YearwiseTeachers = () => {
                   </View>
                 ))}
             </View>
+            {monthText && (
+              <CustomButton
+                title={'Clear Filter'}
+                size={'xsmall'}
+                color={'red'}
+                fontSize={responsiveFontSize(1.3)}
+                onClick={() => {
+                  setMonthText('');
+                  setFilteredData(moreFilteredData);
+                }}
+              />
+            )}
             <View style={styles.dataView}>
               <Text selectable style={styles.bankDataText}>
+                Total {moreFilteredData.length}{' '}
                 {moreFilteredData.length > 1 ? 'Teachers' : 'Teacher'} Joined on
                 Year {selectedYear}
               </Text>
-              <Text selectable style={styles.bankDataText}>
-                Total {moreFilteredData.length} Teachers
-              </Text>
             </View>
-
+            {monthText && (
+              <View style={styles.dataView}>
+                <Text selectable style={styles.bankDataText}>
+                  {filteredData.length}
+                  {filteredData.length > 1 ? ' Teachers' : ' Teacher'} Joined on{' '}
+                  {monthText}
+                </Text>
+              </View>
+            )}
+            {user.circle === 'admin' && (
+              <CustomButton
+                size={'small'}
+                color={'rebeccapurple'}
+                fontSize={responsiveFontSize(1.4)}
+                title={showAllDetails ? 'Hide Details' : 'Show Details'}
+                onClick={() => setShowAllDetails(!showAllDetails)}
+              />
+            )}
             {filteredData.length > 0 ? (
               filteredData.map((el, index) => {
                 return (
@@ -437,27 +529,87 @@ const YearwiseTeachers = () => {
                       <Text selectable style={styles.bankDataText}>
                         School: {el.school}
                       </Text>
-                      <TouchableOpacity
-                        onPress={() => makeCall(parseInt(el.phone))}>
-                        <Text selectable style={styles.bankDataText}>
-                          Mobile: {el.phone}
-                        </Text>
-                      </TouchableOpacity>
-                      <Text selectable style={styles.bankDataText}>
-                        Service Life: {getServiceLife(el.doj)}
-                      </Text>
-                      <Text selectable style={styles.bankDataText}>
-                        Date of Joining: {el.doj}
-                      </Text>
-                      <Text selectable style={styles.bankDataText}>
-                        DOJ at This Post in This School: {el.dojnow}
-                      </Text>
-                      <Text selectable style={styles.bankDataText}>
-                        Date of Birth: {el.dob}
-                      </Text>
-                      <Text selectable style={styles.bankDataText}>
-                        Date of Retirement: {el.dor}
-                      </Text>
+                      {showAllDetails && (
+                        <TouchableOpacity
+                          onPress={() => makeCall(parseInt(el.phone))}>
+                          <Text selectable style={styles.bankDataText}>
+                            Mobile: {el.phone}
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+
+                      {showAllDetails && (
+                        <View>
+                          <Text selectable style={styles.bankDataText}>
+                            Service Life: {getServiceLife(el.doj)}
+                          </Text>
+                          <Text selectable style={styles.bankDataText}>
+                            Date of Joining: {el.doj}
+                          </Text>
+                          <Text selectable style={styles.bankDataText}>
+                            DOJ at This Post in This School: {el.dojnow}
+                          </Text>
+                          <Text selectable style={styles.bankDataText}>
+                            Date of Birth: {el.dob}
+                          </Text>
+                          <Text selectable style={styles.bankDataText}>
+                            Date of Retirement: {el.dor}
+                          </Text>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              alignSelf: 'center',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                            }}>
+                            {/* <View style={{marginRight: responsiveWidth(1)}}>
+                              <CustomButton
+                                title={'View'}
+                                size={'xsmall'}
+                                fontSize={responsiveFontSize(1.6)}
+                                color={'darkgreen'}
+                                onClick={() => {
+                                  navigation.navigate('ViewDetails');
+                                  setStateObject(el);
+                                }}
+                              />
+                            </View>
+                            <CustomButton
+                              title={'Edit'}
+                              size={'xsmall'}
+                              fontSize={responsiveFontSize(1.6)}
+                              color={'chocolate'}
+                              onClick={() => {
+                                navigation.navigate('EditDetails');
+                                setStateObject(el);
+                              }}
+                            /> */}
+                            <TouchableOpacity
+                              style={{marginRight: responsiveWidth(3)}}
+                              onPress={() => {
+                                navigation.navigate('ViewDetails');
+                                setStateObject(el);
+                              }}>
+                              <AntDesign
+                                name="eye"
+                                size={30}
+                                color={'darkgreen'}
+                              />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              onPress={() => {
+                                navigation.navigate('EditDetails');
+                                setStateObject(el);
+                              }}>
+                              <FontAwesome
+                                name="edit"
+                                size={30}
+                                color={'chocolate'}
+                              />
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      )}
                     </View>
                   </View>
                 );

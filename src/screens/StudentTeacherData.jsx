@@ -9,7 +9,7 @@ import {
   Platform,
   Linking,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -33,6 +33,7 @@ import {useGlobalContext} from '../context/Store';
 const StudentTeacherData = () => {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
+  const ref = useRef();
   const {
     state,
     teachersState,
@@ -104,6 +105,12 @@ const StudentTeacherData = () => {
     total_student: 18,
   });
 
+  const scrollToTop = () => {
+    ref.current?.scrollTo({
+      y: 0,
+      animated: true,
+    });
+  };
   const updateData = async () => {
     let equalObject = compareObjects(editSchool, uneditedSchool);
     if (!equalObject) {
@@ -241,7 +248,7 @@ const StudentTeacherData = () => {
   }, []);
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView ref={ref}>
         {showData && (
           <Text selectable style={styles.desc}>
             Select School Name
@@ -318,6 +325,7 @@ const StudentTeacherData = () => {
                   style={styles.AdminName}
                   onPress={() => {
                     setIsClicked(false);
+                    scrollToTop();
                     setSchoolName('');
                     setShowData(true);
                     setFilteredData(
@@ -775,8 +783,8 @@ const styles = StyleSheet.create({
     marginTop: responsiveHeight(2),
     marginBottom: responsiveHeight(2),
     width: responsiveWidth(90),
-    height: responsiveHeight(90),
-    position: 'absolute',
+    // height: responsiveHeight(100),
+    // position: 'absolute',
     // backgroundColor: 'rgba(255, 255, 255,.9)',
     justifyContent: 'center',
     alignItems: 'center',
@@ -786,7 +794,7 @@ const styles = StyleSheet.create({
     marginTop: responsiveHeight(2),
     marginBottom: responsiveHeight(2),
     width: responsiveWidth(90),
-    height: responsiveHeight(90),
+    // height: responsiveHeight(100),
     borderRadius: 10,
 
     backgroundColor: 'white',

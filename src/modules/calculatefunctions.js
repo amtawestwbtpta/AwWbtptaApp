@@ -182,8 +182,54 @@ export const getMonthName = date => {
   return monthNames[d.getMonth()];
 };
 
+export const months = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+export const finMonths = [
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+  'January',
+  'February',
+  'March',
+];
 export const getMonthDays = [31, 30, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
+export function GetMonthName(monthNumber) {
+  monthNumber = monthNumber < 0 ? 11 : monthNumber;
+  var months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+  return months[monthNumber];
+}
 export function compareObjects(x, y) {
   if (x === y) return true;
   // if both x and y are null or undefined and exactly the same
