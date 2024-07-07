@@ -23,6 +23,7 @@ import Animated, {
   useSharedValue,
   withDelay,
   withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 import {useGlobalContext} from '../context/Store';
 import messaging from '@react-native-firebase/messaging';
@@ -39,23 +40,53 @@ const Splash = () => {
   const h = useSharedValue(0);
   const w = useSharedValue(0);
   const r = useSharedValue('0deg');
+  const image_y = useSharedValue(0);
+  const amta_x = useSharedValue(0);
+  const west_x = useSharedValue(0);
+  const circle_y = useSharedValue(0);
   const [token, setToken] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const animatedStyle = useAnimatedStyle(() => {
+  const [showLoader, setShowLoader] = useState(false);
+  const imageAnimatedStyle = useAnimatedStyle(() => {
     return {
-      width: w.value,
-      height: h.value,
-      opacity: w.value === 0 ? 0.3 : 1,
-      transform: [{rotate: r.value}],
+      transform: [{translateY: -image_y.value}],
     };
   });
-  const scaleImage = () => {
-    if (w.value === 0) {
-      h.value = withSpring(250);
-      w.value = withSpring(250);
-      r.value = withDelay(500, withSpring('360deg'));
-    }
+  const amtaAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{translateX: amta_x.value}],
+    };
+  });
+  const westAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{translateX: west_x.value}],
+    };
+  });
+  const circleAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{translateY: circle_y.value}],
+    };
+  });
+  const swipeAmtaWestCircle = () => {
+    image_y.value = responsiveHeight(100);
+    amta_x.value = -responsiveWidth(100);
+    west_x.value = responsiveWidth(100);
+    circle_y.value = responsiveHeight(100);
+
+    image_y.value = withTiming(0, {
+      duration: 500,
+    });
+    amta_x.value = withTiming(0, {
+      duration: 600,
+    });
+    west_x.value = withTiming(0, {
+      duration: 700,
+    });
+    circle_y.value = withTiming(0, {
+      duration: 800,
+    });
   };
+
   const getDetails = async () => {
     const userID = JSON.parse(await EncryptedStorage.getItem('user'));
     const teacherID = JSON.parse(await EncryptedStorage.getItem('teacher'));
@@ -85,8 +116,9 @@ const Splash = () => {
                 console.log('User Not Logged');
 
                 setTimeout(() => {
+                  setShowLoader(false);
                   navigation.navigate('Home');
-                }, 500);
+                }, 3000);
               } else {
                 console.log('User Logged');
                 await firestore()
@@ -98,14 +130,16 @@ const Splash = () => {
 
                     if (userData.disabled) {
                       console.log('User Disabled');
+
                       showToast(
                         'error',
                         'Your Account Has Been Disabled.',
                         'Contact WBTPTA Admin',
                       );
                       setTimeout(() => {
+                        setShowLoader(false);
                         navigation.navigate('SignOut');
-                      }, 500);
+                      }, 3000);
                     } else {
                       setState({
                         USER: userID,
@@ -113,13 +147,16 @@ const Splash = () => {
                         TOKEN: token,
                         LOGGEDAT: loggedAt,
                       });
+
                       console.log('User Settled going to Home Page');
                       setTimeout(() => {
+                        setShowLoader(false);
                         navigation.navigate('Home');
-                      }, 500);
+                      }, 3000);
                     }
                   })
                   .catch(async e => {
+                    setShowLoader(false);
                     console.log(e);
                     await EncryptedStorage.clear();
                     navigation.navigate('Login');
@@ -127,13 +164,15 @@ const Splash = () => {
               }
             } else {
               setTimeout(async () => {
+                setShowLoader(false);
                 navigation.navigate('Login');
-              }, 500);
+              }, 3000);
             }
           }
         }
       })
       .catch(e => {
+        setShowLoader(false);
         console.log(e);
       });
   };
@@ -154,9 +193,12 @@ const Splash = () => {
   };
 
   useEffect(() => {
-    getDetails();
-    scaleImage();
-    getFcmToken();
+    setTimeout(() => {
+      getDetails();
+      getFcmToken();
+      setShowLoader(true);
+    }, 800);
+    swipeAmtaWestCircle();
   }, [isFocused, showModal]);
 
   return (
@@ -166,7 +208,14 @@ const Splash = () => {
         <View>
           <Animated.Image
             source={require('../assets/images/logo.png')}
-            style={[{width: 0, height: 0}, animatedStyle]}
+            style={[
+              {
+                width: 250,
+                height: 250,
+                margin: responsiveHeight(2),
+              },
+              imageAnimatedStyle,
+            ]}
           />
           <View
             style={{
@@ -174,18 +223,24 @@ const Splash = () => {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <Text selectable style={styles.logoText}>
+            <Animated.Text
+              selectable
+              style={[styles.logoText, amtaAnimatedStyle]}>
               Amta
-            </Text>
-            <Text selectable style={styles.logoText}>
+            </Animated.Text>
+            <Animated.Text
+              selectable
+              style={[styles.logoText, westAnimatedStyle]}>
               West
-            </Text>
-            <Text selectable style={styles.logoText}>
+            </Animated.Text>
+            <Animated.Text
+              selectable
+              style={[styles.logoText, circleAnimatedStyle]}>
               WBTPTA
-            </Text>
+            </Animated.Text>
           </View>
           <View style={{margin: responsiveHeight(2)}}>
-            <ActivityIndicator size={50} color={'white'} />
+            {showLoader && <ActivityIndicator size={50} color={'white'} />}
           </View>
         </View>
       ) : (
@@ -225,20 +280,7 @@ const Splash = () => {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
-                onPress={() => {
-                  Alert.alert('Hold On!', 'Are You Sure To Exit App?', [
-                    {
-                      text: 'Cancel',
-                      onPress: () => null,
-                      style: 'cancel',
-                    },
-                    {
-                      text: 'Exit',
-                      onPress: () => RNExitApp.exitApp(),
-                    },
-                  ]);
-                  return true;
-                }}>
+                onPress={() => RNExitApp.exitApp()}>
                 <MaterialCommunityIcons
                   name="power"
                   size={responsiveFontSize(4)}
@@ -268,8 +310,8 @@ const styles = StyleSheet.create({
     backgroundColor: THEME_COLOR,
   },
   logoText: {
-    fontSize: responsiveFontSize(5),
-    fontWeight: '700',
+    fontSize: responsiveFontSize(8),
+    fontWeight: '900',
     color: 'white',
   },
   modalView: {
