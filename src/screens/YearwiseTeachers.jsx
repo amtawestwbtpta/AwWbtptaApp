@@ -409,7 +409,7 @@ const YearwiseTeachers = () => {
             ))}
         </View>
 
-        {user.circle === 'admin' && selectedYear ? (
+        {selectedYear ? (
           <View>
             {joiningMonths.length > 1 && (
               <View style={styles.dataView}>
@@ -428,7 +428,8 @@ const YearwiseTeachers = () => {
                 flexWrap: 'wrap',
                 width: responsiveWidth(90),
               }}>
-              {joiningMonths.length > 1 &&
+              {user.circle === 'admin' &&
+                joiningMonths.length > 1 &&
                 joiningMonths.map((month, index) => (
                   <View
                     style={{

@@ -92,6 +92,7 @@ const AllTeachersSalary = () => {
           let addl = el.addl;
           let ma = el.ma;
           let gpf = el.gpf;
+          let gpfprev = el.gpfprev;
           let gsli = el.gsli;
           let disability = el.disability;
           let prevmbasic = el.prevmbasic;
@@ -101,11 +102,14 @@ const AllTeachersSalary = () => {
           // console.log(junelast)
           let basicpay;
           let ptax;
+          let pfund;
           if (dataYear === date.getFullYear()) {
             if (index > 6) {
               basicpay = basic;
               da = Math.round(basicpay * DA);
+              pfund = gpf;
             } else {
+              pfund = gpfprev;
               basicpay = mbasic;
               if (index < 4) {
                 da = Math.round(basicpay * PREVDA);
@@ -116,6 +120,7 @@ const AllTeachersSalary = () => {
           } else if (dataYear === date.getFullYear() - 1) {
             basicpay = prevmbasic;
             da = Math.round(basicpay * PREV6DA);
+            pfund = gpfprev;
           } else {
             if (index > 6) {
               basicpay = RoundTo(basic + basic * 0.03, 100);
@@ -124,6 +129,7 @@ const AllTeachersSalary = () => {
               basicpay = basic;
               da = Math.round(basicpay * DA);
             }
+            pfund = gpfprev;
           }
 
           // let da = Math.round(basicpay * DA);
@@ -148,7 +154,7 @@ const AllTeachersSalary = () => {
             ptax = 0;
           }
 
-          let deduction = gsli + gpf + ptax;
+          let deduction = gsli + pfund + ptax;
 
           let netpay = gross - deduction;
 
@@ -194,7 +200,7 @@ const AllTeachersSalary = () => {
                   Gross: ₹{IndianFormat(gross)},
                 </Text>
                 <Text selectable style={styles.dataText}>
-                  GPF: ₹{IndianFormat(gpf)},
+                  GPF: ₹{IndianFormat(pfund)},
                 </Text>
                 <Text selectable style={styles.dataText}>
                   PTax: ₹{IndianFormat(ptax)},

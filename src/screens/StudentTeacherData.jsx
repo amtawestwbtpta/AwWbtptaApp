@@ -53,22 +53,7 @@ const StudentTeacherData = () => {
   const [teacherData, setTeacherData] = useState([]);
   const [schoolData, setschoolData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [filteredSchool, setFilteredSchool] = useState([
-    {
-      id: 'schools101',
-      school: 'Select School Name',
-      udise: '19160210302',
-      gp: 'AMORAGORI',
-      student: 40,
-      pp: 1,
-      i: 4,
-      ii: 6,
-      iii: 3,
-      iv: 4,
-      v: 0,
-      total_student: 18,
-    },
-  ]);
+  const [filteredSchool, setFilteredSchool] = useState([]);
   const [schoolName, setSchoolName] = useState('');
   const [showData, setShowData] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
@@ -222,7 +207,6 @@ const StudentTeacherData = () => {
       getSchoolStateData();
     } else {
       setschoolData(schoolState);
-      setFilteredSchool(schoolState);
     }
   };
 
@@ -235,6 +219,8 @@ const StudentTeacherData = () => {
     editSchool,
     teachersState,
     schoolState,
+    showData,
+    selectedSchool,
   ]);
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -265,12 +251,23 @@ const StudentTeacherData = () => {
             setShowData(false);
             setSchoolName('');
           }}>
-          <Text selectable style={styles.dropDownText}>
-            {filteredSchool.school}
-          </Text>
-
           {isClicked ? (
-            <AntDesign name="up" size={30} color={THEME_COLOR} />
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                width: '100%',
+              }}>
+              <Text
+                style={[
+                  styles.dropDownText,
+                  {paddingRight: responsiveWidth(2)},
+                ]}>
+                {selectedSchool}
+              </Text>
+
+              <AntDesign name="up" size={30} color={THEME_COLOR} />
+            </View>
           ) : (
             <View
               style={{
@@ -278,16 +275,13 @@ const StudentTeacherData = () => {
                 justifyContent: 'space-between',
                 width: '100%',
               }}>
-              {filteredSchool[0]?.school ? (
-                <Text
-                  selectable
-                  style={[
-                    styles.dropDownText,
-                    {paddingRight: responsiveWidth(2)},
-                  ]}>
-                  {selectedSchool}
-                </Text>
-              ) : null}
+              <Text
+                style={[
+                  styles.dropDownText,
+                  {paddingRight: responsiveWidth(2)},
+                ]}>
+                {selectedSchool}
+              </Text>
 
               <AntDesign name="down" size={30} color={THEME_COLOR} />
             </View>
@@ -318,7 +312,7 @@ const StudentTeacherData = () => {
                 setFilteredSchool(schoolData);
               }}
             />
-            {filteredSchool.map((item, index) => {
+            {schoolData.map((item, index) => {
               return (
                 <TouchableOpacity
                   key={index}

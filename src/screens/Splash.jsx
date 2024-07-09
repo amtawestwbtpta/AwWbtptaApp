@@ -118,7 +118,7 @@ const Splash = () => {
                 setTimeout(() => {
                   setShowLoader(false);
                   navigation.navigate('Home');
-                }, 3000);
+                }, 1000);
               } else {
                 console.log('User Logged');
                 await firestore()
@@ -139,7 +139,7 @@ const Splash = () => {
                       setTimeout(() => {
                         setShowLoader(false);
                         navigation.navigate('SignOut');
-                      }, 3000);
+                      }, 1000);
                     } else {
                       setState({
                         USER: userID,
@@ -152,7 +152,7 @@ const Splash = () => {
                       setTimeout(() => {
                         setShowLoader(false);
                         navigation.navigate('Home');
-                      }, 3000);
+                      }, 1000);
                     }
                   })
                   .catch(async e => {
@@ -166,7 +166,7 @@ const Splash = () => {
               setTimeout(async () => {
                 setShowLoader(false);
                 navigation.navigate('Login');
-              }, 3000);
+              }, 1000);
             }
           }
         }

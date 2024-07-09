@@ -119,30 +119,22 @@ const NoticeDetails = () => {
       showToast('error', 'Form Is Invalid');
     }
   };
-
   const getNoticeReplies = async () => {
     setShowLoader(true);
-    await firestore()
-      .collection('noticeReply')
-      .where('noticeId', '==', data.id)
-      .get()
-      .then(snapshot => {
-        const datas = snapshot.docs.map(doc => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-
-        let newData = datas.sort((a, b) => b.date - a.date);
-        setNoticeReplies(newData);
-        setFilteredData(newData);
-        setShowLoader(false);
-        setShowReplies(true);
-      })
-      .catch(e => {
-        setShowLoader(false);
-        showToast('error', e);
+    const subscriber = firestore().collection('noticeReply');
+    subscriber.onSnapshot(querySnapShot => {
+      const allMessages = querySnapShot.docs.map(item => {
+        return {...item._data};
       });
+      let newData = allMessages.sort((a, b) => b.date - a.date);
+      setNoticeReplies(newData);
+      setFilteredData(newData);
+      setShowLoader(false);
+      setShowReplies(true);
+    });
+    return () => subscriber;
   };
+
   const showConfirmDialog = id => {
     return Alert.alert('Hold On!', `Are You Sure To Delete This Reply?`, [
       // The "No" button
@@ -177,7 +169,7 @@ const NoticeDetails = () => {
           await notifyAll(title, body).then(async () => {
             setShowLoader(false);
             showToast('success', 'Reply Added Successfully');
-            getNoticeReplies();
+
             setEditReply('');
             setShowReplies(true);
           });
@@ -201,7 +193,7 @@ const NoticeDetails = () => {
       .then(() => {
         setShowLoader(false);
         showToast('success', 'Reply Deleted Successfully');
-        getNoticeReplies();
+
         setReply('');
         setShowReplies(true);
       })
@@ -221,7 +213,7 @@ const NoticeDetails = () => {
   };
   useEffect(() => {
     getNoticeReplies();
-  }, [data]);
+  }, []);
   useEffect(() => {}, [editReplyObj, editReply, width, height]);
   useEffect(() => {
     const result = NoticeReplies.filter(el => {
