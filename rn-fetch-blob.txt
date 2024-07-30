@@ -1,0 +1,82 @@
+Go to /node_modules/rn-fetch-blob/android/build.gradle and paste the following into your project
+
+
+apply plugin: 'com.android.library'
+
+def safeExtGet(prop, fallback) {
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
+repositories {
+    mavenCentral()
+    google()
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.0.1'
+    }
+}
+
+android {
+    compileSdkVersion safeExtGet('compileSdkVersion', 30)
+    buildToolsVersion safeExtGet('buildToolsVersion', '28.0.3')
+    defaultConfig {
+        minSdkVersion safeExtGet('minSdkVersion', 16)
+        targetSdkVersion safeExtGet('targetSdkVersion', 30)
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+    }
+}
+
+dependencies {
+    implementation "com.facebook.react:react-native:${safeExtGet('reactNativeVersion', '+')}"
+    implementation "com.squareup.okhttp3:okhttp:${safeExtGet('okhttp', '+')}"
+    implementation "com.squareup.okhttp3:logging-interceptor:${safeExtGet('okhttp', '+')}"
+    implementation "com.squareup.okhttp3:okhttp-urlconnection:${safeExtGet('okhttp', '+')}"
+//    {RNFetchBlob_PRE_0.28_DEPDENDENCY}
+}
+
+
+
+
+
+
+
+
+
+
+Go to \node_modules\rn-fetch-blob\android\src\main\java\com\RNFetchBlob\RNFetchBlobReq.java
+Line 195
+replace
+
+Context appCtx = RNFetchBlob.RCTContext.getApplicationContext();
+                DownloadManager dm = (DownloadManager) appCtx.getSystemService(Context.DOWNLOAD_SERVICE);
+                downloadManagerId = dm.enqueue(req);
+                androidDownloadManagerTaskTable.put(taskId, Long.valueOf(downloadManagerId));
+                // appCtx.registerReceiver(this, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+                if (Build.VERSION.SDK_INT >= 34 && appCtx.getApplicationInfo().targetSdkVersion >= 34) {
+                    appCtx.registerReceiver(this, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), Context.RECEIVER_EXPORTED);
+                } else {
+                    appCtx.registerReceiver(this, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+                }
+                return;
+
+
+
+
+
+
+
