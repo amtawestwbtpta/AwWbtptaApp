@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   BackHandler,
   Alert,
+  Switch,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
@@ -20,6 +21,7 @@ import {
   round2dec,
   findEmptyValues,
   compareObjects,
+  round5,
 } from '../modules/calculatefunctions';
 
 import {
@@ -33,6 +35,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ReactNativeModal from 'react-native-modal';
 import uuid from 'react-native-uuid';
 import {useGlobalContext} from '../context/Store';
+import {notifyAll} from '../modules/notification';
 const QuestionSection = () => {
   const isFocused = useIsFocused();
   const {
@@ -43,24 +46,26 @@ const QuestionSection = () => {
     setQuestionUpdateTime,
     questionRateState,
     setQuestionRateState,
+    questionRateUpdateTime,
+    setQuestionRateUpdateTime,
   } = useGlobalContext();
   const user = state.USER;
   const navigation = useNavigation();
   const [docId, setDocId] = useState(uuid.v4().split('-')[0]);
   const [showLoader, setShowLoader] = useState(false);
   const [search, setSearch] = useState('');
-
   const [qData, setQData] = useState([]);
   const [qRateData, setQRateData] = useState({
     id: '',
-    question_pp_rate: '',
-    question_1_rate: '',
-    question_2_rate: '',
-    question_3_rate: '',
-    question_4_rate: '',
-    question_5_rate: '',
+    pp_rate: '',
+    i_rate: '',
+    ii_rate: '',
+    iii_rate: '',
+    iv_rate: '',
+    v_rate: '',
     term: '1st',
     year: new Date().getFullYear(),
+    isAccepting: false,
   });
   const [selectedSchool, setSelectedSchool] = useState('Select School Name');
   const [visible, setVisible] = useState(false);
@@ -164,12 +169,12 @@ const QuestionSection = () => {
 
   const [questionInputField, setQuestionInputField] = useState({
     id: '',
-    question_pp_rate: 0,
-    question_1_rate: 0,
-    question_2_rate: 0,
-    question_3_rate: 0,
-    question_4_rate: 0,
-    question_5_rate: 0,
+    pp_rate: 0,
+    i_rate: 0,
+    ii_rate: 0,
+    iii_rate: 0,
+    iv_rate: 0,
+    v_rate: 0,
     term: '',
     year: new Date().getFullYear(),
   });
@@ -247,110 +252,81 @@ const QuestionSection = () => {
         setDocId(`questions${data.length + 101}-${uuid.v4().split('-')[0]}`);
       })
       .then(async () => {
-        await firestore()
-          .collection('question_rate')
-          .get()
-          .then(async snapShot => {
-            // let record = JSON.stringify(snapShotTeachers.docs[0]._data);
-
-            const data = snapShot.docs.map(doc => ({
-              // doc.data() is never undefined for query doc snapshots
-              ...doc.data(),
-              id: doc.id,
-            }));
-            setQRateData(data[0]);
-            setQuestionRateState(data[0]);
-
-            let otherTerms = selectTerm.filter(el => el.term !== data[0].term);
-
-            let tempTerm = {
-              term: data[0].term,
-              selected: true,
-            };
-            otherTerms.push(tempTerm);
-
-            setSelectTerm(otherTerms);
-
-            setQuestionInputField({
-              id: data[0].id,
-              question_pp_rate: data[0].pp_rate,
-              question_1_rate: data[0].i_rate,
-              question_2_rate: data[0].ii_rate,
-              question_3_rate: data[0].iii_rate,
-              question_4_rate: data[0].iv_rate,
-              question_5_rate: data[0].v_rate,
-              term: data[0].term,
-              year: data[0].year,
-            });
-            setOriginalQuestionInputField({
-              id: data[0].id,
-              pp_rate: parseFloat(data[0].pp_rate),
-              i_rate: parseFloat(data[0].i_rate),
-              ii_rate: parseFloat(data[0].ii_rate),
-              iii_rate: parseFloat(data[0].iii_rate),
-              iv_rate: parseFloat(data[0].iv_rate),
-              v_rate: parseFloat(data[0].v_rate),
-              term: data[0].term,
-              year: data[0].year,
-            });
-            setSubmitQuestionInputField({
-              id: data[0].id,
-              pp_rate: parseFloat(data[0].pp_rate),
-              i_rate: parseFloat(data[0].i_rate),
-              ii_rate: parseFloat(data[0].ii_rate),
-              iii_rate: parseFloat(data[0].iii_rate),
-              iv_rate: parseFloat(data[0].iv_rate),
-              v_rate: parseFloat(data[0].v_rate),
-              term: data[0].term,
-              year: data[0].year,
-            });
-            setAddInputField({
-              id: docId,
-              school: '',
-              gp: '',
-              udise: '',
-              cl_pp_student: '',
-              cl_1_student: '',
-              cl_2_student: '',
-              cl_3_student: '',
-              cl_4_student: '',
-              cl_5_student: '',
-              payment: 'Due',
-              paid: '0',
-              total_student: '',
-              total_rate: '',
-            });
-            setSubmitAddInputField({
-              id: docId,
-              school: '',
-              gp: '',
-              udise: '',
-              cl_pp_student: '',
-              cl_1_student: '',
-              cl_2_student: '',
-              cl_3_student: '',
-              cl_4_student: '',
-              cl_5_student: '',
-              payment: 'Due',
-              paid: '0',
-              total_student: '0',
-              total_rate: '0',
-            });
-            setShowLoader(false);
-            setShowData(false);
-            setSelectedSchool('Select School Name');
-            setIsClicked(false);
-          })
-          .catch(e => {
-            setShowLoader(false);
-            console.log(e);
-          });
+        setAddInputField({
+          id: docId,
+          school: '',
+          gp: '',
+          udise: '',
+          cl_pp_student: '',
+          cl_1_student: '',
+          cl_2_student: '',
+          cl_3_student: '',
+          cl_4_student: '',
+          cl_5_student: '',
+          payment: 'Due',
+          paid: '0',
+          total_student: '',
+          total_rate: '',
+        });
+        setSubmitAddInputField({
+          id: docId,
+          school: '',
+          gp: '',
+          udise: '',
+          cl_pp_student: '',
+          cl_1_student: '',
+          cl_2_student: '',
+          cl_3_student: '',
+          cl_4_student: '',
+          cl_5_student: '',
+          payment: 'Due',
+          paid: '0',
+          total_student: '0',
+          total_rate: '0',
+        });
+        setShowLoader(false);
+        setShowData(false);
+        setSelectedSchool('Select School Name');
+        setIsClicked(false);
       })
       .catch(e => {
         setShowLoader(false);
         console.log(e);
       });
   };
+
+  const getQuestionRate = async () => {
+    setShowLoader(true);
+    await firestore()
+      .collection('question_rate')
+      .get()
+      .then(snapshot => {
+        const data = snapshot.docs.map(doc => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+
+        let otherTerms = selectTerm.filter(el => el.term !== data[0].term);
+
+        let tempTerm = {
+          term: data[0].term,
+          selected: true,
+        };
+        otherTerms.push(tempTerm);
+
+        setSelectTerm(otherTerms);
+
+        setQuestionRateState(data[0]);
+        setQuestionRateUpdateTime(Date.now());
+        setShowLoader(false);
+      })
+      .catch(e => {
+        setShowLoader(false);
+        showToast('error', e);
+        console.log(e);
+      });
+  };
+
   const updateQrateData = async () => {
     if (!compareObjects(originalQuestionInputField, submitQuestionInputField)) {
       setShowLoader(true);
@@ -610,6 +586,73 @@ const QuestionSection = () => {
       });
   };
 
+  const closeAccepting = async () => {
+    setShowLoader(true);
+    await firestore()
+      .collection('question_rate')
+      .doc(questionRateState.id)
+      .update({
+        isAccepting: false,
+      })
+      .then(async () => {
+        let title = `Question Requisition Closed!`;
+        let body = 'Question Requisition Accepting Status has been Closed!';
+        await notifyAll(title, body)
+          .then(async () => {
+            setQuestionRateState({...questionRateState, isAccepting: false});
+            setQRateData({...questionRateState, isAccepting: false});
+            setQuestionRateUpdateTime(Date.now());
+            setShowLoader(false);
+            showToast(
+              'success',
+              'Question Accepting Status Set Closed Successfully!',
+            );
+          })
+          .catch(e => {
+            setShowLoader(false);
+            showToast('error', 'Error Sending Notification');
+          });
+      })
+      .catch(e => {
+        setShowLoader(false);
+        showToast('error', 'Question Rate Updation Failed!');
+        console.log(e);
+      });
+  };
+  const openAccepting = async () => {
+    setShowLoader(true);
+    await firestore()
+      .collection('question_rate')
+      .doc(questionRateState.id)
+      .update({
+        isAccepting: true,
+      })
+      .then(async () => {
+        let title = `Question Requisition Opened!`;
+        let body = 'Question Requisition Accepting Status has been Opened!';
+        await notifyAll(title, body)
+          .then(async () => {
+            setQuestionRateState({...questionRateState, isAccepting: false});
+            setQRateData({...questionRateState, isAccepting: false});
+            setQuestionRateUpdateTime(Date.now());
+            setShowLoader(false);
+            showToast(
+              'success',
+              'Question Accepting Status Set Opened Successfully!',
+            );
+          })
+          .catch(e => {
+            setShowLoader(false);
+            showToast('error', 'Error Sending Notification');
+          });
+      })
+      .catch(e => {
+        setShowLoader(false);
+        showToast('error', 'Question Rate Updation Failed!');
+        console.log(e);
+      });
+  };
+
   const showToast = (type, text) => {
     Toast.show({
       type: type,
@@ -639,68 +682,7 @@ const QuestionSection = () => {
       setDocId(
         `questions${questionState.length + 101}-${uuid.v4().split('-')[0]}`,
       );
-      setQRateData(questionRateState);
-      let otherTerms = selectTerm.filter(
-        el => el.term !== questionRateState.term,
-      );
 
-      let tempTerm = {
-        term: questionRateState.term,
-        selected: true,
-      };
-      otherTerms.push(tempTerm);
-
-      setSelectTerm(otherTerms);
-
-      setQuestionInputField({
-        id: questionRateState.id,
-        question_pp_rate: questionRateState.pp_rate,
-        question_1_rate: questionRateState.i_rate,
-        question_2_rate: questionRateState.ii_rate,
-        question_3_rate: questionRateState.iii_rate,
-        question_4_rate: questionRateState.iv_rate,
-        question_5_rate: questionRateState.v_rate,
-        term: questionRateState.term,
-        year: questionRateState.year,
-      });
-      setOriginalQuestionInputField({
-        id: questionRateState.id,
-        pp_rate: parseFloat(questionRateState.pp_rate),
-        i_rate: parseFloat(questionRateState.i_rate),
-        ii_rate: parseFloat(questionRateState.ii_rate),
-        iii_rate: parseFloat(questionRateState.iii_rate),
-        iv_rate: parseFloat(questionRateState.iv_rate),
-        v_rate: parseFloat(questionRateState.v_rate),
-        term: questionRateState.term,
-        year: questionRateState.year,
-      });
-      setSubmitQuestionInputField({
-        id: questionRateState.id,
-        pp_rate: parseFloat(questionRateState.pp_rate),
-        i_rate: parseFloat(questionRateState.i_rate),
-        ii_rate: parseFloat(questionRateState.ii_rate),
-        iii_rate: parseFloat(questionRateState.iii_rate),
-        iv_rate: parseFloat(questionRateState.iv_rate),
-        v_rate: parseFloat(questionRateState.v_rate),
-        term: questionRateState.term,
-        year: questionRateState.year,
-      });
-      setAddInputField({
-        id: docId,
-        school: '',
-        gp: '',
-        udise: '',
-        cl_pp_student: '',
-        cl_1_student: '',
-        cl_2_student: '',
-        cl_3_student: '',
-        cl_4_student: '',
-        cl_5_student: '',
-        payment: 'Due',
-        paid: '0',
-        total_student: '',
-        total_rate: '',
-      });
       setSubmitAddInputField({
         id: docId,
         school: '',
@@ -721,6 +703,45 @@ const QuestionSection = () => {
       setShowData(false);
       setSelectedSchool('Select School Name');
       setIsClicked(false);
+    }
+    const questionRateDifference =
+      (Date.now() - questionRateUpdateTime) / 1000 / 60 / 15;
+    if (questionRateDifference >= 1 || questionRateState.length === 0) {
+      setQuestionRateUpdateTime(Date.now());
+      getQuestionRate();
+    } else {
+      setQRateData(questionRateState);
+      let otherTerms = selectTerm.filter(
+        el => el.term !== questionRateState.term,
+      );
+
+      let tempTerm = {
+        term: questionRateState.term,
+        selected: true,
+      };
+      otherTerms.push(tempTerm);
+
+      setSelectTerm(otherTerms);
+
+      setQuestionInputField(questionRateState);
+      setOriginalQuestionInputField(questionRateState);
+      setSubmitQuestionInputField(questionRateState);
+      setAddInputField({
+        id: docId,
+        school: '',
+        gp: '',
+        udise: '',
+        cl_pp_student: '',
+        cl_1_student: '',
+        cl_2_student: '',
+        cl_3_student: '',
+        cl_4_student: '',
+        cl_5_student: '',
+        payment: 'Due',
+        paid: '0',
+        total_student: '',
+        total_rate: '',
+      });
     }
   };
   useEffect(() => {
@@ -777,42 +798,75 @@ const QuestionSection = () => {
 
         <View
           style={{
-            flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center',
             alignSelf: 'center',
           }}>
           {!isClicked && !showData && selectShow && user.circle === 'admin' && (
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                alignSelf: 'center',
-              }}>
-              <CustomButton
-                title={'Add School'}
-                size={'small'}
-                color={'darkgreen'}
-                fontSize={12}
-                onClick={() => {
-                  setShowData(false);
-                  setAddSchoolVisible(true);
-                  setVisible(false);
-                  setSelectShow(false);
-                }}
-              />
-              <CustomButton
-                title={'Update Rate'}
-                size={'small'}
-                fontSize={12}
-                onClick={() => {
-                  setShowData(false);
-                  setAddSchoolVisible(false);
-                  setVisible(true);
-                  setSelectShow(false);
-                }}
-              />
+            <View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                }}>
+                <CustomButton
+                  title={'Add School'}
+                  size={'small'}
+                  color={'darkgreen'}
+                  fontSize={12}
+                  onClick={() => {
+                    setShowData(false);
+                    setAddSchoolVisible(true);
+                    setVisible(false);
+                    setSelectShow(false);
+                  }}
+                />
+                <CustomButton
+                  title={'Update Rate'}
+                  size={'small'}
+                  fontSize={12}
+                  onClick={() => {
+                    setShowData(false);
+                    setAddSchoolVisible(false);
+                    setVisible(true);
+                    setSelectShow(false);
+                  }}
+                />
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignSelf: 'center',
+                  marginTop: responsiveHeight(1),
+                  marginBottom: responsiveHeight(1),
+                }}>
+                <Text
+                  selectable
+                  style={[styles.label, {paddingRight: responsiveWidth(1.5)}]}>
+                  Close Requisition
+                </Text>
+                <Switch
+                  trackColor={{false: '#767577', true: '#81b0ff'}}
+                  thumbColor={
+                    questionRateState.isAccepting ? '#f5dd4b' : '#f4f3f4'
+                  }
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={() => {
+                    if (questionRateState.isAccepting) {
+                      closeAccepting();
+                    } else {
+                      openAccepting();
+                    }
+                  }}
+                  value={questionRateState.isAccepting}
+                />
+
+                <Text selectable style={[styles.label, {paddingLeft: 5}]}>
+                  Open Requisition
+                </Text>
+              </View>
             </View>
           )}
           {!isClicked && selectShow && !showData && (
@@ -965,7 +1019,7 @@ const QuestionSection = () => {
                           filteredData[0].cl_5_student * qRateData.v_rate,
                         )}, Total Student. ${
                           filteredData[0].total_student
-                        }, Total Amount ₹ ${Math.round(
+                        }, Total Amount ₹ ${round5(
                           filteredData[0].cl_pp_student * qRateData.pp_rate +
                             filteredData[0].cl_1_student * qRateData.i_rate +
                             filteredData[0].cl_2_student * qRateData.ii_rate +
@@ -1064,7 +1118,7 @@ const QuestionSection = () => {
                     )}
                     <Text selectable style={styles.text}>
                       Total Cost:{' ₹ '}
-                      {Math.round(
+                      {round5(
                         filteredData[0].cl_pp_student * qRateData.pp_rate +
                           filteredData[0].cl_1_student * qRateData.i_rate +
                           filteredData[0].cl_2_student * qRateData.ii_rate +
@@ -1308,11 +1362,11 @@ const QuestionSection = () => {
               <CustomTextInput
                 placeholder={'PP Rate'}
                 type={'number-pad'}
-                value={questionInputField.question_pp_rate.toString()}
+                value={questionInputField.pp_rate.toString()}
                 onChangeText={text => {
                   setQuestionInputField({
                     ...questionInputField,
-                    question_pp_rate: text,
+                    pp_rate: text,
                   });
                   setSubmitQuestionInputField({
                     ...submitQuestionInputField,
@@ -1324,11 +1378,11 @@ const QuestionSection = () => {
               <CustomTextInput
                 placeholder={'Class I Rate'}
                 type={'number-pad'}
-                value={questionInputField.question_1_rate.toString()}
+                value={questionInputField.i_rate.toString()}
                 onChangeText={text => {
                   setQuestionInputField({
                     ...questionInputField,
-                    question_1_rate: text,
+                    i_rate: text,
                   });
                   setSubmitQuestionInputField({
                     ...submitQuestionInputField,
@@ -1339,11 +1393,11 @@ const QuestionSection = () => {
               <CustomTextInput
                 placeholder={'Class II Rate'}
                 type={'number-pad'}
-                value={questionInputField.question_2_rate.toString()}
+                value={questionInputField.ii_rate.toString()}
                 onChangeText={text => {
                   setQuestionInputField({
                     ...questionInputField,
-                    question_2_rate: text,
+                    ii_rate: text,
                   });
                   setSubmitQuestionInputField({
                     ...submitQuestionInputField,
@@ -1354,11 +1408,11 @@ const QuestionSection = () => {
               <CustomTextInput
                 placeholder={'Class III Rate'}
                 type={'number-pad'}
-                value={questionInputField.question_3_rate.toString()}
+                value={questionInputField.iii_rate.toString()}
                 onChangeText={text => {
                   setQuestionInputField({
                     ...questionInputField,
-                    question_3_rate: text,
+                    iii_rate: text,
                   });
                   setSubmitQuestionInputField({
                     ...submitQuestionInputField,
@@ -1369,11 +1423,11 @@ const QuestionSection = () => {
               <CustomTextInput
                 placeholder={'Class IV Rate'}
                 type={'number-pad'}
-                value={questionInputField.question_4_rate.toString()}
+                value={questionInputField.iv_rate.toString()}
                 onChangeText={text => {
                   setQuestionInputField({
                     ...questionInputField,
-                    question_4_rate: text,
+                    iv_rate: text,
                   });
                   setSubmitQuestionInputField({
                     ...submitQuestionInputField,
@@ -1384,11 +1438,11 @@ const QuestionSection = () => {
               <CustomTextInput
                 placeholder={'Class V Rate'}
                 type={'number-pad'}
-                value={questionInputField.question_5_rate.toString()}
+                value={questionInputField.v_rate.toString()}
                 onChangeText={text => {
                   setQuestionInputField({
                     ...questionInputField,
-                    question_5_rate: text,
+                    v_rate: text,
                   });
                   setSubmitQuestionInputField({
                     ...submitQuestionInputField,

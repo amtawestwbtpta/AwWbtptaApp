@@ -28,6 +28,8 @@ import MemoDetails from '../screens/MemoDetails';
 import TokensView from '../screens/TokensView';
 import TeacherServiceLife from '../screens/TeacherServiceLife';
 import YearwiseTeachers from '../screens/YearwiseTeachers';
+import QuestionRequisition from '../screens/QuestionRequisition';
+import UserLoacation from '../screens/UserLoacation';
 
 const Stack = createNativeStackNavigator();
 const AppNavigator = () => {
@@ -121,8 +123,18 @@ const AppNavigator = () => {
           options={{headerShown: false, drawerItemStyle: {height: 0}}}
         />
         <Stack.Screen
+          name="QuestionRequisition"
+          component={QuestionRequisition}
+          options={{headerShown: false, drawerItemStyle: {height: 0}}}
+        />
+        <Stack.Screen
           name="TokensView"
           component={TokensView}
+          options={{headerShown: false, drawerItemStyle: {height: 0}}}
+        />
+        <Stack.Screen
+          name="UserLoacation"
+          component={UserLoacation}
           options={{headerShown: false, drawerItemStyle: {height: 0}}}
         />
         <Stack.Screen

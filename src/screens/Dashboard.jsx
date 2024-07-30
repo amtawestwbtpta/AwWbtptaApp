@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
   Linking,
+  Modal,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {THEME_COLOR} from '../utils/Colors';
@@ -26,10 +27,18 @@ import RNExitApp from 'react-native-exit-app';
 import Carousel from 'react-native-reanimated-carousel';
 import ImageView from 'react-native-image-viewing';
 import {downloadFile} from '../modules/downloadFile';
-import {AppURL, DA, HRA, TelegramURL} from '../modules/constants';
+import {
+  AppURL,
+  DA,
+  GithubWebsite,
+  HRA,
+  TelegramURL,
+  VercelWeb,
+} from '../modules/constants';
 import {useGlobalContext} from '../context/Store';
 const Dashboard = () => {
-  const {state, slideState, setStateObject} = useGlobalContext();
+  const {state, slideState, setStateObject, questionRateState} =
+    useGlobalContext();
   const user = state.USER;
   const navigation = useNavigation();
   const teacher = state.TEACHER;
@@ -43,6 +52,8 @@ const Dashboard = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [titles, setTitles] = useState([]);
   const [photoNames, setPhotoNames] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+
   const ifsc_ser = () => {
     fetch(`https://ifsc.razorpay.com/${teacher.ifsc}`)
       .then(res => res.json())
@@ -53,22 +64,23 @@ const Dashboard = () => {
 
   let da, hra, gross, basicpay, netpay, ptax, pfund;
   let junelast = new Date(`${date.getFullYear()}-07-1`);
+  const month = date.getMonth();
   let addl = teacher.addl;
   let ma = teacher.ma;
   let gpf = teacher.gpf;
   let gpfprev = teacher.gpfprev;
+  let julyGpf = teacher.julyGpf;
   let gsli = teacher.gsli;
   let disability = teacher.disability;
 
   if (date >= junelast) {
     basicpay = teacher.basic;
-    pfund = gpf;
-  } else if (
-    date.getMonth() == 0 ||
-    date.getMonth() == 1 ||
-    date.getMonth() == 3
-  ) {
+    pfund = julyGpf;
+  } else if (month <= 3) {
     basicpay = teacher.basic;
+    pfund = gpf;
+  } else if (month < 6 && month >= 2) {
+    basicpay = teacher.mbasic;
     pfund = gpf;
   } else {
     basicpay = teacher.mbasic;
@@ -127,12 +139,16 @@ const Dashboard = () => {
       EncryptedStorage.clear();
       navigation.navigate('Login');
     }
-  }, [isFocused]);
+  }, [isFocused, slideState]);
 
   return (
     <View style={styles.container}>
       <ScrollView>
-        <View style={[styles.container, styles.bottom]}>
+        <View
+          style={[
+            styles.bottom,
+            {flex: 1, shadowColor: 'black', elevation: 5},
+          ]}>
           <Carousel
             loop
             mode="parallax"
@@ -143,6 +159,7 @@ const Dashboard = () => {
             width={responsiveWidth(100)}
             height={responsiveHeight(35)}
             autoPlay={true}
+            autoPlayInterval={1000}
             pagingEnabled={true}
             snapEnabled={true}
             data={slides}
@@ -151,7 +168,7 @@ const Dashboard = () => {
               <TouchableOpacity
                 style={{
                   flex: 1,
-                  borderWidth: 1,
+                  // borderWidth: 1,
                   justifyContent: 'center',
                 }}
                 onPress={() => {
@@ -165,13 +182,20 @@ const Dashboard = () => {
                     justifyContent: 'center',
                     alignItems: 'center',
                     alignSelf: 'center',
-                    backgroundColor: THEME_COLOR,
+                    backgroundColor: 'darkorange',
+                    borderTopLeftRadius: responsiveHeight(2),
+                    borderTopRightRadius: responsiveHeight(2),
                   }}>
                   <Text
                     selectable
                     style={[
                       styles.dataText,
-                      {fontSize: responsiveFontSize(1.8), color: 'white'},
+                      {
+                        fontSize: responsiveFontSize(2.5),
+                        color: 'white',
+                        fontWeight: '700',
+                        fontFamily: 'Roboto',
+                      },
                     ]}>
                     {item.title}
                   </Text>
@@ -182,24 +206,28 @@ const Dashboard = () => {
                     width: responsiveWidth(100),
                     height: responsiveHeight(20),
                     alignSelf: 'center',
-                    borderRadius: responsiveWidth(1),
                   }}
                 />
                 <View
                   style={{
                     width: responsiveWidth(100),
                     height: responsiveHeight(8),
-
+                    borderBottomLeftRadius: responsiveWidth(4),
+                    borderBottomRightRadius: responsiveWidth(4),
                     justifyContent: 'center',
                     alignItems: 'center',
                     alignSelf: 'center',
-                    backgroundColor: THEME_COLOR,
+                    backgroundColor: 'green',
                   }}>
                   <Text
                     selectable
                     style={[
                       styles.dataText,
-                      {fontSize: responsiveFontSize(1.5), color: 'white'},
+                      {
+                        fontSize: responsiveFontSize(1.8),
+                        color: 'white',
+                        fontWeight: '700',
+                      },
                     ]}>
                     {item.description}
                   </Text>
@@ -240,7 +268,7 @@ const Dashboard = () => {
                       justifyContent: 'center',
                       alignItems: 'center',
                       position: 'absolute',
-                      top: -responsiveHeight(88),
+                      top: -responsiveHeight(85),
                       left: responsiveWidth(65),
                     }}
                     onPress={async () => {
@@ -641,6 +669,15 @@ const Dashboard = () => {
                       navigation.navigate('TokensView');
                     }}
                   />
+                  <CustomButton
+                    size={'small'}
+                    fontSize={responsiveFontSize(1.5)}
+                    title={'Locations'}
+                    color={'deepskyblue'}
+                    onClick={() => {
+                      navigation.navigate('UserLoacation');
+                    }}
+                  />
 
                   <CustomButton
                     size={'small'}
@@ -682,6 +719,17 @@ const Dashboard = () => {
                     navigation.navigate('YearwiseTeachers');
                   }}
                 />
+                {questionRateState?.isAccepting && (
+                  <CustomButton
+                    size={'small'}
+                    fontSize={responsiveFontSize(1.5)}
+                    title={'Question Requisition'}
+                    color={'fuchsia'}
+                    onClick={() => {
+                      navigation.navigate('QuestionRequisition');
+                    }}
+                  />
+                )}
                 <CustomButton
                   size={'small'}
                   fontSize={responsiveFontSize(1.5)}
@@ -711,7 +759,15 @@ const Dashboard = () => {
                   }}
                 />
               </View>
-
+              <CustomButton
+                size={'small'}
+                fontSize={responsiveFontSize(1.5)}
+                title={'Website'}
+                color={'navy'}
+                onClick={async () => {
+                  setShowModal(true);
+                }}
+              />
               <View
                 style={{
                   flexDirection: 'row',
@@ -783,6 +839,72 @@ const Dashboard = () => {
             </View>
           )}
         </View>
+        <Modal
+          animationType="slide"
+          visible={showModal}
+          transparent
+          closeOnClick={true}
+          onRequestClose={() => {
+            setShowModal(false);
+          }}>
+          <TouchableOpacity
+            style={styles.modalView}
+            onPress={() => {
+              setShowModal(false);
+            }}>
+            <View style={styles.mainView}>
+              <Text
+                selectable
+                style={{
+                  fontSize: responsiveFontSize(3),
+                  fontWeight: '500',
+                  textAlign: 'center',
+                  color: THEME_COLOR,
+                }}>
+                Choose Website
+              </Text>
+              <Text selectable style={styles.label}>
+                We have two identical website. You can chose anyone of them.
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                }}>
+                <CustomButton
+                  title={'GitHub'}
+                  color={'chocolate'}
+                  size="small"
+                  onClick={async () => {
+                    setShowModal(false);
+                    const supported = await Linking.canOpenURL(GithubWebsite); //To check if URL is supported or not.
+                    if (supported) {
+                      await Linking.openURL(GithubWebsite); // It will open the URL on browser.
+                    } else {
+                      Alert.alert(`Can't open this URL: ${GithubWebsite}`);
+                    }
+                  }}
+                />
+                <CustomButton
+                  title={'Vercel'}
+                  color={'darkgreen'}
+                  size="small"
+                  onClick={async () => {
+                    setShowModal(false);
+                    const supported = await Linking.canOpenURL(VercelWeb); //To check if URL is supported or not.
+                    if (supported) {
+                      await Linking.openURL(VercelWeb); // It will open the URL on browser.
+                    } else {
+                      Alert.alert(`Can't open this URL: ${VercelWeb}`);
+                    }
+                  }}
+                />
+              </View>
+            </View>
+          </TouchableOpacity>
+        </Modal>
       </ScrollView>
     </View>
   );
@@ -829,5 +951,36 @@ const styles = StyleSheet.create({
     color: THEME_COLOR,
     textAlign: 'center',
     padding: 1,
+  },
+  modalView: {
+    flex: 1,
+
+    width: responsiveWidth(90),
+    height: responsiveWidth(30),
+    padding: responsiveHeight(2),
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  mainView: {
+    width: responsiveWidth(90),
+    height: responsiveHeight(30),
+    padding: responsiveHeight(2),
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    backgroundColor: 'white',
+    borderRadius: 10,
+
+    backgroundColor: 'white',
+    alignSelf: 'center',
+  },
+  label: {
+    alignSelf: 'center',
+    fontSize: responsiveFontSize(2),
+    fontWeight: '500',
+    margin: responsiveHeight(1),
+    color: THEME_COLOR,
+    textAlign: 'center',
   },
 });

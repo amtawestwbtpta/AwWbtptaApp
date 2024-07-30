@@ -25,10 +25,10 @@ import {
 } from 'react-native-responsive-dimensions';
 import {useGlobalContext} from '../context/Store';
 import axios from 'axios';
-
+import EncryptedStorage from 'react-native-encrypted-storage';
 const EditDetails = () => {
   const isFocused = useIsFocused();
-  const {state, teachersState, setTeachersState, stateObject} =
+  const {state, setState, teachersState, setTeachersState, stateObject} =
     useGlobalContext();
   const user = state.USER;
   const data = stateObject;
@@ -41,6 +41,7 @@ const EditDetails = () => {
   const [isDesigEnabled, setIsDesigEnabled] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isQuesAdmin, setIsQuesAdmin] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isHoi, setIsHoi] = useState(false);
   const [isInservice, setIsInservice] = useState(false);
@@ -74,33 +75,123 @@ const EditDetails = () => {
   const updateData = async () => {
     let equalObject = compareObjects(data, editMember);
     if (!equalObject) {
+      setShowLoader(true);
       const url = `https://awwbtpta.vercel.app/api/updteacher`;
       let response = await axios.post(url, editMember);
       let record = response.data;
       if (record.success) {
-        setShowLoader(true);
         await firestore()
           .collection('teachers')
           .doc(editMember?.id)
           .update(editMember)
           .then(async () => {
-            let x = teachersState.filter(el => el.id !== editMember?.id);
-            x = [...x, editMember];
-            const newData = x.sort((a, b) => {
-              // First, compare the "school" keys
-              if (a.school < b.school) {
-                return -1;
+            if (teachersState.length > 0) {
+              let x = teachersState.filter(el => el.id !== editMember?.id);
+              x = [...x, editMember];
+              const newData = x.sort((a, b) => {
+                // First, compare the "school" keys
+                if (a.school < b.school) {
+                  return -1;
+                }
+                if (a.school > b.school) {
+                  return 1;
+                }
+                // If "school" keys are equal, compare the "rank" keys
+                return a.rank - b.rank;
+              });
+              setTeachersState(newData);
+              if (user.id === editMember?.id) {
+                await EncryptedStorage.setItem(
+                  'teacher',
+                  JSON.stringify(editMember),
+                );
+                await EncryptedStorage.setItem(
+                  'user',
+                  JSON.stringify({
+                    ...user,
+                    tname: editMember.tname,
+                    tsname: editMember.tsname,
+                    school: editMember.school,
+                    desig: editMember.desig,
+                    pan: editMember.pan,
+                    udise: editMember.udise,
+                    circle: editMember.circle,
+                    empid: editMember.empid,
+                    question: editMember.question,
+                    email: editMember.email,
+                    phone: editMember.phone,
+                  }),
+                );
+                setState({
+                  TEACHER: editMember,
+                  TOKEN: user.token,
+                  LOGGEDAT: user.loggedAt,
+                  USER: {
+                    ...user,
+                    tname: editMember.tname,
+                    tsname: editMember.tsname,
+                    school: editMember.school,
+                    desig: editMember.desig,
+                    pan: editMember.pan,
+                    udise: editMember.udise,
+                    circle: editMember.circle,
+                    empid: editMember.empid,
+                    question: editMember.question,
+                    email: editMember.email,
+                    phone: editMember.phone,
+                  },
+                });
               }
-              if (a.school > b.school) {
-                return 1;
+              setShowLoader(false);
+              showToast('success', 'Teacher Details Updated Successfully');
+              navigation.navigate('Home');
+            } else {
+              if (user.id === editMember?.id) {
+                await EncryptedStorage.setItem(
+                  'teacher',
+                  JSON.stringify(editMember),
+                );
+                await EncryptedStorage.setItem(
+                  'user',
+                  JSON.stringify({
+                    ...user,
+                    tname: editMember.tname,
+                    tsname: editMember.tsname,
+                    school: editMember.school,
+                    desig: editMember.desig,
+                    pan: editMember.pan,
+                    udise: editMember.udise,
+                    circle: editMember.circle,
+                    empid: editMember.empid,
+                    question: editMember.question,
+                    email: editMember.email,
+                    phone: editMember.phone,
+                  }),
+                );
+                setState({
+                  TEACHER: editMember,
+                  TOKEN: user.token,
+                  LOGGEDAT: user.loggedAt,
+                  USER: {
+                    ...user,
+                    tname: editMember.tname,
+                    tsname: editMember.tsname,
+                    school: editMember.school,
+                    desig: editMember.desig,
+                    pan: editMember.pan,
+                    udise: editMember.udise,
+                    circle: editMember.circle,
+                    empid: editMember.empid,
+                    question: editMember.question,
+                    email: editMember.email,
+                    phone: editMember.phone,
+                  },
+                });
               }
-              // If "school" keys are equal, compare the "rank" keys
-              return a.rank - b.rank;
-            });
-            setTeachersState(newData);
-            setShowLoader(false);
-            showToast('success', 'Teacher Details Updated Successfully');
-            navigation.navigate('Home');
+              setShowLoader(false);
+              showToast('success', 'Teacher Details Updated Successfully');
+              navigation.navigate('Home');
+            }
           });
       } else {
         setShowLoader(false);
@@ -124,6 +215,7 @@ const EditDetails = () => {
     ifsc_ser();
     setEditMember(data);
     data?.desig === 'HT' ? setIsDesigEnabled(true) : setIsDesigEnabled(false);
+    data?.registered === true ? setIsRegistered(true) : setIsRegistered(false);
     data?.gender === 'female' ? setIsMale(true) : setIsMale(false);
     data?.circle === 'admin' ? setIsAdmin(true) : setIsAdmin(false);
     data?.question === 'admin' ? setIsQuesAdmin(true) : setIsQuesAdmin(false);
@@ -305,7 +397,38 @@ const EditDetails = () => {
                 }}
               />
             </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignSelf: 'center',
+                marginTop: responsiveHeight(0.5),
+                marginBottom: responsiveHeight(0.5),
+              }}>
+              <Text
+                selectable
+                style={[styles.title, {paddingRight: responsiveWidth(1.5)}]}>
+                Unregistered
+              </Text>
+              <Switch
+                trackColor={{false: '#767577', true: '#81b0ff'}}
+                thumbColor={isMale ? '#f5dd4b' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={() => {
+                  setIsRegistered(!isRegistered);
+                  setDisable(false);
+                  if (!isRegistered) {
+                    setEditMember({...editMember, registered: true});
+                  } else {
+                    setEditMember({...editMember, registered: false});
+                  }
+                }}
+                value={isRegistered}
+              />
 
+              <Text selectable style={[styles.title, {paddingRight: 5}]}>
+                Registered
+              </Text>
+            </View>
             <Text selectable style={styles.dataText}>
               Gram Panchayet
             </Text>
@@ -898,10 +1021,26 @@ const EditDetails = () => {
               }}
             />
             <Text selectable style={styles.dataText}>
-              GPF
+              March GPF
             </Text>
             <CustomTextInput
-              placeholder={'Enter GPF'}
+              placeholder={'Enter March GPF'}
+              value={editMember?.gpfprev.toString()}
+              type={'number-pad'}
+              onChangeText={text => {
+                setDisable(false);
+                if (text !== '') {
+                  setEditMember({...editMember, gpfprev: parseInt(text)});
+                } else {
+                  setEditMember({...editMember, gpfprev: ''});
+                }
+              }}
+            />
+            <Text selectable style={styles.dataText}>
+              April GPF
+            </Text>
+            <CustomTextInput
+              placeholder={'Enter April GPF'}
               value={editMember?.gpf.toString()}
               type={'number-pad'}
               onChangeText={text => {
@@ -914,21 +1053,22 @@ const EditDetails = () => {
               }}
             />
             <Text selectable style={styles.dataText}>
-              Previous GPF
+              July GPF
             </Text>
             <CustomTextInput
-              placeholder={'Enter Previous GPF'}
-              value={editMember?.gpfprev.toString()}
+              placeholder={'Enter July GPF'}
+              value={editMember?.julyGpf.toString()}
               type={'number-pad'}
               onChangeText={text => {
                 setDisable(false);
                 if (text !== '') {
-                  setEditMember({...editMember, gpfprev: parseInt(text)});
+                  setEditMember({...editMember, julyGpf: parseInt(text)});
                 } else {
-                  setEditMember({...editMember, gpfprev: ''});
+                  setEditMember({...editMember, julyGpf: ''});
                 }
               }}
             />
+
             <Text selectable style={styles.dataText}>
               Additional
             </Text>

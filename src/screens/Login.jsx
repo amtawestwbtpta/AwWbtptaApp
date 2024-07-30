@@ -10,7 +10,7 @@ import {
   Linking,
   ScrollView,
 } from 'react-native';
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect} from 'react';
 import {THEME_COLOR} from '../utils/Colors';
 import CustomTextInput from '../components/CustomTextInput';
 import CustomButton from '../components/CustomButton';
@@ -175,6 +175,7 @@ const Login = () => {
                     await EncryptedStorage.setItem('teacher', teacherRecord);
                     await EncryptedStorage.setItem('user', userRecord);
                     await EncryptedStorage.setItem('loggedAt', loggedAt);
+                    await EncryptedStorage.setItem('token', token);
                     setVisible(false);
                     showToast(
                       'success',

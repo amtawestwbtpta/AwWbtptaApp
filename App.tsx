@@ -8,6 +8,8 @@ import {
   onDisplayNotification,
   requestUserPermission,
 } from './src/modules/notification';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+
 LogBox.ignoreAllLogs();
 const App = () => {
   useEffect(() => {
@@ -32,9 +34,11 @@ const App = () => {
   return (
     <GlobalContextProvider>
       <View style={{flex: 1}}>
-        <KeyboardAvoidingView style={{flex: 1}}>
-          <AppNavigator />
-        </KeyboardAvoidingView>
+        <GestureHandlerRootView style={{flex: 1}}>
+          <KeyboardAvoidingView style={{flex: 1}}>
+            <AppNavigator />
+          </KeyboardAvoidingView>
+        </GestureHandlerRootView>
       </View>
     </GlobalContextProvider>
   );

@@ -93,6 +93,7 @@ const AllTeachersSalary = () => {
           let ma = el.ma;
           let gpf = el.gpf;
           let gpfprev = el.gpfprev;
+          let julyGpf = el.julyGpf;
           let gsli = el.gsli;
           let disability = el.disability;
           let prevmbasic = el.prevmbasic;
@@ -107,15 +108,15 @@ const AllTeachersSalary = () => {
             if (index > 6) {
               basicpay = basic;
               da = Math.round(basicpay * DA);
+              pfund = julyGpf;
+            } else if (index < 7 || index > 3) {
+              basicpay = mbasic;
+              da = Math.round(basicpay * DA);
               pfund = gpf;
             } else {
-              pfund = gpfprev;
               basicpay = mbasic;
-              if (index < 4) {
-                da = Math.round(basicpay * PREVDA);
-              } else {
-                da = Math.round(basicpay * DA);
-              }
+              pfund = gpfprev;
+              da = Math.round(basicpay * PREVDA);
             }
           } else if (dataYear === date.getFullYear() - 1) {
             basicpay = prevmbasic;

@@ -79,7 +79,7 @@ const YearwiseTeachers = () => {
     setSelectedYear(el);
     setFilteredData(x);
     setMoreFilteredData(x);
-    setJoiningMonths(uniqArray(y));
+    setJoiningMonths(uniqArray(y).sort((a, b) => a.rank - b.rank));
     setMonthText('');
   };
   const handleMonthChange = month => {
@@ -428,8 +428,7 @@ const YearwiseTeachers = () => {
                 flexWrap: 'wrap',
                 width: responsiveWidth(90),
               }}>
-              {user.circle === 'admin' &&
-                joiningMonths.length > 1 &&
+              {joiningMonths.length > 1 &&
                 joiningMonths.map((month, index) => (
                   <View
                     style={{

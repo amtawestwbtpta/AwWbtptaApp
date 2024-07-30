@@ -591,3 +591,6 @@ export const monthNamesWithIndex = [
   {monthName: 'November', index: '11', rank: 11},
   {monthName: 'December', index: '12', rank: 12},
 ];
+export function round5(x) {
+  return Math.ceil(x / 5) * 5;
+}

@@ -221,6 +221,7 @@ const StudentTeacherData = () => {
     schoolState,
     showData,
     selectedSchool,
+    schoolData,
   ]);
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -296,7 +297,7 @@ const StudentTeacherData = () => {
                 setSchoolName(text);
                 if (text.length) {
                   setFilteredSchool(
-                    filteredSchool.filter(el =>
+                    schoolData.filter(el =>
                       el.school
                         .toString()
                         .toLowerCase()
@@ -312,7 +313,7 @@ const StudentTeacherData = () => {
                 setFilteredSchool(schoolData);
               }}
             />
-            {schoolData.map((item, index) => {
+            {filteredSchool.map((item, index) => {
               return (
                 <TouchableOpacity
                   key={index}

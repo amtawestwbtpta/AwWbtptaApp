@@ -93,11 +93,12 @@ const TeachersDetails = () => {
   const [twentyShowed, setTwentyShowed] = useState(false);
   const [thirtyShowed, setThirtyShowed] = useState(false);
   const [pageData, setPageData] = useState(10);
+
   const [inputField, setInputField] = useState({
     school: '',
     udise: '',
     tname: '',
-    gender: '',
+    gender: 'male',
     ph: 0,
     desig: 'AT',
     fname: '',
@@ -107,20 +108,20 @@ const TeachersDetails = () => {
     association: 'WBTPTA',
     phone: '',
     email: '',
-    dob: '01-01-1980',
+    dob: '01-01-1990',
     doj: getSubmitDateInput(new Date().toLocaleDateString()),
     dojnow: getSubmitDateInput(new Date().toLocaleDateString()),
-    dor: '01-01-2040',
+    dor: '01-01-2050',
     bank: '',
     account: '',
     ifsc: '',
-    empid: '',
+    empid: generateID(),
     training: 'TRAINED',
     pan: '',
     address: '',
-    basic: 0,
-    mbasic: 0,
-    prevmbasic: 0,
+    basic: 28900,
+    mbasic: 28900,
+    prevmbasic: 28900,
     addl: 0,
     da: 0,
     mda: 0,
@@ -129,22 +130,24 @@ const TeachersDetails = () => {
     ma: 500,
     gross: 0,
     mgross: 0,
+    mptax: 0,
     gpf: 0,
     gpfprev: 0,
-    mptax: 150,
-    jptax: 150,
+    julyGpf: 0,
+    ptax: 150,
     gsli: 0,
+    jptax: 0,
     netpay: 0,
     mnetpay: 0,
     bonus: 0,
     arrear: 0,
     question: 'taw',
-    hoi: 'NO',
-    newHt: false,
-    showAccount: false,
+    hoi: 'No',
     service: 'inservice',
     id: '',
     rank: 3,
+    newHt: false,
+    registered: false,
     dataYear: new Date().getFullYear(),
   });
   const [isHT, setIsHT] = useState(false);
@@ -682,7 +685,7 @@ const TeachersDetails = () => {
   const deleteTeacher = async item => {
     setVisible(true);
     const url = `https://awwbtpta.vercel.app/api/delteacher`;
-    let response = await axios.post(url, inputField);
+    let response = await axios.post(url, item);
     let record = response.data;
     if (record.success) {
       await firestore()
@@ -1039,7 +1042,8 @@ const TeachersDetails = () => {
   };
   useEffect(() => {
     getMainData();
-    // scrollToTop();
+    setInpSchool('');
+    setInputTname('');
   }, [isFocused]);
 
   useEffect(() => {
@@ -1098,7 +1102,7 @@ const TeachersDetails = () => {
                     school: '',
                     udise: '',
                     tname: '',
-                    gender: '',
+                    gender: 'male',
                     ph: 0,
                     desig: 'AT',
                     fname: '',
@@ -1108,20 +1112,20 @@ const TeachersDetails = () => {
                     association: 'WBTPTA',
                     phone: '',
                     email: '',
-                    dob: '01-01-1980',
+                    dob: '01-01-1990',
                     doj: getSubmitDateInput(new Date().toLocaleDateString()),
                     dojnow: getSubmitDateInput(new Date().toLocaleDateString()),
-                    dor: '01-01-2040',
+                    dor: '01-01-2050',
                     bank: '',
                     account: '',
                     ifsc: '',
-                    empid: '',
+                    empid: generateID(),
                     training: 'TRAINED',
                     pan: '',
                     address: '',
-                    basic: 0,
-                    mbasic: 0,
-                    prevmbasic: 0,
+                    basic: 28900,
+                    mbasic: 28900,
+                    prevmbasic: 28900,
                     addl: 0,
                     da: 0,
                     mda: 0,
@@ -1130,22 +1134,24 @@ const TeachersDetails = () => {
                     ma: 500,
                     gross: 0,
                     mgross: 0,
+                    mptax: 0,
                     gpf: 0,
                     gpfprev: 0,
-                    mptax: 150,
-                    jptax: 150,
+                    julyGpf: 0,
+                    ptax: 150,
                     gsli: 0,
+                    jptax: 0,
                     netpay: 0,
                     mnetpay: 0,
                     bonus: 0,
                     arrear: 0,
                     question: 'taw',
-                    hoi: 'NO',
-                    newHt: false,
-                    showAccount: false,
+                    hoi: 'No',
                     service: 'inservice',
                     id: '',
                     rank: 3,
+                    newHt: false,
+                    registered: false,
                     dataYear: new Date().getFullYear(),
                   });
                   setSelectedText('Select School Name');
@@ -1764,27 +1770,39 @@ const TeachersDetails = () => {
                     </View>
                   )}
                   <Text selectable style={styles.dataText}>
-                    GPF
+                    March GPF
+                  </Text>
+                  <CustomTextInput
+                    placeholder={'Enter March GPF'}
+                    value={inputField.gpfprev.toString()}
+                    type={'number-pad'}
+                    onChangeText={text => {
+                      setInputField({...inputField, gpfprev: parseInt(text)});
+                    }}
+                  />
+                  <Text selectable style={styles.dataText}>
+                    April GPF
                   </Text>
                   <CustomTextInput
                     placeholder={'Enter GPF'}
                     value={inputField.gpf.toString()}
                     type={'number-pad'}
                     onChangeText={text => {
-                      setInputField({...inputField, gpf: text});
+                      setInputField({...inputField, gpf: parseInt(text)});
                     }}
                   />
                   <Text selectable style={styles.dataText}>
-                    Previous GPF
+                    July GPF
                   </Text>
                   <CustomTextInput
-                    placeholder={'Enter Previous GPF'}
-                    value={inputField.gpfprev.toString()}
+                    placeholder={'Enter July GPF'}
+                    value={inputField.julyGpf.toString()}
                     type={'number-pad'}
                     onChangeText={text => {
-                      setInputField({...inputField, gpfprev: text});
+                      setInputField({...inputField, julyGpf: parseInt(text)});
                     }}
                   />
+
                   <Text selectable style={styles.dataText}>
                     Additional
                   </Text>
@@ -1793,7 +1811,7 @@ const TeachersDetails = () => {
                     value={inputField.addl.toString()}
                     type={'number-pad'}
                     onChangeText={text => {
-                      setInputField({...inputField, addl: text});
+                      setInputField({...inputField, addl: parseInt(text)});
                     }}
                   />
                   <Text selectable style={styles.dataText}>
@@ -1804,7 +1822,7 @@ const TeachersDetails = () => {
                     value={inputField.ma.toString()}
                     type={'number-pad'}
                     onChangeText={text => {
-                      setInputField({...inputField, ma: text});
+                      setInputField({...inputField, ma: parseInt(text)});
                     }}
                   />
                   <Text selectable style={styles.dataText}>
@@ -1815,7 +1833,7 @@ const TeachersDetails = () => {
                     value={inputField.gsli.toString()}
                     type={'number-pad'}
                     onChangeText={text => {
-                      setInputField({...inputField, gsli: text});
+                      setInputField({...inputField, gsli: parseInt(text)});
                     }}
                   />
                   <Text selectable style={styles.dataText}>
@@ -1837,7 +1855,7 @@ const TeachersDetails = () => {
                     value={inputField.mda.toString()}
                     type={'number-pad'}
                     onChangeText={text => {
-                      setInputField({...inputField, mda: text});
+                      setInputField({...inputField, mda: parseInt(text)});
                     }}
                   />
                   <Text selectable style={styles.dataText}>
@@ -1848,7 +1866,7 @@ const TeachersDetails = () => {
                     value={inputField.mhra.toString()}
                     type={'number-pad'}
                     onChangeText={text => {
-                      setInputField({...inputField, mhra: text});
+                      setInputField({...inputField, mhra: parseInt(text)});
                     }}
                   />
                   <Text selectable style={styles.dataText}>
@@ -1859,7 +1877,7 @@ const TeachersDetails = () => {
                     value={inputField.mgross.toString()}
                     type={'number-pad'}
                     onChangeText={text => {
-                      setInputField({...inputField, mgross: text});
+                      setInputField({...inputField, mgross: parseInt(text)});
                     }}
                   />
                   <Text selectable style={styles.dataText}>
@@ -1870,7 +1888,7 @@ const TeachersDetails = () => {
                     value={inputField.mnetpay.toString()}
                     type={'number-pad'}
                     onChangeText={text => {
-                      setInputField({...inputField, mnetpay: text});
+                      setInputField({...inputField, mnetpay: parseInt(text)});
                     }}
                   />
                   <Text selectable style={styles.dataText}>
@@ -1881,7 +1899,7 @@ const TeachersDetails = () => {
                     value={inputField.basic.toString()}
                     type={'number-pad'}
                     onChangeText={text => {
-                      setInputField({...inputField, basic: text});
+                      setInputField({...inputField, basic: parseInt(text)});
                     }}
                   />
                   <Text selectable style={styles.dataText}>
@@ -1892,7 +1910,7 @@ const TeachersDetails = () => {
                     value={inputField.da.toString()}
                     type={'number-pad'}
                     onChangeText={text => {
-                      setInputField({...inputField, da: text});
+                      setInputField({...inputField, da: parseInt(text)});
                     }}
                   />
                   <Text selectable style={styles.dataText}>
@@ -1903,7 +1921,7 @@ const TeachersDetails = () => {
                     value={inputField.hra.toString()}
                     type={'number-pad'}
                     onChangeText={text => {
-                      setInputField({...inputField, hra: text});
+                      setInputField({...inputField, hra: parseInt(text)});
                     }}
                   />
                   <Text selectable style={styles.dataText}>
@@ -1914,7 +1932,7 @@ const TeachersDetails = () => {
                     value={inputField.gross.toString()}
                     type={'number-pad'}
                     onChangeText={text => {
-                      setInputField({...inputField, gross: text});
+                      setInputField({...inputField, gross: parseInt(text)});
                     }}
                   />
                   <Text selectable style={styles.dataText}>
@@ -1925,7 +1943,7 @@ const TeachersDetails = () => {
                     value={inputField.netpay.toString()}
                     type={'number-pad'}
                     onChangeText={text => {
-                      setInputField({...inputField, netpay: text});
+                      setInputField({...inputField, netpay: parseInt(text)});
                     }}
                   />
 
@@ -1937,7 +1955,7 @@ const TeachersDetails = () => {
                     value={inputField.bonus.toString()}
                     type={'number-pad'}
                     onChangeText={text => {
-                      setInputField({...inputField, bonus: text});
+                      setInputField({...inputField, bonus: parseInt(text)});
                     }}
                   />
                   <Text selectable style={styles.dataText}>

@@ -5,10 +5,9 @@ import {
   TouchableOpacity,
   View,
   BackHandler,
-  Alert,
   ScrollView,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {useGlobalContext} from '../context/Store';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
@@ -43,6 +42,7 @@ import Animated, {
 import RNExitApp from 'react-native-exit-app';
 import Modal from 'react-native-modal';
 import Downloads from './Downloads';
+
 const Main = () => {
   const {state, activeTab, setActiveTab} = useGlobalContext();
 
@@ -251,28 +251,47 @@ const Main = () => {
     }
     // refresh();
   }, [isFocused]);
-  const backAction = () => {
-    Alert.alert('Hold On!', 'Are You Sure To Exit App?', [
-      {
-        text: 'Cancel',
-        onPress: () => null,
-        style: 'cancel',
-      },
-      {
-        text: 'Exit',
-        onPress: () => RNExitApp.exitApp(),
-      },
-    ]);
+  // const backAction = () => {
+  //   Alert.alert('Hold On!', 'Are You Sure To Exit App?', [
+  //     {
+  //       text: 'Cancel',
+  //       onPress: () => null,
+  //       style: 'cancel',
+  //     },
+  //     {
+  //       text: 'Exit',
+  //       onPress: () => RNExitApp.exitApp(),
+  //     },
+  //   ]);
+  //   return true;
+  // };
+
+  const [backPressCount, setBackPressCount] = useState(0);
+
+  const handleBackPress = useCallback(() => {
+    if (backPressCount === 0) {
+      setBackPressCount(prevCount => prevCount + 1);
+      setTimeout(() => setBackPressCount(0), 2000);
+    } else if (backPressCount === 1) {
+      RNExitApp.exitApp();
+    }
     return true;
-  };
+  }, [backPressCount]);
 
   useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
+    const backListener = BackHandler.addEventListener(
       'hardwareBackPress',
-      backAction,
+      handleBackPress,
     );
-    return () => backHandler.remove();
-  }, []);
+    return backListener.remove;
+  }, [handleBackPress]);
+  // useEffect(() => {
+  //   const backHandler = BackHandler.addEventListener(
+  //     'hardwareBackPress',
+  //     backAction,
+  //   );
+  //   return () => backHandler.remove();
+  // }, []);
   useEffect(() => {}, [isClicked, textColor]);
 
   return (
@@ -284,7 +303,7 @@ const Main = () => {
             alignItems: 'center',
             alignSelf: 'center',
             flexDirection: 'row',
-            marginLeft: -responsiveWidth(5),
+            marginLeft: -responsiveWidth(12),
           }}>
           <TouchableOpacity onPress={() => refresh()}>
             <Image
@@ -292,10 +311,9 @@ const Main = () => {
               style={{
                 width: responsiveWidth(30),
                 height: responsiveWidth(30),
-                paddingRight: responsiveWidth(20),
                 transform: [
-                  {scale: 0.4},
-                  {translateY: -responsiveHeight(8)},
+                  {scale: 0.3},
+                  {translateY: -responsiveHeight(7)},
                   {translateX: -responsiveHeight(8)},
                 ],
               }}
@@ -308,9 +326,9 @@ const Main = () => {
               fontFamily: 'kalpurush',
               fontWeight: '500',
               transform: [
-                {scale: 1.4},
-                {scaleY: 1.5},
-                {translateY: -responsiveHeight(1.2)},
+                {scale: 1.5},
+                {scaleY: 1.3},
+                {translateY: -responsiveHeight(0.8)},
                 {translateX: -responsiveHeight(2.5)},
               ],
               color: 'white',
@@ -321,9 +339,9 @@ const Main = () => {
           <TouchableOpacity
             style={{
               transform: [
-                {scale: 1.4},
+                {scale: 1.5},
                 {scaleY: 1.5},
-                {translateY: -responsiveHeight(1.2)},
+                {translateY: -responsiveHeight(0.9)},
                 {translateX: responsiveHeight(2.5)},
               ],
             }}

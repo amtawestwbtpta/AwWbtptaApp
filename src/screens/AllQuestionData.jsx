@@ -21,7 +21,7 @@ import {
 } from 'react-native-responsive-dimensions';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {round2dec} from '../modules/calculatefunctions';
+import {round2dec, round5} from '../modules/calculatefunctions';
 import {useGlobalContext} from '../context/Store';
 const AllQuestionData = () => {
   const {questionState, questionRateState} = useGlobalContext();
@@ -363,7 +363,7 @@ const AllQuestionData = () => {
               </Text>
               <Text selectable style={styles.text}>
                 Total Cost: Rs. ₹
-                {Math.round(
+                {round5(
                   item.cl_pp_student * qRateData.pp_rate +
                     item.cl_1_student * qRateData.i_rate +
                     item.cl_2_student * qRateData.ii_rate +

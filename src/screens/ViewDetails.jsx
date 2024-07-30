@@ -51,6 +51,8 @@ const ViewDetails = () => {
     addl,
     ma,
     gpf,
+    gpfprev,
+    julyGpf,
     gsli,
     fname,
     dataYear,
@@ -63,22 +65,30 @@ const ViewDetails = () => {
   };
   let date = new Date();
 
-  let basicpay;
-  let ptax;
-  let junelast = new Date(`${date.getFullYear()}-07-31`);
+  let da, hra, gross, basicpay, netpay, ptax, pfund;
+  let junelast = new Date(`${date.getFullYear()}-07-1`);
+  const month = date.getMonth();
+
   if (dataYear === new Date().getFullYear()) {
     if (date >= junelast) {
       basicpay = basic;
+      pfund = julyGpf;
+    } else if (month <= 3) {
+      basicpay = basic;
+      pfund = gpf;
+    } else if (month < 6 && month >= 2) {
+      basicpay = mbasic;
+      pfund = gpf;
     } else {
       basicpay = mbasic;
+      pfund = gpfprev;
     }
   } else {
     basicpay = basic;
   }
-  let da = Math.round(basicpay * DA);
-  let hra = Math.round(basicpay * HRA);
-
-  let gross = basicpay + da + hra + addl + ma;
+  da = Math.round(basicpay * DA);
+  hra = Math.round(basicpay * HRA);
+  gross = basicpay + da + hra + addl + ma;
 
   if (gross > 40000) {
     ptax = 200;
@@ -96,9 +106,9 @@ const ViewDetails = () => {
     ptax = 0;
   }
 
-  let deduction = gsli + gpf + ptax;
+  let deduction = gsli + pfund + ptax;
 
-  let netpay = gross - deduction;
+  netpay = gross - deduction;
 
   useEffect(() => {
     ifsc_ser();
@@ -316,6 +326,13 @@ const ViewDetails = () => {
             </Text>
           </TouchableOpacity>
         ) : null}
+        {ma ? (
+          <TouchableOpacity style={styles.dataView}>
+            <Text selectable style={styles.dataText}>
+              Medical Allowance: {ma}
+            </Text>
+          </TouchableOpacity>
+        ) : null}
         <TouchableOpacity style={styles.dataView}>
           <Text selectable style={styles.dataText}>
             Gross Pay: {gross}
@@ -323,7 +340,17 @@ const ViewDetails = () => {
         </TouchableOpacity>
         <TouchableOpacity style={styles.dataView}>
           <Text selectable style={styles.dataText}>
-            GPF: {gpf}
+            March GPF: {gpfprev}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.dataView}>
+          <Text selectable style={styles.dataText}>
+            April GPF: {gpf}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.dataView}>
+          <Text selectable style={styles.dataText}>
+            July GPF: {julyGpf}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.dataView}>

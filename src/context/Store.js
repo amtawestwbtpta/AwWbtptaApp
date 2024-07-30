@@ -40,8 +40,25 @@ const GlobalContext = createContext({
   setQuestionState: () => [],
   questionUpdateTime: '',
   setQuestionUpdateTime: () => '',
-  questionRateState: {},
+  questionRateState: {
+    id: '',
+    pp_rate: '',
+    i_rate: '',
+    ii_rate: '',
+    iii_rate: '',
+    iv_rate: '',
+    v_rate: '',
+    term: '1st',
+    year: new Date().getFullYear(),
+    isAccepting: false,
+  },
   setQuestionRateState: () => {},
+  questionRateUpdateTime: '',
+  setQuestionRateUpdateTime: () => {},
+  location: '',
+  setLocation: () => '',
+  locatitionTime: Date.now() - 1000,
+  setLocationTime: () => '',
 });
 
 export const GlobalContextProvider = ({children}) => {
@@ -71,15 +88,19 @@ export const GlobalContextProvider = ({children}) => {
   );
   const [questionRateState, setQuestionRateState] = useState({
     id: '',
-    question_pp_rate: '',
-    question_1_rate: '',
-    question_2_rate: '',
-    question_3_rate: '',
-    question_4_rate: '',
-    question_5_rate: '',
+    pp_rate: '',
+    i_rate: '',
+    ii_rate: '',
+    iii_rate: '',
+    iv_rate: '',
+    v_rate: '',
     term: '1st',
     year: new Date().getFullYear(),
+    isAccepting: false,
   });
+  const [questionRateUpdateTime, setQuestionRateUpdateTime] = useState('');
+  const [location, setLocation] = useState(false);
+  const [locationTime, setLocationTime] = useState(Date.now() - 1000);
 
   return (
     <GlobalContext.Provider
@@ -120,6 +141,12 @@ export const GlobalContextProvider = ({children}) => {
         setQuestionUpdateTime,
         questionRateState,
         setQuestionRateState,
+        questionRateUpdateTime,
+        setQuestionRateUpdateTime,
+        location,
+        setLocation,
+        locationTime,
+        setLocationTime,
       }}>
       {children}
     </GlobalContext.Provider>
