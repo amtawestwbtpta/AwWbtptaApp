@@ -360,6 +360,10 @@ const StudentTeacherData = () => {
                 Total Teacher: {filteredData.length}
               </Text>
               <Text selectable style={styles.dropDownText}>
+                Total Student {filteredSchool[0]?.year - 2}:{' '}
+                {filteredSchool[0]?.student_prev2}
+              </Text>
+              <Text selectable style={styles.dropDownText}>
                 Total Student {filteredSchool[0]?.year - 1}:{' '}
                 {filteredSchool[0]?.student}
               </Text>
