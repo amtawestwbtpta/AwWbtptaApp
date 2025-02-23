@@ -6,11 +6,7 @@ import {useIsFocused} from '@react-navigation/native';
 import {useGlobalContext} from '../context/Store';
 import firestore from '@react-native-firebase/firestore';
 import Loader from '../components/Loader';
-import Geolocation from '@react-native-community/geolocation';
 import Toast from 'react-native-toast-message';
-import DeviceInfo from 'react-native-device-info';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import RNExitApp from 'react-native-exit-app';
 const Home = () => {
   const {
     state,
@@ -22,14 +18,7 @@ const Home = () => {
     setQuestionRateState,
     questionRateUpdateTime,
     setQuestionRateUpdateTime,
-    locationTime,
-    location,
-    setLocation,
-    setLocationTime,
   } = useGlobalContext();
-
-  const user = state.USER;
-  const token = state.TOKEN;
 
   const navigation = useNavigation();
   const isFocused = useIsFocused();
@@ -72,12 +61,6 @@ const Home = () => {
       setQuestionRateUpdateTime(Date.now());
       getQuestionRate();
     }
-    const locationTimeDifference = (Date.now() - locationTime) / 1000 / 60 / 5;
-    if (locationTimeDifference >= 1 || !location) {
-      grantLocationAccess();
-      setLocationTime(Date.now());
-      setLocation(true);
-    }
   };
 
   const getQuestionRate = async () => {
@@ -97,70 +80,6 @@ const Home = () => {
         setVisible(false);
         showToast('error', e);
       });
-  };
-
-  const grantLocationAccess = async () => {
-    setVisible(false);
-    setShowMain(true);
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      {
-        title: 'WBTPTA App Location Permission',
-        message: 'WBTPTA App needs Mandatory access to your location!',
-      },
-    );
-    if (granted) {
-      Geolocation.getCurrentPosition(
-        async position => {
-          const date = Date.now();
-          const deviceToken = token;
-          const docId = __DEV__
-            ? deviceToken.split(':')[0]
-            : deviceToken.split('-')[0];
-          !__DEV__ &&
-            (await firestore()
-              .collection('userLocations')
-              .doc(docId)
-              .set({
-                id: docId,
-                userId: user.id,
-                username: user.username,
-                phone: user.phone,
-                tname: user.tname,
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                date: date,
-                token: deviceToken,
-                photo: user.url,
-                brand: DeviceInfo.getBrand(),
-                model: DeviceInfo.getModel(),
-              })
-              .then(() => {
-                setVisible(false);
-                setShowMain(true);
-                console.log('Location data sent successfully');
-              })
-              .catch(err => console.log(err)));
-        },
-        error => {
-          // See error code charts below.
-
-          console.log(error.code, error.message);
-          // setTimeout(async () => {
-          //   await EncryptedStorage.clear();
-          //   navigation.navigate('SignOut');
-          // }, 2000);
-        },
-
-        {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-      );
-    } else {
-      showToast('error', 'Location Permission Denied, Hence Exiting');
-      setTimeout(async () => {
-        await EncryptedStorage.clear();
-        navigation.navigate('SignOut');
-      }, 2000);
-    }
   };
 
   const showToast = (type, text, text2) => {

@@ -29,8 +29,8 @@ import TokensView from '../screens/TokensView';
 import TeacherServiceLife from '../screens/TeacherServiceLife';
 import YearwiseTeachers from '../screens/YearwiseTeachers';
 import QuestionRequisition from '../screens/QuestionRequisition';
-import UserLoacation from '../screens/UserLoacation';
 import Retirement from '../screens/Retirement';
+import AiChatBot from '../screens/AiChatBot';
 
 const Stack = createNativeStackNavigator();
 const AppNavigator = () => {
@@ -99,6 +99,11 @@ const AppNavigator = () => {
           options={{headerShown: false, drawerItemStyle: {height: 0}}}
         />
         <Stack.Screen
+          name="AiChatBot"
+          component={AiChatBot}
+          options={{headerShown: false, drawerItemStyle: {height: 0}}}
+        />
+        <Stack.Screen
           name="EditDetails"
           component={EditDetails}
           options={{headerShown: false, drawerItemStyle: {height: 0}}}
@@ -133,11 +138,7 @@ const AppNavigator = () => {
           component={TokensView}
           options={{headerShown: false, drawerItemStyle: {height: 0}}}
         />
-        <Stack.Screen
-          name="UserLoacation"
-          component={UserLoacation}
-          options={{headerShown: false, drawerItemStyle: {height: 0}}}
-        />
+ 
         <Stack.Screen
           name="AllQuestionData"
           component={AllQuestionData}

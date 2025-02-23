@@ -7,6 +7,7 @@ import {
   ScrollView,
   BackHandler,
   Alert,
+  FlatList,
 } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import firestore from '@react-native-firebase/firestore';
@@ -256,7 +257,7 @@ const TokensView = () => {
             </View>
           )}
         </View>
-        {filteredTokens.length > 0 ? (
+        {/* {filteredTokens.length > 0 ? (
           filteredTokens.map((el, index) => (
             <View style={styles.dataView} key={index}>
               <Text selectable style={styles.label}>
@@ -291,6 +292,41 @@ const TokensView = () => {
           <Text selectable style={styles.label}>
             No Token Found
           </Text>
+        )} */}
+        {filteredTokens.length > 0 && (
+          <FlatList
+          data={filteredTokens.slice(firstData, visibleItems)}
+            renderItem={({item, index}) => (
+              <View style={styles.dataView} key={index}>
+                <Text selectable style={styles.label}>
+                  Teacher's Name: {item.name}
+                </Text>
+                <Text selectable style={styles.label}>
+                  Username: {item.username}
+                </Text>
+                <Text selectable style={styles.label}>
+                  Registered On:{' '}
+                  {getSubmitDateInput(new Date(item.date).toLocaleDateString())}
+                </Text>
+                <Text selectable style={styles.label}>
+                  Device Brand: {item.brand}
+                </Text>
+                <Text selectable style={styles.label}>
+                  Device Model: {item.model}
+                </Text>
+                <Text selectable style={styles.label}>
+                  Android Version: {item.osVersion}
+                </Text>
+                <CustomButton
+                  title={'Delete Token'}
+                  color={'red'}
+                  size={'small'}
+                  fontSize={responsiveFontSize(1.5)}
+                  onClick={() => showDelTokenConfirmDialog(item)}
+                />
+              </View>
+            )}
+          />
         )}
         <View
           style={{

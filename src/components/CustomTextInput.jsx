@@ -69,7 +69,7 @@ const CustomTextInput = ({
           onChangeText={text => onChangeText(text)}
           keyboardType={type ? type : 'default'}
           secureTextEntry={isSecure ? true : false}
-          multiline={multiline ? true : false}
+          multiline={multiline ? true : size === 'small' ? false : true}
           numberOfLines={numberOfLines ? numberOfLines : 10}
           textAlignVertical={'top'}
           textAlign="left"

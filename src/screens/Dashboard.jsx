@@ -53,6 +53,7 @@ const Dashboard = () => {
   const isFocused = useIsFocused();
   const [showData, setShowData] = useState(false);
   const [btnText, setBtnText] = useState('Show Your Data');
+  const [dataFetched, setDataFetched] = useState(false);
   const [bankData, setBankData] = useState({});
   const [slides, setSlides] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
@@ -329,8 +330,6 @@ const Dashboard = () => {
     });
   };
   useEffect(() => {
-    ifsc_ser();
-    getModifiedSalary();
     getphotos();
     if (teacher === '') {
       EncryptedStorage.clear();
@@ -617,10 +616,16 @@ const Dashboard = () => {
             color={btnText === 'Show Your Data' ? 'darkgreen' : 'chocolate'}
             onClick={() => {
               setShowData(!showData);
-
-              btnText === 'Show Your Data'
-                ? setBtnText('Hide Your Data')
-                : setBtnText('Show Your Data');
+              if (btnText === 'Show Your Data') {
+                setBtnText('Hide Your Data');
+                if (!dataFetched) {
+                  ifsc_ser();
+                  getModifiedSalary();
+                  setDataFetched(true)  
+                }
+              } else {
+                setBtnText('Show Your Data');
+              }
             }}
           />
 
@@ -905,7 +910,15 @@ const Dashboard = () => {
                   />
                 </View>
               ) : null}
-
+              <CustomButton
+                size={'small'}
+                fontSize={responsiveFontSize(1.5)}
+                title={'Ask Gemini'}
+                color={'black'}
+                onClick={() => {
+                  navigation.navigate('AiChatBot');
+                }}
+              />
               <View
                 style={{
                   flexDirection: 'row',
