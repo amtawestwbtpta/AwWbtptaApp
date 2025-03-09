@@ -15,19 +15,20 @@ import {
   responsiveFontSize,
 } from 'react-native-responsive-dimensions';
 import {THEME_COLOR} from '../utils/Colors';
-import {GEMEINI_API_KEY} from '../modules/constants';
-import {GoogleGenerativeAI} from '@google/generative-ai';
 import CustomTextInput from '../components/CustomTextInput';
 import CustomButton from '../components/CustomButton';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
-import AutoHeightImage from 'react-native-auto-height-image';
-const genAl = new GoogleGenerativeAI(GEMEINI_API_KEY);
+import AutoHeightImage from '../components/AutoHeightImage';
+import { DEEPSEEK_API_KEY } from '../modules/constants';
+import Indicator from '../components/Indicator';
+
 export default function AiChatBot() {
   const isFocused = useIsFocused();
 
   const navigation = useNavigation();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
+  const [loader, setLoader] = useState(false)
   const scrollRef = useRef();
   const scrollToBottom = () => {
     scrollRef.current?.scrollToEnd({animated: true});
@@ -36,6 +37,7 @@ export default function AiChatBot() {
   const handleSend = async () => {
     scrollToBottom();
     if (input.trim() !== '') {
+      setLoader(true);
       let msg = [...messages];
       const userMessage = {text: input, sender: 'user'};
       msg = [...msg, userMessage];
@@ -45,40 +47,49 @@ export default function AiChatBot() {
       // Call Gemini AI chat API (replace with actual API endpoint)
       //   const response = await axios.post('YOUR_Gemini_API_ENDPOINT', { message: input });
       try {
-        const response = await generateGeminiReply(input);
-        if (response !== '') {
-          const aiMessage = {
-            text: response,
-            sender: 'Gemini',
-          };
-          msg = [...msg, aiMessage];
-          setMessages(msg);
-        } else {
-          toast.error('Error sending message to Gemini AI. Please try again.');
-        }
+        const response = await fetch(
+          'https://openrouter.ai/api/v1/chat/completions',
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
+              'HTTP-Referer': 'https://www.sitename.com',
+              'X-Title': 'SiteName',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'deepseek/deepseek-r1:free',
+              messages: [{role: 'user', content: input}],
+            }),
+          },
+        );
+        const data = await response.json();
+        setLoader(false);
+
+        const aiMessage = {
+          text: data.choices?.[0]?.message?.reasoning
+            ? data.choices?.[0]?.message?.reasoning
+            : '' + data.choices?.[0]?.message?.content
+            ? data.choices?.[0]?.message?.content
+            : 'No response received.',
+          sender: 'DeeSeek',
+        };
+        msg = [...msg, aiMessage];
+        setMessages(msg);
       } catch (error) {
+        setLoader(false);
         console.error('Error sending message to Gemini AI: ', error);
 
         // If Gemini AI fails to respond, display a default message
         const defaultMessage = {
           text: "I'm sorry, I couldn't understand that. Please try again.",
-          sender: 'Gemini',
+          sender: 'DeeSeek',
         };
         setMessages([...messages, defaultMessage]);
       }
     }
   };
-  const generateGeminiReply = async prompt => {
-    try {
-      const model = genAl.getGenerativeModel({model: 'gemini-pro'});
-      const result = await model.generateContent(prompt);
-      const response = result.response.text();
-      return response;
-    } catch (error) {
-      console.error('Error generating text:', error);
-      return '';
-    }
-  };
+
   useEffect(() => {}, [messages]);
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -100,13 +111,13 @@ export default function AiChatBot() {
           alignItems: 'center',
           alignSelf: 'center',
         }}>
-        <Text style={styles.title}>Ask Gemini </Text>
+        <Text style={styles.title}>Ask DeeSeek </Text>
         <Text style={styles.bankDataText}>Powered By </Text>
         <AutoHeightImage
           width={responsiveWidth(15)}
-          source={{
-            uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/320px-Google_Gemini_logo.svg.png',
-          }}
+          uri={
+            'https://raw.githubusercontent.com/amtawestwbtpta/awwbtptadata/main/deepseek.png'
+          }
         />
       </View>
       <ScrollView
@@ -137,6 +148,7 @@ export default function AiChatBot() {
           )}
         </View>
       </ScrollView>
+      {loader && <Indicator pattern={'UIActivity'} color={THEME_COLOR} size={40} />}
       <View
         style={{
           marginVertical: responsiveHeight(1),
@@ -151,7 +163,7 @@ export default function AiChatBot() {
           size={'medium'}
           value={input}
           onChangeText={text => setInput(text)}
-          placeholder="Ask Gemini..."
+          placeholder="Ask DeepSeek..."
         />
 
         <View style={{marginLeft: responsiveWidth(2)}}>
@@ -163,6 +175,7 @@ export default function AiChatBot() {
           />
         </View>
       </View>
+      
     </View>
   );
 }

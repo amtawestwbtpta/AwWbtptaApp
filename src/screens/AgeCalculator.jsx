@@ -12,7 +12,7 @@ import {
   responsiveWidth,
   responsiveFontSize,
 } from 'react-native-responsive-dimensions';
-import DateTimePickerAndroid from '@react-native-community/datetimepicker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import CustomButton from '../components/CustomButton';
 import {useGlobalContext} from '../context/Store';
 const AgeCalculator = () => {
@@ -25,6 +25,7 @@ const AgeCalculator = () => {
   const [showBetweenAge, setShowBetweenAge] = useState(false);
   const [showSameDate, setShowSameDate] = useState(true);
   const [showJanDate, setShowJanDate] = useState(false);
+  const [showJanuaryData, setShowJanuaryData] = useState(false);
   const [date, setDate] = useState(new Date());
   const [date1, setDate1] = useState(new Date());
   const [date2, setDate2] = useState(new Date());
@@ -32,36 +33,14 @@ const AgeCalculator = () => {
   const [endDate, setEndDate] = useState('');
   const [age, setAge] = useState({years: 0, months: 0, days: 0});
   const [janDate, setJanDate] = useState(new Date());
-  const thisYear = date.getFullYear();
-  const thisMonth = date.getMonth() + 1;
-  const january1st = thisMonth < 6 ? thisYear : thisYear + 1;
+  const [firstJanuary, setFirstJanuary] = useState(new Date());
+  const firstJanuaryYear = firstJanuary.getFullYear();
+  const firstJanuaryMonth = firstJanuary.getMonth() + 1;
+  const january1st =
+    firstJanuaryMonth < 6 ? firstJanuaryYear : firstJanuaryYear + 1;
   const [showCalculateBtn, setShowCalculateBtn] = useState(false);
   const [showSecondDate, setShowSecondDate] = useState(false);
-  const calculateDate = (event, selectedDate) => {
-    const currentSelectedDate = selectedDate || date;
-    setOpen('');
-    setDate(currentSelectedDate);
-    setShowData(true);
-    setFontColor('black');
 
-    calculateAgeOnSameDay(currentSelectedDate);
-  };
-  const calculateDate1 = (event, selectedDate1) => {
-    const currentSelectedDate1 = selectedDate1 || date;
-    setOpen1('');
-    setDate1(currentSelectedDate1);
-    setStartDate(currentSelectedDate1);
-    setShowSecondDate(true);
-    setFontColor('black');
-  };
-  const calculateDate2 = (event, selectedDate2) => {
-    const currentSelectedDate2 = selectedDate2 || date2;
-    setOpen2('');
-    setDate2(currentSelectedDate2);
-    setEndDate(currentSelectedDate2);
-    setShowCalculateBtn(true);
-    setFontColor('black');
-  };
   const calculateAgeOnSameDay = birthDate => {
     const currentDate = new Date();
     let ageYears = currentDate.getFullYear() - birthDate.getFullYear();
@@ -83,6 +62,7 @@ const AgeCalculator = () => {
       ageMonths += 12;
     }
     setAge({years: ageYears, months: ageMonths, days: ageDays});
+    setShowData(true);
   };
 
   const calculateAgeBetweenDates = () => {
@@ -111,15 +91,6 @@ const AgeCalculator = () => {
     setAge({years: ageYears, months: ageMonths, days: ageDays});
   };
 
-  const calculateJanDate = (event, selectedDate) => {
-    const currentSelectedDate = selectedDate || janDate;
-    setOpen('');
-    setJanDate(currentSelectedDate);
-    setShowData(true);
-    setFontColor('black');
-
-    calculateAgeOnJanDay(currentSelectedDate);
-  };
   const calculateAgeOnJanDay = birthDate => {
     const currentDate = new Date(`${january1st}-01-01`);
     let ageYears = currentDate.getFullYear() - birthDate.getFullYear();
@@ -177,6 +148,7 @@ const AgeCalculator = () => {
               setShowCalculateBtn(false);
               setShowSecondDate(false);
               setShowBetweenAge(false);
+              setShowJanuaryData(false);
               setDate(new Date());
               setDate1(new Date());
               setDate2(new Date());
@@ -195,6 +167,7 @@ const AgeCalculator = () => {
               setShowCalculateBtn(false);
               setShowSecondDate(false);
               setShowBetweenAge(false);
+              setShowJanuaryData(false);
               setDate(new Date());
               setDate1(new Date());
               setDate2(new Date());
@@ -211,7 +184,7 @@ const AgeCalculator = () => {
           />
         )}
       </View>
-      {showSameDate && !showJanDate &&(
+      {showSameDate && !showJanDate && (
         <View>
           <Text selectable style={styles.title}>
             Age as on Today
@@ -247,7 +220,7 @@ const AgeCalculator = () => {
               </Text>
             </TouchableOpacity>
 
-            {open && (
+            {/* {open && (
               <DateTimePickerAndroid
                 testID="dateTimePicker"
                 value={date}
@@ -257,7 +230,25 @@ const AgeCalculator = () => {
                 display="spinner"
                 onChange={calculateDate}
               />
-            )}
+            )} */}
+            <DateTimePickerModal
+              isVisible={open}
+              mode="date"
+              // maximumDate={new Date()}
+              // minimumDate={new Date(`01-01-${new Date().getFullYear()}`)}
+              // minimumDate={new Date(`${date.getFullYear() + 1}-01-01`)}
+              onConfirm={date => {
+                setOpen(false);
+                setDate(date);
+                setFontColor('black');
+                calculateAgeOnSameDay(date);
+              }}
+              onCancel={() => {
+                setOpen(false);
+                setShowData(false);
+                setFontColor(THEME_COLOR);
+              }}
+            />
           </View>
           {showData ? (
             <View style={[styles.itemView, {marginTop: responsiveHeight(8)}]}>
@@ -309,7 +300,7 @@ const AgeCalculator = () => {
               </Text>
             </TouchableOpacity>
 
-            {open1 && (
+            {/* {open1 && (
               <DateTimePickerAndroid
                 testID="dateTimePicker"
                 value={date1}
@@ -319,7 +310,24 @@ const AgeCalculator = () => {
                 display="spinner"
                 onChange={calculateDate1}
               />
-            )}
+            )} */}
+            <DateTimePickerModal
+              isVisible={open1}
+              mode="date"
+              // maximumDate={new Date()}
+              // minimumDate={new Date(`01-01-${new Date().getFullYear()}`)}
+              // minimumDate={new Date(`${date.getFullYear() + 1}-01-01`)}
+              onConfirm={date => {
+                setOpen1(false);
+                setDate1(date);
+                setStartDate(date);
+                setShowSecondDate(true);
+                setFontColor('black');
+              }}
+              onCancel={() => {
+                setOpen1(false);
+              }}
+            />
           </View>
           {showSecondDate ? (
             <View>
@@ -357,7 +365,7 @@ const AgeCalculator = () => {
                   </Text>
                 </TouchableOpacity>
 
-                {open2 && (
+                {/* {open2 && (
                   <DateTimePickerAndroid
                     testID="dateTimePicker"
                     value={date2}
@@ -367,18 +375,37 @@ const AgeCalculator = () => {
                     display="spinner"
                     onChange={calculateDate2}
                   />
-                )}
+                )} */}
+                <DateTimePickerModal
+                  isVisible={open2}
+                  mode="date"
+                  // maximumDate={new Date()}
+                  // minimumDate={new Date(`01-01-${new Date().getFullYear()}`)}
+                  minimumDate={Date.parse(date1)}
+                  onConfirm={date => {
+                    setOpen2(false);
+                    setDate2(date);
+                    setEndDate(date);
+                    setShowCalculateBtn(true);
+                    setFontColor('black');
+                  }}
+                  onCancel={() => {
+                    setOpen2(false);
+                  }}
+                />
               </View>
               {showCalculateBtn && (
-                <CustomButton
-                  title={'Calculate Age'}
-                  color={'darkorchid'}
-                  onClick={calculateAgeBetweenDates}
-                />
+                <View style={{marginTop: responsiveHeight(2)}}>
+                  <CustomButton
+                    title={'Calculate Age'}
+                    color={'darkorchid'}
+                    onClick={calculateAgeBetweenDates}
+                  />
+                </View>
               )}
               {showBetweenAge ? (
                 <View
-                  style={[styles.itemView, {marginTop: responsiveHeight(8)}]}>
+                  style={[styles.itemView, {marginTop: responsiveHeight(4)}]}>
                   <Text selectable style={styles.title}>
                     Age on Same Day:
                   </Text>
@@ -430,7 +457,7 @@ const AgeCalculator = () => {
               </Text>
             </TouchableOpacity>
 
-            {open && (
+            {/* {open && (
               <DateTimePickerAndroid
                 testID="dateTimePicker"
                 value={date}
@@ -439,12 +466,29 @@ const AgeCalculator = () => {
                 display="spinner"
                 onChange={calculateJanDate}
               />
-            )}
+            )} */}
+            <DateTimePickerModal
+              isVisible={open}
+              mode="date"
+              maximumDate={new Date(`${firstJanuary.getFullYear() + 1}-01-01`)}
+              onConfirm={date => {
+                setOpen(false);
+                setJanDate(date);
+                setShowJanuaryData(true);
+                setFontColor('black');
+                calculateAgeOnJanDay(date);
+              }}
+              onCancel={() => {
+                setOpen(false);
+                setFontColor(THEME_COLOR);
+                setShowJanuaryData(false);
+              }}
+            />
           </View>
-          {showData ? (
+          {showJanuaryData ? (
             <View style={[styles.itemView, {marginTop: responsiveHeight(8)}]}>
               <Text selectable style={styles.title}>
-                Age on Same Day:
+                Age as on First January {january1st}
               </Text>
               <Text selectable style={styles.title}>
                 {age.years} years, {age.months} months, {age.days} days

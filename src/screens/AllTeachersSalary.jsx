@@ -317,9 +317,12 @@ const AllTeachersSalary = () => {
                     <Text selectable style={styles.dataText}>
                       DA: ₹{IndianFormat(da)},
                     </Text>
-                    <Text selectable style={styles.dataText}>
-                      HRA: ₹{IndianFormat(hra)},
-                    </Text>
+                    {hra > 0 && (
+                      <Text selectable style={styles.dataText}>
+                        HRA: ₹{IndianFormat(hra)},
+                      </Text>
+                    )}
+
                     {ma > 0 ? (
                       <Text selectable style={styles.dataText}>
                         Medical Allowance: ₹{IndianFormat(ma)},

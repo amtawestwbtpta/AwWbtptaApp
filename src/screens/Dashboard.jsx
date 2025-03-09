@@ -913,7 +913,7 @@ const Dashboard = () => {
               <CustomButton
                 size={'small'}
                 fontSize={responsiveFontSize(1.5)}
-                title={'Ask Gemini'}
+                title={'Ask DeepSeek'}
                 color={'black'}
                 onClick={() => {
                   navigation.navigate('AiChatBot');

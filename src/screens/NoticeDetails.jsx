@@ -39,7 +39,7 @@ import AnimatedSeacrch from '../components/AnimatedSeacrch';
 import Pdf from 'react-native-pdf';
 import {downloadFile} from '../modules/downloadFile';
 import ImageView from 'react-native-image-viewing';
-import AutoHeightImage from 'react-native-auto-height-image';
+import AutoHeightImage from '../components/AutoHeightImage';
 import {useGlobalContext} from '../context/Store';
 const NoticeDetails = () => {
   const isFocused = useIsFocused();

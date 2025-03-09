@@ -26,7 +26,7 @@ import {downloadFile} from '../modules/downloadFile';
 import ImageView from 'react-native-image-viewing';
 import Pdf from 'react-native-pdf';
 import CustomButton from '../components/CustomButton';
-import AutoHeightImage from 'react-native-auto-height-image';
+import AutoHeightImage from '../components/AutoHeightImage';
 import {useGlobalContext} from '../context/Store';
 const MemoDetails = () => {
   const isFocused = useIsFocused();
