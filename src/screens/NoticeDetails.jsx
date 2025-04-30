@@ -55,6 +55,7 @@ const NoticeDetails = () => {
   const [showEditReply, setShowEditReply] = useState(false);
   const [editReplyObj, setEditReplyObj] = useState({});
   const [NoticeReplies, setNoticeReplies] = useState([]);
+  const [loader, setLoader] = useState(true);
   const [showLoader, setShowLoader] = useState(false);
   const [showPageNo, setShowPageNo] = useState(false);
   const [search, setSearch] = useState('');
@@ -232,7 +233,7 @@ const NoticeDetails = () => {
     );
     return () => backHandler.remove();
   }, []);
-  useEffect(() => {}, [isFocused]);
+  useEffect(() => {}, [isFocused, loader]);
   useEffect(() => {
     const txt = data.noticeText;
     if (txt?.includes('https')) {
@@ -314,17 +315,15 @@ const NoticeDetails = () => {
                       uri: data.url,
                       cache: false,
                     }}
+                    renderActivityIndicator={() => <Loader visible={true} />}
                     showsHorizontalScrollIndicator={true}
                     showsVerticalScrollIndicator={true}
                     enablePaging={true}
                     onLoadProgress={percent => {
                       console.log(percent);
-                      setShowLoader(true);
                     }}
                     onLoadComplete={(numberOfPages, filePath) => {
                       console.log(`Number of pages: ${numberOfPages}`);
-                      setShowLoader(false);
-
                       setShowPageNo(false);
                     }}
                     onPageChanged={(page, numberOfPages) => {
@@ -388,11 +387,9 @@ const NoticeDetails = () => {
                       </View>
                     )}
                   </View>
-                  {showPageNo && (
-                    <Text style={styles.text}>
-                      Page {pageNo} of {totalPage}
-                    </Text>
-                  )}
+                  <Text style={styles.text}>
+                    Page {pageNo} of {totalPage}
+                  </Text>
                 </View>
               )}
 

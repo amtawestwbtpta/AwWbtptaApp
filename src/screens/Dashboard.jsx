@@ -78,7 +78,7 @@ const Dashboard = () => {
   const today = new Date();
   const year = today.getFullYear();
   const [month, setMonth] = useState(
-    GetMonthName(today.getMonth() === 0 ? 11 : today.getMonth() - 1),
+    GetMonthName(today.getMonth()),
   );
 
   let tname,
@@ -88,18 +88,13 @@ const Dashboard = () => {
     disability,
     empid,
     pan,
-    dataYear,
-    basic,
-    mbasic,
     addl,
     da,
     hra,
     ma,
     gross,
-    prevmbasic,
     gpf,
     gpfprev,
-    julyGpf,
     pfund,
     ptax,
     gsli,
@@ -117,14 +112,6 @@ const Dashboard = () => {
   disability = teacher.disability;
   empid = teacher.empid;
   pan = teacher.pan;
-  basic = parseInt(teacher.basic);
-  mbasic = parseInt(teacher.mbasic);
-  addl = parseInt(teacher.addl);
-  ma = parseInt(teacher.ma);
-  gpf = parseInt(teacher.gpf);
-  gpfprev = parseInt(teacher.gpfprev);
-  julyGpf = parseInt(teacher.julyGpf);
-  gsli = parseInt(teacher.gsli);
   udise = teacher.udise;
   bank = teacher.bank;
   account = teacher.account;
@@ -817,7 +804,7 @@ const Dashboard = () => {
                 fontSize={responsiveFontSize(1.5)}
                 color={'blueviolet'}
                 onClick={() => {
-                  navigation.navigate('Editteacher');
+                  navigation.navigate('EditDetails');
                   setStateObject(teacher);
                 }}
               />

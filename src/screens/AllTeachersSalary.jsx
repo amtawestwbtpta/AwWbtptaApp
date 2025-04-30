@@ -33,7 +33,7 @@ import {
 import {useGlobalContext} from '../context/Store';
 import axios from 'axios';
 import Loader from '../components/Loader';
-import Ropa from '../modules/ropa';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const AllTeachersSalary = () => {
   const {stateArray, state, setStateObject} = useGlobalContext();
   const user = state.USER;
@@ -93,11 +93,11 @@ const AllTeachersSalary = () => {
   const [year, setYear] = useState(today.getFullYear());
 
   const lastMonthIndex = today.getMonth() === 11 ? 11 : today.getMonth() + 1;
-  const paySlipArray = thisYearMonths
-    .slice(0, lastMonthIndex)
-    .reverse()
-    .concat(preYearMonths.reverse())
-    .concat(pre2ndYearMonths.reverse());
+  // const paySlipArray = thisYearMonths
+  //   .slice(0, lastMonthIndex)
+  //   .reverse()
+  //   .concat(preYearMonths.reverse())
+  //   .concat(pre2ndYearMonths.reverse());
 
   const [monthSalary, setMonthSalary] = useState([]);
   const [aprilSalary, setAprilSalary] = useState([]);
@@ -153,6 +153,9 @@ const AllTeachersSalary = () => {
               Select Month
             </Text>
           </View>
+          <Text selectable style={styles.dataText}>
+            Year {thisYear}
+          </Text>
           <View
             style={{
               justifyContent: 'space-evenly',
@@ -163,21 +166,119 @@ const AllTeachersSalary = () => {
               flexWrap: 'wrap',
               width: responsiveWidth(95),
             }}>
-            {paySlipArray.map((el, ind) => {
-              return (
-                <CustomButton
-                  key={ind}
-                  title={el}
-                  color={month === el ? 'green' : null}
-                  fontColor={month === el ? 'seashell' : null}
-                  size={'small'}
-                  fontSize={responsiveFontSize(1.2)}
-                  onClick={() => {
-                    handleChange(el);
-                  }}
-                />
-              );
-            })}
+            {thisYearMonths
+              .slice(0, lastMonthIndex)
+              .reverse()
+              .map((el, ind) => {
+                return (
+                  <CustomButton
+                    key={ind}
+                    title={el}
+                    color={
+                      month === el?.split('-')[0] &&
+                      year === parseInt(el?.split('-')[1])
+                        ? 'green'
+                        : null
+                    }
+                    fontColor={
+                      month === el?.split('-')[0] &&
+                      year === parseInt(el?.split('-')[1])
+                        ? 'seashell'
+                        : null
+                    }
+                    size={'small'}
+                    fontSize={responsiveFontSize(1.2)}
+                    onClick={() => {
+                      handleChange(el);
+                      console.log(el);
+                    }}
+                  />
+                );
+              })}
+          </View>
+          <Text selectable style={styles.dataText}>
+            Year {preYear}
+          </Text>
+          <View
+            style={{
+              justifyContent: 'space-evenly',
+              alignItems: 'center',
+              alignSelf: 'center',
+              flexDirection: 'row',
+              margin: responsiveWidth(1),
+              flexWrap: 'wrap',
+              width: responsiveWidth(95),
+            }}>
+            {preYearMonths
+              .reverse()
+              .map((el, ind) => {
+                return (
+                  <CustomButton
+                    key={ind}
+                    title={el}
+                    color={
+                      month === el?.split('-')[0] &&
+                      year === parseInt(el?.split('-')[1])
+                        ? 'green'
+                        : null
+                    }
+                    fontColor={
+                      month === el?.split('-')[0] &&
+                      year === parseInt(el?.split('-')[1])
+                        ? 'seashell'
+                        : null
+                    }
+                    size={'small'}
+                    fontSize={responsiveFontSize(1.2)}
+                    onClick={() => {
+                      handleChange(el);
+                      console.log(el);
+                    }}
+                  />
+                );
+              })}
+          </View>
+          <Text selectable style={styles.dataText}>
+            Year {pre2ndYear}
+          </Text>
+          <View
+            style={{
+              justifyContent: 'space-evenly',
+              alignItems: 'center',
+              alignSelf: 'center',
+              flexDirection: 'row',
+              margin: responsiveWidth(1),
+              flexWrap: 'wrap',
+              width: responsiveWidth(95),
+            }}>
+            {pre2ndYearMonths
+              .reverse()
+              .map((el, ind) => {
+                return (
+                  <CustomButton
+                    key={ind}
+                    title={el}
+                    color={
+                      month === el?.split('-')[0] &&
+                      year === parseInt(el?.split('-')[1])
+                        ? 'green'
+                        : null
+                    }
+                    fontColor={
+                      month === el?.split('-')[0] &&
+                      year === parseInt(el?.split('-')[1])
+                        ? 'seashell'
+                        : null
+                    }
+                    size={'small'}
+                    fontSize={responsiveFontSize(1.2)}
+                    onClick={() => {
+                      handleChange(el);
+                      console.log(el);
+                    }}
+                  />
+                );
+              })}
           </View>
           <Text selectable style={styles.title}>
             All Teacher's Salary Data for The Month of {month.toUpperCase()}'{' '}
@@ -187,57 +288,23 @@ const AllTeachersSalary = () => {
             let tname,
               id,
               desig,
-              school,
               disability,
-              empid,
-              pan,
-              dataYear,
-              basic,
-              mbasic,
               addl,
               da,
               hra,
               ma,
               gross,
-              prevmbasic,
-              gpf,
-              gpfprev,
-              julyGpf,
               pfund,
               ptax,
               gsli,
-              udise,
-              bank,
-              account,
-              ifsc,
-              level,
-              cell,
-              ir;
+              ir,
+              netpay,
+              basicpay;
 
             tname = el.tname;
             id = el.id;
             desig = el.desig;
-            school = el.school;
             disability = el.disability;
-            empid = el.empid;
-            pan = el.pan;
-            basic = parseInt(el.basic);
-            mbasic = parseInt(el.mbasic);
-            addl = parseInt(el.addl);
-            ma = parseInt(el.ma);
-            gpf = parseInt(el.gpf);
-            gpfprev = parseInt(el.gpfprev);
-            julyGpf = parseInt(el.julyGpf);
-            gsli = parseInt(el.gsli);
-            udise = el.udise;
-            bank = el.bank;
-            account = el.account;
-            ifsc = el.ifsc;
-            dataYear = el.dataYear;
-
-            let netpay;
-
-            let basicpay;
 
             const techersSalary = monthSalary?.filter(el => el.id === id)[0];
             const teachersAprilSalary = aprilSalary?.filter(
@@ -262,8 +329,6 @@ const AllTeachersSalary = () => {
             ma = techersSalary?.ma;
             pfund = techersSalary?.gpf;
             gsli = techersSalary?.gsli;
-            level = Ropa(basicpay).lv;
-            cell = Ropa(basicpay).ce;
             gross = basicpay + da + ir + hra + addl + ma;
             if (gross > 40000) {
               ptax = 200;
@@ -301,10 +366,10 @@ const AllTeachersSalary = () => {
                       flexWrap: 'wrap',
                     }}>
                     <Text selectable style={styles.dataText}>
-                      Teacher Name: {el.tname},
+                      Teacher Name: {tname},
                     </Text>
                     <Text selectable style={styles.dataText}>
-                      Designation: {el.desig},
+                      Designation: {desig},
                     </Text>
                     <Text selectable style={styles.dataText}>
                       Basicpay: ₹{IndianFormat(basicpay)},
@@ -349,15 +414,16 @@ const AllTeachersSalary = () => {
                   <View
                     style={{
                       flexDirection: 'row',
-                      justifyContent: 'space-between',
+                      justifyContent:
+                        user?.circle === 'admin' ? 'space-between' : 'center',
                       alignItems: 'center',
                       alignSelf: 'center',
                       flexWrap: 'wrap',
                       width: responsiveWidth(60),
                     }}>
                     <CustomButton
-                      title={'Download Payslip'}
-                      size={'xsmall'}
+                      title={`Download\nWBTPTA\nPayslip`}
+                      size={'medium'}
                       fontSize={responsiveFontSize(1.1)}
                       color={'darkgreen'}
                       onClick={async () => {
@@ -365,12 +431,17 @@ const AllTeachersSalary = () => {
                           el,
                         )}`;
                         await Linking.openURL(url);
-                      }}
-                    />
+                      }}>
+                      <MaterialIcons
+                        name="download-for-offline"
+                        color={'white'}
+                        size={30}
+                      />
+                    </CustomButton>
                     {user?.circle === 'admin' && (
                       <CustomButton
-                        title={'Download OSMS Payslip'}
-                        size={'xsmall'}
+                        title={`Download\nOSMS\nPayslip`}
+                        size={'medium'}
                         fontSize={responsiveFontSize(1.1)}
                         color={'blueviolet'}
                         onClick={async () => {
@@ -378,8 +449,13 @@ const AllTeachersSalary = () => {
                             el,
                           )}&key=${ANYKEY}`;
                           await Linking.openURL(url);
-                        }}
-                      />
+                        }}>
+                        <MaterialIcons
+                          name="download-for-offline"
+                          color={'white'}
+                          size={30}
+                        />
+                      </CustomButton>
                     )}
                   </View>
                 </View>

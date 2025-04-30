@@ -48,12 +48,10 @@ const Registration = props => {
   const [inputField, setInputField] = useState({
     teachersID: data.id,
     tname: data.tname,
-    tsname: data.tsname,
     school: data.school,
     desig: data.desig,
     pan: data.pan,
     udise: data.udise,
-    sis: data.sis,
     circle: data.circle,
     showAccount: data.showAccount,
     empid: data.empid,
@@ -61,32 +59,19 @@ const Registration = props => {
     email: data.email,
     phone: data.phone,
     id: userId,
-    dpscst: 'District Primary School Council, Howrah',
-    dpsc: 'Howrah District Primary School Council',
-    dpsc1: '',
-    dpsc2: 'CHAIRMAN, DPSC, HOWRAH',
-    dpsc3: '18, N.D. MUKHERJEE ROAD',
-    dpsc4: 'HOWRAH- 1',
-    tan: 'CALD02032C',
     username: '',
     password: '',
     cpassword: '',
-    createdAt: Date.now(),
   });
   useEffect(() => {}, [inputField]);
 
-  function ValidateEmail(mail) {
-    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/.test(mail)) {
-      return true;
-    }
-    // alert("You have entered an invalid email address!");
-    return false;
+  function ValidateEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
   }
   const reference = storage().ref(`/profileImage/${userId}-${imageName}`);
 
   const registerUser = async () => {
-    // e.preventDefault();
-    // console.log(inputField);
     if (validForm()) {
       setVisible(true);
       const result = await Img.compress(path, {
@@ -101,42 +86,30 @@ const Registration = props => {
       const url = await storage()
         .ref(`/profileImage/${userId}-${imageName}`)
         .getDownloadURL();
-        const username = inputField.username.replace(/\s/g, '').toLowerCase();
+      const username = inputField.username.replace(/\s/g, '').toLowerCase();
       await firestore()
         .collection('userteachers')
         .doc(userId)
         .set({
           teachersID: inputField.teachersID,
           tname: inputField.tname,
-          tsname: inputField.tsname,
           school: inputField.school,
           desig: inputField.desig,
           pan: inputField.pan,
           udise: inputField.udise,
-          sis: inputField.sis,
           circle: inputField.circle,
-          showAccount: inputField.showAccount,
           empid: inputField.empid,
           question: inputField.question,
           email: inputField.email,
-          phone: inputField.phone,
           id: userId,
-          dpscst: inputField.dpscst,
-          dpsc: inputField.dpsc,
-          dpsc1: inputField.dpsc1,
-          dpsc2: inputField.dpsc2,
-          dpsc3: inputField.dpsc3,
-          dpsc4: inputField.dpsc4,
-          tan: inputField.tan,
           username: username,
           password: bcrypt.hashSync(inputField.password, 10),
-          createdAt: inputField.createdAt,
           url: url,
           photoName: `${userId}-${imageName}`,
         })
         .then(async () => {
           const backendUrl = `https://awwbtpta.vercel.app/api/signup`;
-          inputField.username = username
+          inputField.username = username;
           try {
             let response = await axios.post(backendUrl, inputField);
             let record = response.data;
@@ -180,12 +153,10 @@ const Registration = props => {
                     setInputField({
                       teachersID: '',
                       tname: '',
-                      tsname: '',
                       school: '',
                       desig: '',
                       pan: '',
                       udise: '',
-                      sis: '',
                       circle: '',
                       showAccount: '',
                       empid: '',
@@ -193,17 +164,9 @@ const Registration = props => {
                       email: '',
                       phone: '',
                       id: '',
-                      dpscst: 'District Primary School Council, Howrah',
-                      dpsc: 'Howrah District Primary School Council',
-                      dpsc1: '',
-                      dpsc2: 'CHAIRMAN, DPSC, HOWRAH',
-                      dpsc3: '18, N.D. MUKHERJEE ROAD',
-                      dpsc4: 'HOWRAH- 1',
-                      tan: 'CALD02032C',
                       username: '',
                       password: '',
                       cpassword: '',
-                      createdAt: Date.now(),
                     });
                     setImageName('');
                     setPath('');
@@ -278,6 +241,7 @@ const Registration = props => {
     ) {
       formIsValid = false;
     }
+    console.log(ValidateEmail(inputField.email));
     return formIsValid;
   };
   const showToast = (type, text) => {

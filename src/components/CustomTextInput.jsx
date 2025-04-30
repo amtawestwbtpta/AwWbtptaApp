@@ -14,6 +14,7 @@ import {
   responsiveFontSize,
 } from 'react-native-responsive-dimensions';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+
 const CustomTextInput = ({
   placeholder,
   value,
@@ -30,8 +31,11 @@ const CustomTextInput = ({
   numberOfLines,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
+  const [isSecure, setIsSecure] = useState(!!secure); // Double bang to ensure boolean
 
-  const [isSecure, setIsSecure] = useState(secure);
+  // Force disable multiline when secure input is enabled
+  const finalMultiline = secure ? false : multiline;
+
   return (
     <View
       style={[
@@ -51,52 +55,39 @@ const CustomTextInput = ({
           borderWidth: isFocused ? 1.5 : 1,
         },
       ]}>
-      {title ? (
-        <Text style={[styles.title, {color: color ? color : 'skyblue'}]}>
-          {title}
-        </Text>
-      ) : null}
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
+      {title && (
+        <Text style={[styles.title, {color: color || 'skyblue'}]}>{title}</Text>
+      )}
+      <View style={styles.inputContainer}>
         <TextInput
           placeholder={placeholder}
           value={value}
-          editable={editable ? true : editable}
-          onChangeText={text => onChangeText(text)}
-          keyboardType={type ? type : 'default'}
-          secureTextEntry={isSecure ? true : false}
-          multiline={multiline ? true : size === 'small' ? false : true}
-          numberOfLines={numberOfLines ? numberOfLines : 10}
-          textAlignVertical={'top'}
+          editable={editable}
+          onChangeText={onChangeText}
+          keyboardType={type || 'default'}
+          secureTextEntry={isSecure}
+          multiline={finalMultiline} // Critical fix here
+          numberOfLines={numberOfLines || 1}
+          textAlignVertical={finalMultiline ? 'top' : 'center'}
           textAlign="left"
           placeholderTextColor={isFocused ? 'blueviolet' : THEME_COLOR}
-          maxLength={maxLength ? maxLength : 500000}
+          maxLength={maxLength || 500000}
           style={{
             color: 'black',
-            backgroundColor: bgcolor ? bgcolor : 'transparent',
+            backgroundColor: bgcolor || 'transparent',
             width: '90%',
           }}
-          onFocus={() => {
-            setIsFocused(true);
-          }}
-          onBlur={() => {
-            setIsFocused(false);
-          }}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
         />
         {secure && (
           <TouchableOpacity
-            onPress={() => {
-              setIsSecure(!isSecure);
-            }}
+            onPress={() => setIsSecure(!isSecure)}
             style={{paddingRight: 10}}>
             <Ionicons
               name={isSecure ? 'eye' : 'eye-off'}
-              size={responsiveFontSize(2)}
-              color={isSecure ? THEME_COLOR : 'red'}
+              size={responsiveFontSize(2.5)}
+              color={THEME_COLOR}
             />
           </TouchableOpacity>
         )}
@@ -109,8 +100,6 @@ export default CustomTextInput;
 
 const styles = StyleSheet.create({
   input: {
-    width: Dimensions.get('window').width - 100,
-    height: 50,
     borderRadius: 10,
     alignSelf: 'center',
     marginTop: 10,
@@ -122,7 +111,12 @@ const styles = StyleSheet.create({
     top: -responsiveHeight(1.2),
     position: 'absolute',
     backgroundColor: 'white',
-    paddingLeft: responsiveWidth(2),
-    paddingRight: responsiveWidth(2),
+    paddingHorizontal: responsiveWidth(2),
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: '100%',
   },
 });

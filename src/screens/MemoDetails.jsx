@@ -41,7 +41,7 @@ const MemoDetails = () => {
   const [totalPage, setTotalPage] = useState(1);
   const [isLink, setIsLink] = useState(false);
   const [textArr, setTextArr] = useState([]);
-  useEffect(() => {}, [isFocused, data]);
+  useEffect(() => {}, [isFocused, data, showPageNo]);
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -142,11 +142,9 @@ const MemoDetails = () => {
                     enablePaging={true}
                     onLoadProgress={percent => {
                       console.log(percent);
-                      setShowLoader(true);
                     }}
                     onLoadComplete={(numberOfPages, filePath) => {
                       console.log(`Number of pages: ${numberOfPages}`);
-                      setShowLoader(false);
                       setShowPageNo(true);
                     }}
                     onPageChanged={(page, numberOfPages) => {
@@ -211,11 +209,10 @@ const MemoDetails = () => {
                       </View>
                     )}
                   </View>
-                  {showPageNo && (
-                    <Text style={styles.text}>
-                      Page {pageNo} of {totalPage}
-                    </Text>
-                  )}
+
+                  <Text style={styles.text}>
+                    Page {pageNo} of {totalPage}
+                  </Text>
                 </View>
               )}
             </ScrollView>

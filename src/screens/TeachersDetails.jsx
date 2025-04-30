@@ -99,12 +99,12 @@ const TeachersDetails = () => {
     udise: '',
     tname: '',
     gender: 'male',
-    ph: 0,
-    disability: 'MO',
+    // ph: 0,
+    disability: 'NO',
     desig: 'AT',
     fname: '',
     circle: 'taw',
-    sis: 'AMTA WEST CIRCLE',
+    // sis: 'AMTA WEST CIRCLE',
     gp: '',
     association: 'WBTPTA',
     phone: '',
@@ -120,28 +120,28 @@ const TeachersDetails = () => {
     training: 'TRAINED',
     pan: '',
     address: '',
-    basic: 28900,
-    mbasic: 28900,
-    prevmbasic: 28900,
-    addl: 0,
-    da: 0,
-    mda: 0,
-    hra: 0,
-    mhra: 0,
-    ma: 500,
-    gross: 0,
-    mgross: 0,
-    mptax: 0,
-    gpf: 0,
-    gpfprev: 0,
-    julyGpf: 0,
-    ptax: 150,
-    gsli: 0,
-    jptax: 0,
-    netpay: 0,
-    mnetpay: 0,
-    bonus: 0,
-    arrear: 0,
+    // basic: 28900,
+    // mbasic: 28900,
+    // prevmbasic: 28900,
+    // addl: 0,
+    // da: 0,
+    // mda: 0,
+    // hra: 0,
+    // mhra: 0,
+    // ma: 500,
+    // gross: 0,
+    // mgross: 0,
+    // mptax: 0,
+    // gpf: 0,
+    // gpfprev: 0,
+    // julyGpf: 0,
+    // ptax: 150,
+    // gsli: 0,
+    // jptax: 0,
+    // netpay: 0,
+    // mnetpay: 0,
+    // bonus: 0,
+    // arrear: 0,
     question: 'taw',
     hoi: 'No',
     service: 'inservice',
@@ -309,12 +309,10 @@ const TeachersDetails = () => {
         const techerData = {
           teachersID: item.id,
           tname: item.tname,
-          tsname: item.tsname,
           school: item.school,
           desig: item.desig,
           pan: item.pan,
           udise: item.udise,
-          sis: item.sis,
           circle: item.circle,
           showAccount: item.showAccount,
           empid: item.empid,
@@ -346,12 +344,10 @@ const TeachersDetails = () => {
                 .set({
                   teachersID: techerData.teachersID,
                   tname: techerData.tname,
-                  tsname: techerData.tsname,
                   school: techerData.school,
                   desig: techerData.desig,
                   pan: techerData.pan,
                   udise: techerData.udise,
-                  sis: techerData.sis,
                   circle: techerData.circle,
                   showAccount: techerData.showAccount,
                   empid: techerData.empid,
@@ -379,12 +375,10 @@ const TeachersDetails = () => {
                   {
                     teachersID: techerData.teachersID,
                     tname: techerData.tname,
-                    tsname: techerData.tsname,
                     school: techerData.school,
                     desig: techerData.desig,
                     pan: techerData.pan,
                     udise: techerData.udise,
-                    sis: techerData.sis,
                     circle: techerData.circle,
                     showAccount: techerData.showAccount,
                     empid: techerData.empid,
@@ -1106,7 +1100,7 @@ const TeachersDetails = () => {
                     tname: '',
                     gender: 'male',
                     ph: 0,
-                    disability: "MO",
+                    disability: 'NO',
                     desig: 'AT',
                     fname: '',
                     circle: 'taw',
@@ -1773,7 +1767,7 @@ const TeachersDetails = () => {
                       </Text>
                     </View>
                   )}
-                  <Text selectable style={styles.dataText}>
+                  {/* <Text selectable style={styles.dataText}>
                     March GPF
                   </Text>
                   <CustomTextInput
@@ -1961,7 +1955,7 @@ const TeachersDetails = () => {
                     onChangeText={text => {
                       setInputField({...inputField, bonus: parseInt(text)});
                     }}
-                  />
+                  /> */}
                   <Text selectable style={styles.dataText}>
                     Training Status
                   </Text>
@@ -1982,7 +1976,7 @@ const TeachersDetails = () => {
                       setInputField({...inputField, association: text});
                     }}
                   />
-                  <Text selectable style={styles.dataText}>
+                  {/* <Text selectable style={styles.dataText}>
                     Teacher Search Name
                   </Text>
                   <CustomTextInput
@@ -1991,7 +1985,7 @@ const TeachersDetails = () => {
                     onChangeText={text => {
                       setInputField({...inputField, tsname: text});
                     }}
-                  />
+                  /> */}
                   <Text selectable style={styles.dataText}>
                     Access
                   </Text>
@@ -2017,10 +2011,13 @@ const TeachersDetails = () => {
                   </Text>
                   <CustomTextInput
                     placeholder={'Enter Disability Write 0 or 1'}
-                    value={inputField.ph.toString()}
+                    value={inputField.disability}
                     type={'number-pad'}
                     onChangeText={text => {
-                      setInputField({...inputField, ph: text});
+                      setInputField({
+                        ...inputField,
+                        disability: text.toUpperCase(),
+                      });
                     }}
                   />
                   <Text selectable style={styles.dataText}>
@@ -2069,7 +2066,7 @@ const TeachersDetails = () => {
                       udise: '',
                       tname: '',
                       gender: '',
-                      ph: 0,
+                      disability: 'NO',
                       desig: '',
                       fname: '',
                       circle: 'taw',
@@ -2091,26 +2088,26 @@ const TeachersDetails = () => {
                       training: 'TRAINED',
                       pan: '',
                       address: '',
-                      basic: 0,
-                      mbasic: 0,
-                      prevmbasic: 0,
-                      addl: 0,
-                      da: 0,
-                      mda: 0,
-                      hra: 0,
-                      mhra: 0,
-                      ma: 500,
-                      gross: 0,
-                      mgross: 0,
-                      gpf: 0,
-                      gpfprev: 0,
-                      mptax: 150,
-                      jptax: 150,
-                      gsli: 0,
-                      netpay: 0,
-                      mnetpay: 0,
-                      bonus: 0,
-                      arrear: 0,
+                      // basic: 0,
+                      // mbasic: 0,
+                      // prevmbasic: 0,
+                      // addl: 0,
+                      // da: 0,
+                      // mda: 0,
+                      // hra: 0,
+                      // mhra: 0,
+                      // ma: 500,
+                      // gross: 0,
+                      // mgross: 0,
+                      // gpf: 0,
+                      // gpfprev: 0,
+                      // mptax: 150,
+                      // jptax: 150,
+                      // gsli: 0,
+                      // netpay: 0,
+                      // mnetpay: 0,
+                      // bonus: 0,
+                      // arrear: 0,
                       question: 'taw',
                       hoi: '',
                       newHt: false,

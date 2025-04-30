@@ -30,7 +30,7 @@ const ViewDetails = () => {
     tname,
     desig,
     school,
-    disability,
+    // disability,
     circle,
     gp,
     phone,
@@ -46,16 +46,16 @@ const ViewDetails = () => {
     training,
     pan,
     address,
-    basic,
-    mbasic,
-    addl,
-    ma,
-    gpf,
-    gpfprev,
-    julyGpf,
-    gsli,
+    // basic,
+    // mbasic,
+    // addl,
+    // ma,
+    // gpf,
+    // gpfprev,
+    // julyGpf,
+    // gsli,
     fname,
-    dataYear,
+    // dataYear,
   } = stateObject;
   const [bankData, setBankData] = useState({});
   const ifsc_ser = () => {
@@ -63,52 +63,52 @@ const ViewDetails = () => {
       .then(res => res.json())
       .then(data => setBankData(data));
   };
-  let date = new Date();
+  // let date = new Date();
 
-  let da, hra, gross, basicpay, netpay, ptax, pfund;
-  let junelast = new Date(`${date.getFullYear()}-07-1`);
-  const month = date.getMonth();
+  // let da, hra, gross, basicpay, netpay, ptax, pfund;
+  // let junelast = new Date(`${date.getFullYear()}-07-1`);
+  // const month = date.getMonth();
 
-  if (dataYear === new Date().getFullYear()) {
-    if (date >= junelast) {
-      basicpay = basic;
-      pfund = julyGpf;
-    } else if (month <= 3) {
-      basicpay = basic;
-      pfund = gpf;
-    } else if (month < 6 && month >= 2) {
-      basicpay = mbasic;
-      pfund = gpf;
-    } else {
-      basicpay = mbasic;
-      pfund = gpfprev;
-    }
-  } else {
-    basicpay = basic;
-  }
-  da = Math.round(basicpay * DA);
-  hra = Math.round(basicpay * HRA);
-  gross = basicpay + da + hra + addl + ma;
+  // if (dataYear === new Date().getFullYear()) {
+  //   if (date >= junelast) {
+  //     basicpay = basic;
+  //     pfund = julyGpf;
+  //   } else if (month <= 3) {
+  //     basicpay = basic;
+  //     pfund = gpf;
+  //   } else if (month < 6 && month >= 2) {
+  //     basicpay = mbasic;
+  //     pfund = gpf;
+  //   } else {
+  //     basicpay = mbasic;
+  //     pfund = gpfprev;
+  //   }
+  // } else {
+  //   basicpay = basic;
+  // }
+  // da = Math.round(basicpay * DA);
+  // hra = Math.round(basicpay * HRA);
+  // gross = basicpay + da + hra + addl + ma;
 
-  if (gross > 40000) {
-    ptax = 200;
-  } else if (gross > 25000) {
-    ptax = 150;
-  } else if (gross > 15000) {
-    ptax = 130;
-  } else if (gross > 10000) {
-    ptax = 110;
-  } else {
-    ptax = 0;
-  }
+  // if (gross > 40000) {
+  //   ptax = 200;
+  // } else if (gross > 25000) {
+  //   ptax = 150;
+  // } else if (gross > 15000) {
+  //   ptax = 130;
+  // } else if (gross > 10000) {
+  //   ptax = 110;
+  // } else {
+  //   ptax = 0;
+  // }
 
-  if (disability === 'YES') {
-    ptax = 0;
-  }
+  // if (disability === 'YES') {
+  //   ptax = 0;
+  // }
 
-  let deduction = gsli + pfund + ptax;
+  // let deduction = gsli + pfund + ptax;
 
-  netpay = gross - deduction;
+  // netpay = gross - deduction;
 
   useEffect(() => {
     ifsc_ser();
@@ -304,7 +304,7 @@ const ViewDetails = () => {
             MICR: {bankData.MICR}
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.dataView}>
+        {/* <TouchableOpacity style={styles.dataView}>
           <Text selectable style={styles.dataText}>
             BASIC: {basicpay}
           </Text>
@@ -369,7 +369,7 @@ const ViewDetails = () => {
           <Text selectable style={styles.dataText}>
             Net Pay in Words: {INR(netpay)}
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         {user.circle == 'admin' && (
           <CustomButton
             title={'Edit Details'}

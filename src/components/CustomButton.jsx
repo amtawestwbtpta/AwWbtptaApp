@@ -18,6 +18,7 @@ const CustomButton = ({
   fontColor,
   marginBottom,
   marginTop,
+  children,
 }) => {
   return (
     <TouchableOpacity
@@ -40,9 +41,13 @@ const CustomButton = ({
           marginRight: size === 'small' ? 5 : 0,
           marginBottom: marginBottom ? marginBottom : 5,
           marginTop: marginTop ? marginTop : 5,
+          justifyContent: children ? 'space-between' : 'center',
+          alignItems: 'center',
+          flexDirection: 'row',
         },
       ]}
       onPress={() => onClick()}>
+      {children}
       <Text
         style={{
           color: fontColor ? fontColor : 'white',

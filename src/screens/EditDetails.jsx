@@ -110,7 +110,6 @@ const EditDetails = () => {
                   JSON.stringify({
                     ...user,
                     tname: editMember.tname,
-                    tsname: editMember.tsname,
                     school: editMember.school,
                     desig: editMember.desig,
                     pan: editMember.pan,
@@ -129,7 +128,6 @@ const EditDetails = () => {
                   USER: {
                     ...user,
                     tname: editMember.tname,
-                    tsname: editMember.tsname,
                     school: editMember.school,
                     desig: editMember.desig,
                     pan: editMember.pan,
@@ -156,7 +154,6 @@ const EditDetails = () => {
                   JSON.stringify({
                     ...user,
                     tname: editMember.tname,
-                    tsname: editMember.tsname,
                     school: editMember.school,
                     desig: editMember.desig,
                     pan: editMember.pan,
@@ -175,7 +172,6 @@ const EditDetails = () => {
                   USER: {
                     ...user,
                     tname: editMember.tname,
-                    tsname: editMember.tsname,
                     school: editMember.school,
                     desig: editMember.desig,
                     pan: editMember.pan,
@@ -521,17 +517,6 @@ const EditDetails = () => {
               }}
             />
             <Text selectable style={styles.dataText}>
-              Teacher Search Name
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter Teacher Search Name'}
-              value={editMember?.tsname}
-              onChangeText={text => {
-                setDisable(false);
-                setEditMember({...editMember, tsname: text});
-              }}
-            />
-            <Text selectable style={styles.dataText}>
               Access
             </Text>
 
@@ -864,278 +849,9 @@ const EditDetails = () => {
                 MICR: {bankData?.MICR}
               </Text>
             </View>
-            <Text selectable style={styles.dataText}>
-              July BASIC
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter July BASIC'}
-              value={editMember?.basic.toString()}
-              type={'number-pad'}
-              onChangeText={text => {
-                setDisable(false);
-                setEditMember({...editMember, basic: parseInt(text)});
-              }}
-            />
-            <Text selectable style={styles.dataText}>
-              July DA
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter July DA'}
-              value={editMember?.da.toString()}
-              type={'number-pad'}
-              onChangeText={text => {
-                setDisable(false);
-                if (text !== '') {
-                  setEditMember({...editMember, da: parseInt(text)});
-                } else {
-                  setEditMember({...editMember, da: ''});
-                }
-              }}
-            />
-            <Text selectable style={styles.dataText}>
-              July HRA
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter July HRA'}
-              value={editMember?.hra.toString()}
-              type={'number-pad'}
-              onChangeText={text => {
-                setDisable(false);
-                if (text !== '') {
-                  setEditMember({...editMember, hra: parseInt(text)});
-                } else {
-                  setEditMember({...editMember, hra: ''});
-                }
-              }}
-            />
-            <Text selectable style={styles.dataText}>
-              July Gross
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter July Gross'}
-              value={editMember?.gross.toString()}
-              type={'number-pad'}
-              onChangeText={text => {
-                setDisable(false);
-                if (text !== '') {
-                  setEditMember({...editMember, gross: parseInt(text)});
-                } else {
-                  setEditMember({...editMember, gross: ''});
-                }
-              }}
-            />
-            <Text selectable style={styles.dataText}>
-              July Net Pay
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter July Net Pay'}
-              value={editMember?.netpay.toString()}
-              type={'number-pad'}
-              onChangeText={text => {
-                setDisable(false);
-                if (text !== '') {
-                  setEditMember({...editMember, netpay: parseInt(text)});
-                } else {
-                  setEditMember({...editMember, netpay: ''});
-                }
-              }}
-            />
-            <Text selectable style={styles.dataText}>
-              June BASIC
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter June BASIC'}
-              value={editMember?.mbasic.toString()}
-              type={'number-pad'}
-              onChangeText={text => {
-                setDisable(false);
-                if (text !== '') {
-                  setEditMember({...editMember, mbasic: parseInt(text)});
-                } else {
-                  setEditMember({...editMember, mbasic: ''});
-                }
-              }}
-            />
-            <Text selectable style={styles.dataText}>
-              June DA
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter June DA'}
-              value={editMember?.mda.toString()}
-              type={'number-pad'}
-              onChangeText={text => {
-                setDisable(false);
-                if (text !== '') {
-                  setEditMember({...editMember, mda: parseInt(text)});
-                } else {
-                  setEditMember({...editMember, mda: ''});
-                }
-              }}
-            />
-            <Text selectable style={styles.dataText}>
-              June HRA
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter June HRA'}
-              value={editMember?.mhra.toString()}
-              type={'number-pad'}
-              onChangeText={text => {
-                setDisable(false);
-                if (text !== '') {
-                  setEditMember({...editMember, mhra: parseInt(text)});
-                } else {
-                  setEditMember({...editMember, mhra: ''});
-                }
-              }}
-            />
-            <Text selectable style={styles.dataText}>
-              June Gross
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter June Gross'}
-              value={editMember?.mgross.toString()}
-              type={'number-pad'}
-              onChangeText={text => {
-                setDisable(false);
-                if (text !== '') {
-                  setEditMember({...editMember, mgross: parseInt(text)});
-                } else {
-                  setEditMember({...editMember, mgross: ''});
-                }
-              }}
-            />
-            <Text selectable style={styles.dataText}>
-              June Net Pay
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter June Net Pay'}
-              value={editMember?.mnetpay.toString()}
-              type={'number-pad'}
-              onChangeText={text => {
-                setDisable(false);
-                if (text !== '') {
-                  setEditMember({...editMember, mnetpay: parseInt(text)});
-                } else {
-                  setEditMember({...editMember, mnetpay: ''});
-                }
-              }}
-            />
-            <Text selectable style={styles.dataText}>
-              March GPF
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter March GPF'}
-              value={editMember?.gpfprev.toString()}
-              type={'number-pad'}
-              onChangeText={text => {
-                setDisable(false);
-                if (text !== '') {
-                  setEditMember({...editMember, gpfprev: parseInt(text)});
-                } else {
-                  setEditMember({...editMember, gpfprev: ''});
-                }
-              }}
-            />
-            <Text selectable style={styles.dataText}>
-              April GPF
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter April GPF'}
-              value={editMember?.gpf.toString()}
-              type={'number-pad'}
-              onChangeText={text => {
-                setDisable(false);
-                if (text !== '') {
-                  setEditMember({...editMember, gpf: parseInt(text)});
-                } else {
-                  setEditMember({...editMember, gpf: ''});
-                }
-              }}
-            />
-            <Text selectable style={styles.dataText}>
-              July GPF
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter July GPF'}
-              value={editMember?.julyGpf.toString()}
-              type={'number-pad'}
-              onChangeText={text => {
-                setDisable(false);
-                if (text !== '') {
-                  setEditMember({...editMember, julyGpf: parseInt(text)});
-                } else {
-                  setEditMember({...editMember, julyGpf: ''});
-                }
-              }}
-            />
-
-            <Text selectable style={styles.dataText}>
-              Additional
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter Additional'}
-              value={editMember?.addl.toString()}
-              type={'number-pad'}
-              onChangeText={text => {
-                setDisable(false);
-                if (text !== '') {
-                  setEditMember({...editMember, addl: parseInt(text)});
-                } else {
-                  setEditMember({...editMember, addl: ''});
-                }
-              }}
-            />
-            <Text selectable style={styles.dataText}>
-              Medical Allowance
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter Medical Allowance'}
-              value={editMember?.ma.toString()}
-              type={'number-pad'}
-              onChangeText={text => {
-                setDisable(false);
-                if (text !== '') {
-                  setEditMember({...editMember, ma: parseInt(text)});
-                } else {
-                  setEditMember({...editMember, ma: ''});
-                }
-              }}
-            />
-            <Text selectable style={styles.dataText}>
-              GSLI
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter GSLI'}
-              value={editMember?.gsli.toString()}
-              type={'number-pad'}
-              onChangeText={text => {
-                setDisable(false);
-                if (text !== '') {
-                  setEditMember({...editMember, gsli: parseInt(text)});
-                } else {
-                  setEditMember({...editMember, gsli: ''});
-                }
-              }}
-            />
-            <Text selectable style={styles.dataText}>
-              Bonus
-            </Text>
-            <CustomTextInput
-              placeholder={'Enter Bonus'}
-              value={editMember?.bonus.toString()}
-              type={'number-pad'}
-              onChangeText={text => {
-                setDisable(false);
-                if (text !== '') {
-                  setEditMember({...editMember, bonus: parseInt(text)});
-                } else {
-                  setEditMember({...editMember, bonus: ''});
-                }
-              }}
-            />
           </View>
         ) : null}
-        <View style={{marginBottom: responsiveHeight(2)}}>
+        <View style={{marginVertical: responsiveHeight(2)}}>
           <CustomButton
             title={'Update'}
             btnDisable={disable}
